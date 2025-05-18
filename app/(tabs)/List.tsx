@@ -15,15 +15,10 @@ const List = () => {
             <AppButton
                 text="Add List"
                 onPress={() =>console.log('pressed')}
-                size={120}
                 borderColor={'#fff'}
+                borderWidth={2}
             />
-            <AppButton
-            text="Second Button"
-            onPress={() =>console.log('second pressed')}
-            variant="secondary"
-            size={100}
-            />
+
         </View>
     );
 }

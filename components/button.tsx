@@ -4,51 +4,55 @@ import { StyleSheet, Pressable, Text, View } from 'react-native';
 interface AppButtonProps {
     text: string;
     onPress: () => void;
-    variant?: 'primary' | 'secondary';
     disabled?: boolean;
     size?: number;
+    borderWidth?: number;
     borderColor?: string;
+    textColor?: string;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
     text,
     onPress,
-    variant = 'primary',
     disabled = false,
-    size = 120,
-    borderColor
+    size = 200,
+    borderColor,
+    borderWidth = 10,
+    textColor,
 }) => {
     return (
-        <View style={[
-            styles.buttonContainer,
-            {
-                width: size + 10, // Slightly larger than the button
-                height: size + 10,
-                backgroundColor: borderColor || '#fff'
-            }
-        ]}>
-            <Pressable
-                style={({ pressed }) => [
+        <Pressable
+            onPress={onPress}
+            disabled={disabled}
+            style={({ pressed }) => [
+                styles.buttonContainer,
+                {
+                    width: size,
+                    height: size,
+                    padding: borderWidth,
+                    backgroundColor: borderColor || '#fff'
+                },
+                pressed && styles.pressed,
+                disabled && styles.disabled,
+            ]}
+        >
+            <View
+                style={[
                     styles.button,
-                    styles[variant],
-                    pressed && styles.pressed,
-                    disabled && styles.disabled,
                     {
                         width: size,
                         height: size,
                     }
                 ]}
-                onPress={onPress}
-                disabled={disabled}
             >
                 <Text style={[
                     styles.text,
-                    styles[`${variant}Text`]
+                    textColor && { color: textColor }
                 ]}>
                     {text}
                 </Text>
-            </Pressable>
-        </View>
+            </View>
+        </Pressable>
     );
 };
 
@@ -56,8 +60,6 @@ const styles = StyleSheet.create({
     buttonContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 12, // Slightly larger than button borderRadius
-        padding: 5, // Creates the border effect
     },
     button: {
         padding: 12,
@@ -68,9 +70,6 @@ const styles = StyleSheet.create({
     },
     primary: {
         backgroundColor: '#b45309',
-    },
-    secondary: {
-        backgroundColor:'#372413',
     },
     pressed: {
         opacity: 0.8
@@ -85,9 +84,6 @@ const styles = StyleSheet.create({
     },
     primaryText: {
         color: '#fff'
-    },
-    secondaryText: {
-        color: '#b45309'
     },
 });
 
