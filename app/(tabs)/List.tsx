@@ -11,8 +11,19 @@ const List = () => {
             <Text style={styles.subtitle}>
                 This is where your lists are stored
             </Text>
-            <AppButton text="Add List"
-            onPress={() => console.log('Add List')}/>
+
+            <AppButton
+                text="Add List"
+                onPress={() =>console.log('pressed')}
+                size={120}
+                borderColor={'#fff'}
+            />
+            <AppButton
+            text="Second Button"
+            onPress={() =>console.log('second pressed')}
+            variant="secondary"
+            size={100}
+            />
         </View>
     );
 }
@@ -25,6 +36,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         backgroundColor: '#EADDCA',
         padding: 16,
+        gap: 16,
+        width: '100%',
     },
     title: {
         fontSize: 20,
