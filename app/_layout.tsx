@@ -1,6 +1,10 @@
 import { Stack } from "expo-router";
-import './globals.css';
+import "./globals.css"
 
-export default function RootLayout() {
-  return <Stack />;
+export default function StackLayout(){
+  return(
+    <Stack screenOptions={{headerShown: false}}>
+      <Stack.Screen name="(tabs)"/>
+    </Stack>
+  )
 }
