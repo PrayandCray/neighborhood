@@ -5,8 +5,9 @@ interface AppButtonProps {
     text: string;
     onPress: () => void;
     disabled?: boolean;
-    size?: number;
-    borderWidth?: number;
+    width?: number;
+    isFullWidth?: boolean;
+    borderPadding?: number;
     borderColor?: string;
     textColor?: string;
 }
@@ -15,11 +16,15 @@ const AppButton: React.FC<AppButtonProps> = ({
     text,
     onPress,
     disabled = false,
-    size = 200,
+    width = 120,
+    isFullWidth = false,
     borderColor,
-    borderWidth = 10,
+    borderPadding = 10,
     textColor,
 }) => {
+    const buttonWidthStyle = isFullWidth
+    ? {}
+    : { width : width };
     return (
         <Pressable
             onPress={onPress}
@@ -27,9 +32,7 @@ const AppButton: React.FC<AppButtonProps> = ({
             style={({ pressed }) => [
                 styles.buttonContainer,
                 {
-                    width: size,
-                    height: size,
-                    padding: borderWidth,
+                    padding: borderPadding,
                     backgroundColor: borderColor || '#fff'
                 },
                 pressed && styles.pressed,
@@ -39,10 +42,7 @@ const AppButton: React.FC<AppButtonProps> = ({
             <View
                 style={[
                     styles.button,
-                    {
-                        width: size,
-                        height: size,
-                    }
+                    buttonWidthStyle,
                 ]}
             >
                 <Text style={[
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         alignItems: 'center',
         justifyContent: 'center',
+        borderRadius: 12,
     },
     button: {
         padding: 12,
@@ -81,9 +82,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         textAlign: 'center',
-    },
-    primaryText: {
-        color: '#fff'
     },
 });
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import AppButton from "@/components/button";
-import {View, Text, StyleSheet} from 'react-native';
+import {SafeAreaView, Text, StyleSheet} from 'react-native';
 
 const List = () => {
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>
                 List
             </Text>
@@ -15,11 +15,13 @@ const List = () => {
             <AppButton
                 text="Add List"
                 onPress={() =>console.log('pressed')}
+                isFullWidth={true} // this is for auto-padding, otherwise specify width with width{number}
+                borderPadding={20}
                 borderColor={'#fff'}
-                borderWidth={2}
+                textColor={'#EADDCA'}
             />
 
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -35,6 +37,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     title: {
+        paddingTop: 30,
         fontSize: 20,
         fontWeight: 'bold',
         color: '#b45309',
