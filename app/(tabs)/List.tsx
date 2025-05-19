@@ -1,8 +1,10 @@
 import React from 'react';
+import {useRouter} from 'expo-router';
 import AppButton from "@/components/button";
 import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
 
 const List = () => {
+    const router = useRouter();
     const [activelist, setActiveList] = React.useState<'first' | 'second'>('first');
 
     const renderListContent = () => {
@@ -55,10 +57,20 @@ const List = () => {
             {renderListContent()}
 
             <AppButton
-                text="Add Item"
-                onPress={() => console.log('pressed')}
+                text="Scan Items"
+                onPress={() => console.log('New Scan Item')}
                 isFullWidth={false}
-                width={85}
+                width={150}
+                borderPadding={20}
+                borderColor={'#fff'}
+                textColor={'#EADDCA'}
+            />
+
+            <AppButton
+                text="Manually Add"
+                onPress={() => router.push('/new')}
+                isFullWidth={false}
+                width={150}
                 borderPadding={20}
                 borderColor={'#fff'}
                 textColor={'#EADDCA'}
@@ -81,7 +93,7 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         flex: 1,
-        width: '100%',
+        width: '90%',
         backgroundColor: '#fff',
         borderRadius: 10,
         padding: 16,
