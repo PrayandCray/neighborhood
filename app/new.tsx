@@ -13,11 +13,9 @@ const NewItemScreen = () => {
 
     const handleDone = () => {
         if (inputText.trim()) {
-            if (listType == 'pantry') {
+            if (listType === 'pantry') {
                 addToPantry(inputText);
-            }
-        } else {
-            if (listType == 'grocery') {
+            } else if (listType === 'grocery') {
                 addToGrocery(inputText);
             }
             router.back();
@@ -28,7 +26,7 @@ const NewItemScreen = () => {
         <SafeAreaView style={styles.container}>
 
             <Text style={styles.text}>
-                Add New Item to {listType == 'pantry' ? 'Pantry' : 'Grocery List'}
+                Add New Item to {listType === 'pantry' ? 'Pantry' : 'Grocery List'}
             </Text>
 
             {/* Name */}

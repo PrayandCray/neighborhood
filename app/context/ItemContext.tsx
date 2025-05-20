@@ -10,6 +10,8 @@ type ItemContextType = {
     groceryItems: ListItem[];
     addToPantry: (itemName: string) => void;
     addToGrocery: (itemName: string) => void;
+    removeFromPantry: (id: string) => void;
+    removeFromGrocery: (id: string) => void;
 };
 
 const ItemContext = createContext<ItemContextType | undefined>(undefined)
@@ -32,12 +34,23 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         }]);
     };
 
+
+    const removeFromPantry = (id: string) => {
+        setPantryItems(prev=> prev.filter(item => item.id !== id));
+    }
+
+    const removeFromGrocery = (id: string) => {
+        setGroceryItems(prev=> prev.filter(item => item.id !== id));
+    }
+
     return (
         <ItemContext.Provider value={{
             pantryItems,
             groceryItems,
             addToPantry,
             addToGrocery,
+            removeFromPantry,
+            removeFromGrocery,
         }}>
             {children}
         </ItemContext.Provider>

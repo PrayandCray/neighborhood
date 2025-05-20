@@ -3,14 +3,22 @@ import {useRouter} from 'expo-router';
 import AppButton from "@/components/button";
 import {SafeAreaView, View, Text, StyleSheet, FlatList} from 'react-native';
 import { UseItems } from '../context/ItemContext';
+import {Ionicons} from "@expo/vector-icons";
 
 const List = () => {
     const router = useRouter();
-    const { pantryItems, groceryItems } = UseItems();
+    const {
+        pantryItems,
+        groceryItems,
+        removeFromPantry,
+        removeFromGrocery,
+    } = UseItems();
+
     const [activelist, setActiveList] = React.useState<'first' | 'second'>('first');
 
     const renderListContent = () => {
         const items = activelist === 'first' ? pantryItems : groceryItems;
+        const removeitem = activelist === 'first' ? removeFromPantry : removeFromGrocery;
 
         return (
             <View style={styles.listContainer}>
@@ -21,12 +29,23 @@ const List = () => {
                     data={items}
                     keyExtractor={(item) => item.id}
                     renderItem={({item}) => (
-                        <Text style={styles.listItem}>{item.name}</Text>
+                        <View style={styles.listItemContainer}>
+                            <Text style={styles.listItem}>
+                                {item.name}
+                            </Text>
+
+                            <Ionicons
+                                name="trash-outline"
+                                size={24}
+                                color="#b45309"
+                                onPress={() => removeitem(item.id)}
+                            />
+                        </View>
                     )}
                     ListEmptyComponent={
-                    <Text style={styles.listExampleText}>
-                        No Items in Lists
-                    </Text>
+                        <Text style={styles.emptyList}>
+                            No Items in Lists
+                        </Text>
                     }
                 />
             </View>
@@ -118,6 +137,12 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingHorizontal: 10,
     },
+    listItemContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
     listExampleText: {
         color: '#b45309',
         fontSize: 16,
@@ -130,8 +155,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingVertical: 10,
         paddingHorizontal: 10,
+        paddingEnd: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#b45309',
+    },
+    emptyList: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 16,
+        color: '#b45309',
     },
     title: {
         paddingTop: 30,

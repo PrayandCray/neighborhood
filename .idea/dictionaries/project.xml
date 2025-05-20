@@ -2,6 +2,7 @@
   <dictionary name="project">
     <words>
       <w>activelist</w>
+      <w>removeitem</w>
     </words>
   </dictionary>
 </component>
