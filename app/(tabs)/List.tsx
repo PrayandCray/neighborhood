@@ -1,30 +1,39 @@
 import React from 'react';
 import {useRouter} from 'expo-router';
 import AppButton from "@/components/button";
-import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
+import {SafeAreaView, View, Text, StyleSheet, FlatList} from 'react-native';
+import { UseItems } from '../context/ItemContext';
 
 const List = () => {
     const router = useRouter();
+    const { pantryItems, groceryItems } = UseItems();
     const [activelist, setActiveList] = React.useState<'first' | 'second'>('first');
 
     const renderListContent = () => {
-        if (activelist === 'first') {
-            return (
-                <View style={styles.listContainer}>
-                    <Text style={styles.listExampleText}>My Pantry</Text>
-                    {/*insert list items here*/}
-                </View>
-            );
-        } else {
-            return (
-                <View style={styles.listContainer}>
-                    <Text style={styles.listExampleText}>Grocery List</Text>
-                    {/*insert list items here*/}
-                </View>
+        const items = activelist === 'first' ? pantryItems : groceryItems;
 
-            )
-        }
-    }
+        return (
+            <View style={styles.listContainer}>
+                <Text style={styles.listExampleText}>
+                    {activelist === 'first' ? 'My Pantry' : 'Grocery List'}
+                </Text>
+                <FlatList
+                    data={items}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({item}) => (
+                        <Text style={styles.listItem}>{item.name}</Text>
+                    )}
+                    ListEmptyComponent={
+                    <Text style={styles.listExampleText}>
+                        No Items in Lists
+                    </Text>
+                    }
+                />
+            </View>
+
+        );
+
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -68,7 +77,10 @@ const List = () => {
 
             <AppButton
                 text="Manually Add"
-                onPress={() => router.push('/new')}
+                onPress={() => router.push({
+                    pathname: '/new',
+                    params: { listType: activelist === 'first' ? 'pantry' : 'grocery'}
+                })}
                 isFullWidth={false}
                 width={150}
                 borderPadding={20}
@@ -111,6 +123,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+    listItem: {
+        fontSize: 16,
+        fontWeight: '600',
+        textAlign: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#b45309',
     },
     title: {
         paddingTop: 30,
