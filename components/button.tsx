@@ -10,6 +10,8 @@ interface AppButtonProps {
     borderPadding?: number;
     borderColor?: string;
     textColor?: string;
+    backgroundColor?: string;
+    fontSize?: number;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -19,8 +21,10 @@ const AppButton: React.FC<AppButtonProps> = ({
     width = 120,
     isFullWidth = false,
     borderColor,
-    borderPadding = 10,
+    borderPadding,
     textColor,
+    backgroundColor,
+    fontSize,
 }) => {
     const buttonWidthStyle = isFullWidth
     ? {}
@@ -33,7 +37,7 @@ const AppButton: React.FC<AppButtonProps> = ({
                 styles.buttonContainer,
                 {
                     padding: borderPadding,
-                    backgroundColor: borderColor || '#fff'
+                    backgroundColor: '#b45309',
                 },
                 pressed && styles.pressed,
                 disabled && styles.disabled,
@@ -43,11 +47,13 @@ const AppButton: React.FC<AppButtonProps> = ({
                 style={[
                     styles.button,
                     buttonWidthStyle,
+                    backgroundColor && { backgroundColor: backgroundColor }
                 ]}
             >
                 <Text style={[
                     styles.text,
-                    textColor && { color: textColor }
+                    textColor && { color: textColor },
+                    fontSize ? { fontSize: fontSize } : undefined
                 ]}>
                     {text}
                 </Text>
@@ -60,11 +66,12 @@ const styles = StyleSheet.create({
     buttonContainer: {
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 12,
         borderRadius: 12,
     },
     button: {
         padding: 12,
-        borderRadius: 8,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#b45309',

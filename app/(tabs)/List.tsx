@@ -67,7 +67,7 @@ const List = () => {
                     text="My Pantry"
                     onPress={() => setActiveList('first')}
                     width={150}
-                    borderPadding={20}
+                    borderPadding={10}
                     borderColor={'#fff'}
                     textColor={'#EADDCA'}
                 />
