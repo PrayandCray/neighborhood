@@ -64,3 +64,5 @@ export const UseItems = () => {
     }
     return context;
 }
+
+export default ItemContext;

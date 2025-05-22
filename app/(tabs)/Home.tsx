@@ -1,16 +1,20 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {Text, StyleSheet} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Home = () => {
     return (
-        <View style={styles.container}>
+        <LinearGradient
+            colors={['#E2E2E2', '#B39171', '#843F00']}
+            style={styles.container}
+        >
             <Text style={styles.title}>
                 Welcome to Shelfie
             </Text>
             <Text style={styles.subtitle}>
                 An app that helps you keep track of your shelves, pantries and everything else!
             </Text>
-        </View>
+        </LinearGradient>
     );
 }
 
@@ -20,7 +24,6 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#EADDCA',
         padding: 16,
     },
     title: {

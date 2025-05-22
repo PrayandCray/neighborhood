@@ -8,7 +8,10 @@ export default function _layout() {
                 headerShown: false,
                 tabBarStyle: {
                     paddingTop: 10,
-                    backgroundColor: '#EADDCA'
+                    backgroundColor: 'transparent',
+                    elevation: 0,
+                    position: 'absolute',
+                    borderTopWidth: 0,
                 },
                 tabBarIcon: ({ focused, color, size }) => {
                     switch (route.name) {

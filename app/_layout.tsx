@@ -13,7 +13,9 @@ export default function StackLayout(){
               }}
           ><Stack.Screen
               name="(tabs)"
-              options={{headerShown: false,}}
+              options={
+                {headerShown: false,}
+          }
           />
               <Stack.Screen name="new" options={{
                   presentation: 'modal',
