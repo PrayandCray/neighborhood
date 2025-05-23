@@ -1,15 +1,22 @@
-import React, {useState} from 'react';
-import {SafeAreaView, Text, StyleSheet, TextInput} from 'react-native';
 import AppButton from "@/components/button";
-import {useLocalSearchParams, useRouter} from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, TextInput } from 'react-native';
 import { UseItems } from './context/ItemContext';
-
 
 const NewItemScreen = () => {
     const router = useRouter();
     const { listType } = useLocalSearchParams();
     const [inputText, setInputText] = useState('');
     const { addToPantry, addToGrocery } = UseItems();
+
+    const handleTextChange = (text: string) => {
+        setInputText(text);
+        const baseTitle = listType === 'pantry' ? 'Add to Pantry' : 'Add to Grocery List';
+        router.setParams({
+            headerTitle: text ? `Add "${text}"` : baseTitle
+        });
+    };
 
     const handleDone = () => {
         if (inputText.trim()) {
@@ -28,19 +35,17 @@ const NewItemScreen = () => {
             <Text style={styles.text}>
                 Add New Item to {listType === 'pantry' ? 'Pantry' : 'Grocery List'}
             </Text>
-
-            {/* Name */}
             <TextInput
                 style={styles.input}
                 value={inputText}
-                onChangeText={setInputText}
+                onChangeText={handleTextChange}
                 placeholder="Enter Item Name"
                 placeholderTextColor="#b45309"
             />
-
+            
             <AppButton
                 text="Done"
-                onPress={handleDone} //change so it can create new value for the list
+                onPress={handleDone}
                 isFullWidth={false}
                 width={150}
                 borderPadding={20}

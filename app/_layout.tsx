@@ -1,8 +1,10 @@
+import { ItemProvider } from "@/app/context/ItemContext";
 import { Stack } from "expo-router";
-import "./globals.css"
-import {ItemProvider} from "@/app/context/ItemContext";
+import { useState } from "react";
+import "./globals.css";
 
 export default function StackLayout(){
+
   return(
       <ItemProvider>
           <Stack
@@ -11,19 +13,33 @@ export default function StackLayout(){
                   headerStyle: {backgroundColor: '#b45309',},
                   headerTintColor: '#EADDCA',
               }}
-          ><Stack.Screen
+          >
+            <Stack.Screen
               name="(tabs)"
               options={
                 {headerShown: false,}
           }
           />
-              <Stack.Screen name="new" options={{
-                  presentation: 'modal',
-                  animation: 'slide_from_bottom',
-                  headerTitle: 'New Item',
-                  headerStyle: {backgroundColor: '#EADDCA',},
-                  headerTintColor: '#b45309',
-              }}
+              <Stack.Screen
+                  name="new"
+                  options={({
+                                route,
+                            }: {
+                      route: { params?: { listType?: string; headerTitle?: string } }
+                  }) => {
+                      const listType = route.params?.listType;
+                      const headerTitle = route.params?.headerTitle ||
+                          (listType === 'pantry' ? 'Add to Pantry' : 'Add to Grocery List');
+
+                      return {
+                          presentation: 'modal',
+                          animation: 'slide_from_bottom',
+                          headerTitle: headerTitle,
+                          headerTitleAlign: 'center',
+                          headerStyle: {backgroundColor: '#EADDCA'},
+                          headerTintColor: '#b45309',
+                      };
+                  }}
               />
           </Stack>
       </ItemProvider>

@@ -23,8 +23,8 @@ const List = () => {
     return (
         <LinearGradient
             colors={['#E2E2E2', '#B39171', '#843F00']}
-            style={styles.container}
-        >
+            locations={[0, 0.275, 1]}
+            style={styles.container}>
             <SafeAreaView>
 
                 <Text style={styles.title}>
