@@ -23,6 +23,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     const [groceryItems, setGroceryItems] = useState<ListItem[]>([]);
 
     const categories = [
+        {label: 'Other', value: 'other' },
         { label: 'Fruits', value: 'fruits' },
         { label: 'Vegetables', value: 'vegetables' },
         { label: 'Dairy', value: 'dairy' },

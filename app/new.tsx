@@ -28,9 +28,11 @@ const NewItemScreen = () => {
             };
 
             if (listType === 'pantry') {
-                addToPantry(newItem);
+                addToPantry(newItem)
+                console.log(newItem);
             } else if (listType === 'grocery') {
-                addToGrocery(newItem);
+                addToGrocery(newItem)
+                console.log(newItem);
             }
             router.back();
         }

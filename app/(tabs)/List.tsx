@@ -63,9 +63,16 @@ const List = () => {
                     persistentScrollbar={true}
                     renderItem={({item}) => (
                         <View style={styles.listItemContainer}>
-                            <Text style={styles.listItem}>
-                                {item.name}
-                            </Text>
+                            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', gap: 16}}>
+                                <Text style={styles.listItem}>{item.name}</Text>
+                                {item.category && (
+                                    <View style={ styles.categoryContainer}>
+                                        <Text style={styles.categoryLabel}>
+                                            {categories.find(cat => cat.value === item.category)?.label || 'Other'}
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
                             <Ionicons
                                 name="trash-outline"
                                 size={24}
@@ -146,6 +153,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#b45309',
     },
     listExampleText: {
         color: '#b45309',
@@ -161,14 +170,27 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     listItem: {
-        fontSize: 16,
+        fontSize: 13,
         fontWeight: '600',
         textAlign: 'center',
         paddingVertical: 10,
         paddingHorizontal: 10,
         paddingEnd: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: '#b45309',
+    },
+    categoryLabel: {
+        fontSize: 12,
+        fontWeight: '400',
+        color: '#d97706',
+        textAlign: 'center',
+        paddingVertical: 5,
+    },
+    categoryContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        padding: 5,
+        borderRadius: 8,
+        backgroundColor: '#fef3c7',
     },
     emptyList: {
         flex: 1,
