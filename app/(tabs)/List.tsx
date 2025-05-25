@@ -11,6 +11,7 @@ const List = () => {
     const {
         pantryItems,
         groceryItems,
+        categories,
         removeFromPantry,
         removeFromGrocery,
     } = UseItems();
@@ -58,6 +59,8 @@ const List = () => {
                     style={styles.listContainer}
                     data={items}
                     keyExtractor={(item) => item.id}
+                    showsHorizontalScrollIndicator={true}
+                    persistentScrollbar={true}
                     renderItem={({item}) => (
                         <View style={styles.listItemContainer}>
                             <Text style={styles.listItem}>

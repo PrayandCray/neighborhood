@@ -3,13 +3,15 @@ import React, { createContext, useContext, useState, } from 'react';
 type ListItem = {
     id: string;
     name: string;
+    category: string;
 };
 
 type ItemContextType = {
     pantryItems: ListItem[];
     groceryItems: ListItem[];
-    addToPantry: (itemName: string) => void;
-    addToGrocery: (itemName: string) => void;
+    categories: { label: string; value: string }[];
+    addToPantry: (itemName: { name: string; category: string }) => void;
+    addToGrocery: (itemName: { name: string; category: string }) => void;
     removeFromPantry: (id: string) => void;
     removeFromGrocery: (id: string) => void;
 };
@@ -20,17 +22,29 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     const [pantryItems, setPantryItems] = useState<ListItem[]>([]);
     const [groceryItems, setGroceryItems] = useState<ListItem[]>([]);
 
-    const addToPantry = (itemName: string) => {
+    const categories = [
+        { label: 'Fruits', value: 'fruits' },
+        { label: 'Vegetables', value: 'vegetables' },
+        { label: 'Dairy', value: 'dairy' },
+        { label: 'Meat', value: 'meat' },
+        { label: 'Grains', value: 'grains' },
+        { label: 'Snacks', value: 'snacks' },
+        { label: 'Beverages', value: 'beverages' },
+    ];
+
+    const addToPantry = (item: { name : string, category : string; }) => {
         setPantryItems(prev=> [...prev, {
             id: Date.now().toString(),
-            name: itemName
+            name: item.name,
+            category: item.category
         }]);
     };
 
-    const addToGrocery = (itemName: string) => {
+    const addToGrocery = (item: { name : string, category : string; }) => {
         setGroceryItems(prev=> [...prev, {
             id: Date.now().toString(),
-            name: itemName
+            name: item.name,
+            category: item.category
         }]);
     };
 
@@ -47,6 +61,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         <ItemContext.Provider value={{
             pantryItems,
             groceryItems,
+            categories,
             addToPantry,
             addToGrocery,
             removeFromPantry,
