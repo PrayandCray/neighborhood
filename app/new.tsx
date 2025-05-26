@@ -1,7 +1,7 @@
 import AppButton from "@/components/button";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, View, StyleSheet, Text, TextInput } from 'react-native';
+import { SafeAreaView, View, StyleSheet, Text, TextInput, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { UseItems } from './context/ItemContext';
 
@@ -83,38 +83,38 @@ const NewItemScreen = () => {
 
     const styles = StyleSheet.create({
         container: {
-            flexDirection: 'column',
             flex: 1,
             alignItems: 'center',
-            justifyContent: 'flex-start',
             backgroundColor: '#EADDCA',
             width: '100%',
+            paddingTop: 20,
         },
         buttonContainer: {
-            flexDirection: 'row',
+            paddingTop: 50,
+            bottom: 40,
+            width: '100%',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: 16,
-            paddingTop: 50,
-            width: '100%',
         },
         pickerStyle: {
             width: '90%',
-            height: 160,
-            marginVertical: 16,
-            borderWidth: 0,
+            height: Platform.select({
+                ios: 210,
+            }),
+            marginVertical: 10,
+            borderWidth: Platform.select({
+                ios: 1,
+                android: 1,
+            }),
+            borderColor: '#b45309',
+            borderRadius: 10,
             backgroundColor: 'transparent',
-        },
-        text: {
-            paddingTop: 16,
-            color: '#b45309',
-            fontSize: 20,
-            fontWeight: 'bold',
-            textAlign: 'center',
+            overflow: 'hidden',
         },
         picker: {
             width: '100%',
-            height: 40,
+            height: 60,
+            backgroundColor: 'transparent',
         },
         input: {
             width: '90%',
