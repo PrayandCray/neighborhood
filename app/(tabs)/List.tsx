@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import {useRouter, useLocalSearchParams} from 'expo-router';
 import AppButton from "@/components/button";
-import {SafeAreaView, View, Text, StyleSheet, FlatList} from 'react-native';
+import {SafeAreaView, View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import { UseItems } from '../context/ItemContext';
 import {Ionicons} from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,9 +9,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 const List = () => {
     const router = useRouter();
     const { initialList } = useLocalSearchParams();
-    const [activelist, setActiveList] = React.useState<'first' | 'second'>(
+    const [activeList, setActiveList] = React.useState<'first' | 'second'>(
         initialList === 'second' ? 'second' : 'first'
     );
+    const [sortByCategory, setSortByCategory] = React.useState(false);
 
     useEffect(() => {
         if (initialList) {
@@ -22,14 +23,27 @@ const List = () => {
     const {
         pantryItems,
         groceryItems,
-        categories,
+        categories: itemCategories,
         removeFromPantry,
         removeFromGrocery,
     } = UseItems();
 
+    const currentItems = activeList === 'first' ? pantryItems : groceryItems;
+    const removeItem = activeList === 'first' ? removeFromPantry : removeFromGrocery;
 
-    const items = activelist === 'first' ? pantryItems : groceryItems;
-    const removeitem = activelist === 'first' ? removeFromPantry : removeFromGrocery;
+    const sortedItems = React.useMemo(() => {
+        if (!sortByCategory) return currentItems;
+
+        return [...currentItems].sort((a, b) => {
+            const catA = itemCategories.find(cat => cat.value === a.category)?.label;
+            const catB = itemCategories.find(cat => cat.value === b.category)?.label;
+
+            if (catA === 'Other' && catB !== 'Other') return 1;
+            if (catB === 'Other' && catA !== 'Other') return -1;
+
+            return catA.localeCompare(catB);
+        });
+    }, [currentItems, sortByCategory, itemCategories]);
 
     return (
         <LinearGradient
@@ -52,21 +66,35 @@ const List = () => {
                         onPress={() => setActiveList('first')}
                         width={130}
                         borderPadding={10}
-                        borderColor={activelist === 'first' ? '#fff' : '#b45309'}
+                        borderColor={activeList === 'first' ? '#fff' : '#b45309'}
                         textColor={'#EADDCA'}/>
                     <AppButton
                         text='Grocery List'
                         onPress={() => setActiveList('second')}
                         width={130}
                         borderPadding={10}
-                        borderColor={activelist === 'second' ? '#fff' : '#b45309'}
+                        borderColor={activeList === 'second' ? '#fff' : '#b45309'}
                         textColor={'#EADDCA'}/>
+                </View>
+
+                <View style={styles.sortButtonContainer}>
+                    <TouchableOpacity
+                        onPress={() => setSortByCategory(!sortByCategory)}
+                        activeOpacity={0.45}
+                        style={[styles.sortButton, sortByCategory && styles.sortButtonActive]}>
+                        <Text style={[
+                            styles.sortButtonText,
+                            sortByCategory && styles.sortButtonTextActive
+                        ]}>
+                            {sortByCategory ? 'Sort by Date Added' : 'Sort by Category'}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
 
                 <FlatList
                     style={styles.listContainer}
-                    data={items}
-                    keyExtractor={(item) => item.id}
+                    data={sortedItems}
+                    keyExtractor={(item) => item.id.toString()}
                     showsHorizontalScrollIndicator={true}
                     persistentScrollbar={true}
                     renderItem={({item}) => (
@@ -74,9 +102,9 @@ const List = () => {
                             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', gap: 16}}>
                                 <Text style={styles.listItem}>{item.name}</Text>
                                 {item.category && (
-                                    <View style={ styles.categoryContainer}>
+                                    <View style={styles.categoryContainer}>
                                         <Text style={styles.categoryLabel}>
-                                            {categories.find(cat => cat.value === item.category)?.label || 'Other'}
+                                            {itemCategories.find(cat => cat.value === item.category)?.label || 'Other'}
                                         </Text>
                                     </View>
                                 )}
@@ -85,18 +113,18 @@ const List = () => {
                                 name="trash-outline"
                                 size={24}
                                 color="#b45309"
-                                onPress={() => removeitem(item.id)}
+                                onPress={() => removeItem(item.id)}
                             />
                         </View>
                     )}
                     ListHeaderComponent={
                         <Text style={styles.listHeaderText}>
-                            {activelist === 'first' ? 'My Pantry' : 'Grocery List'}
+                            {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
                         </Text>
                     }
                     ListEmptyComponent={
                         <Text style={styles.emptyList}>
-                            No Items in Lists
+                            {activeList === 'first' ? 'Your pantry is empty!' : 'Your grocery list is empty!'}
                         </Text>
                     }
                 />
@@ -114,7 +142,7 @@ const List = () => {
                         text="Manually Add"
                         onPress={() => router.push({
                             pathname: '/new',
-                            params: { listType: activelist === 'first' ? 'pantry' : 'grocery'}
+                            params: { listType: activeList === 'first' ? 'pantry' : 'grocery'}
                         })}
                         isFullWidth={false}
                         width={150}
@@ -155,6 +183,29 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: 8,
         paddingBottom: 5,
+    },
+    sortButtonContainer: {
+        alignItems: 'flex-center',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+    },
+    sortButton: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+        backgroundColor: '#fef3c7',
+    },
+    sortButtonActive: {
+        backgroundColor: '#b45309',
+    },
+    sortButtonText: {
+        fontSize: 12,
+        color: '#b45309',
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    sortButtonTextActive: {
+        color: '#EADDCA',
     },
     listItemContainer: {
         flexDirection: 'row',
