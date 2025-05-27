@@ -1,5 +1,5 @@
-import React from 'react';
-import {useRouter} from 'expo-router';
+import React, { useEffect } from 'react';
+import {useRouter, useLocalSearchParams} from 'expo-router';
 import AppButton from "@/components/button";
 import {SafeAreaView, View, Text, StyleSheet, FlatList} from 'react-native';
 import { UseItems } from '../context/ItemContext';
@@ -8,6 +8,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const List = () => {
     const router = useRouter();
+    const { initialList } = useLocalSearchParams();
+    const [activelist, setActiveList] = React.useState<'first' | 'second'>(
+        initialList === 'second' ? 'second' : 'first'
+    );
+
+    useEffect(() => {
+        if (initialList) {
+            setActiveList(initialList === 'second' ? 'second' : 'first');
+        }
+    }, [initialList]);
+
     const {
         pantryItems,
         groceryItems,
@@ -16,7 +27,6 @@ const List = () => {
         removeFromGrocery,
     } = UseItems();
 
-    const [activelist, setActiveList] = React.useState<'first' | 'second'>('first');
 
     const items = activelist === 'first' ? pantryItems : groceryItems;
     const removeitem = activelist === 'first' ? removeFromPantry : removeFromGrocery;
@@ -42,17 +52,15 @@ const List = () => {
                         onPress={() => setActiveList('first')}
                         width={130}
                         borderPadding={10}
-                        borderColor={'#fff'}
-                        textColor={'#EADDCA'}
-                    />
+                        borderColor={activelist === 'first' ? '#fff' : '#b45309'}
+                        textColor={'#EADDCA'}/>
                     <AppButton
                         text='Grocery List'
                         onPress={() => setActiveList('second')}
                         width={130}
                         borderPadding={10}
-                        borderColor={activelist === 'first' ? '#b45309' : '#fff'}
-                        textColor={'#EADDCA'}
-                    />
+                        borderColor={activelist === 'second' ? '#fff' : '#b45309'}
+                        textColor={'#EADDCA'}/>
                 </View>
 
                 <FlatList

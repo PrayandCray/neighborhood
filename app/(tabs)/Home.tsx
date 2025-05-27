@@ -1,20 +1,36 @@
 import React from 'react';
-import {Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AppButton from "@/components/button";
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const Home = () => {
     const router = useRouter();
 
-    const handleAddNewItem = () => {
-        router.push("/(tabs)/List");
+    const handleAddNewPantryItem = () => {
+        router.push({
+            pathname: "/(tabs)/List",
+            params: { initialList: 'first' }
+        });
         setTimeout(() => {
             router.push({
                 pathname: '/new',
                 params: { listType: 'pantry' }
             });
-        }, 100);
+        }, 150);
+    };
+
+    const handleAddNewGroceryItem = () => {
+        router.push({
+            pathname: "/(tabs)/List",
+            params: { initialList: 'second' }
+        });
+        setTimeout(() => {
+            router.push({
+                pathname: '/new',
+                params: { listType: 'grocery' }
+            });
+        }, 150);
     };
 
     return (
@@ -28,16 +44,27 @@ const Home = () => {
             <Text style={styles.subtitle}>
                 An app that helps you keep track of your shelves, pantries and everything else!
             </Text>
-            <AppButton
-                text="Add New Item to Pantry"
-                onPress={handleAddNewItem}
-                isFullWidth={false}
-                width={150}
-                borderPadding={20}
-                borderColor={'#fff'}
-                textColor={'#EADDCA'}
-            />
+            <View style={styles.shortcutsContainer}>
+                <AppButton
+                    text="Add New Item to Pantry"
+                    onPress={handleAddNewPantryItem}
+                    isFullWidth={false}
+                    width={150}
+                    borderPadding={20}
+                    borderColor={'#fff'}
+                    textColor={'#EADDCA'}
+                />
 
+                <AppButton
+                    text="Add New Item to Grocery"
+                    onPress={handleAddNewGroceryItem}
+                    isFullWidth={false}
+                    width={150}
+                    borderPadding={20}
+                    borderColor={'#fff'}
+                    textColor={'#EADDCA'}
+                />
+            </View>
         </LinearGradient>
     );
 }
@@ -49,6 +76,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 16,
+    },
+    shortcutsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        padding: 10,
+        gap: 10,
     },
     title: {
         fontSize: 20,
