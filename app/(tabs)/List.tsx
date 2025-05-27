@@ -41,6 +41,7 @@ const List = () => {
             if (catA === 'Other' && catB !== 'Other') return 1;
             if (catB === 'Other' && catA !== 'Other') return -1;
 
+            // @ts-ignore
             return catA.localeCompare(catB);
         });
     }, [currentItems, sortByCategory, itemCategories]);
@@ -91,6 +92,37 @@ const List = () => {
                     </TouchableOpacity>
                 </View>
 
+                <View style={styles.listExampleContainer}>
+
+                    <Text style={[styles.listItem, {paddingLeft: 26}]}>
+                        Name
+                    </Text>
+                    <View style={{gap: 16, flexDirection: 'row'}}>
+                        <View style={[styles.amountDisplayContainer, {
+                            paddingHorizontal: 5,
+                            paddingVertical: 1,
+                        }]}>
+                            <Text>
+                                Amt.
+                            </Text>
+                        </View>
+                        <View style={styles.categoryContainer}>
+                            <Text style={styles.categoryLabel}>
+                                Category
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={{paddingLeft: 100, paddingRight: 14}}>
+                        <Ionicons
+                            name="trash-outline"
+                            size={24}
+                            color="#b45309"
+                            style={{paddingTop: 6}}
+                        />
+                    </View>
+
+                </View>
+
                 <FlatList
                     style={styles.listContainer}
                     data={sortedItems}
@@ -101,6 +133,9 @@ const List = () => {
                         <View style={styles.listItemContainer}>
                             <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', gap: 16}}>
                                 <Text style={styles.listItem}>{item.name}</Text>
+                                <Text style={styles.amountDisplayContainer}>
+                                    {item.amount ? `${item.amount}` : ''}
+                                </Text>
                                 {item.category && (
                                     <View style={styles.categoryContainer}>
                                         <Text style={styles.categoryLabel}>
@@ -174,9 +209,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 15,
         padding: 16,
-        //width: '100%',
-        //allignSelf: 'center',
-        marginVertical: 16,
+        marginVertical: 8,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -184,10 +217,20 @@ const styles = StyleSheet.create({
         gap: 8,
         paddingBottom: 5,
     },
+    listExampleContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        //alignItems: 'flex-start',
+        paddingVertical: 6,
+        borderBottomWidth: 1,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        borderBottomColor: '#fff',
+    },
     sortButtonContainer: {
-        alignItems: 'flex-center',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
+        alignItems: 'center',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
     },
     sortButton: {
         paddingHorizontal: 12,
@@ -231,7 +274,6 @@ const styles = StyleSheet.create({
     listItem: {
         fontSize: 13,
         fontWeight: '600',
-        textAlign: 'center',
         paddingVertical: 10,
         paddingHorizontal: 10,
         paddingEnd: 15,
@@ -250,6 +292,15 @@ const styles = StyleSheet.create({
         padding: 5,
         borderRadius: 8,
         backgroundColor: '#fef3c7',
+    },
+    amountDisplayContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        paddingVertical: 2,
+        paddingHorizontal: 8,
+        borderRadius: 8,
+        backgroundColor: '#CBC3E3',
     },
     emptyList: {
         flex: 1,

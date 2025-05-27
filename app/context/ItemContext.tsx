@@ -4,14 +4,15 @@ type ListItem = {
     id: string;
     name: string;
     category: string;
+    amount: string;
 };
 
 type ItemContextType = {
     pantryItems: ListItem[];
     groceryItems: ListItem[];
     categories: { label: string; value: string }[];
-    addToPantry: (itemName: { name: string; category: string }) => void;
-    addToGrocery: (itemName: { name: string; category: string }) => void;
+    addToPantry: (itemName: { name: string; category: string, amount: string }) => void;
+    addToGrocery: (itemName: { name: string; category: string, amount: string }) => void;
     removeFromPantry: (id: string) => void;
     removeFromGrocery: (id: string) => void;
 };
@@ -33,19 +34,21 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         { label: 'Beverages', value: 'beverages' },
     ];
 
-    const addToPantry = (item: { name : string, category : string; }) => {
+    const addToPantry = (item: { name : string; category : string; amount : string}) => {
         setPantryItems(prev=> [...prev, {
             id: Date.now().toString(),
             name: item.name,
-            category: item.category
+            category: item.category,
+            amount: item.amount
         }]);
     };
 
-    const addToGrocery = (item: { name : string, category : string; }) => {
+    const addToGrocery = (item: { name : string; category : string; amount : string}) => {
         setGroceryItems(prev=> [...prev, {
             id: Date.now().toString(),
             name: item.name,
-            category: item.category
+            category: item.category,
+            amount: item.amount
         }]);
     };
 

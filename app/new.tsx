@@ -1,7 +1,7 @@
 import AppButton from "@/components/button";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, View, StyleSheet, Text, TextInput, Platform } from 'react-native';
+import { SafeAreaView, View, StyleSheet, Text, TextInput, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { UseItems } from './context/ItemContext';
 
@@ -11,6 +11,7 @@ const NewItemScreen = () => {
     const [inputText, setInputText] = useState('');
     const {addToPantry, addToGrocery, categories} = UseItems();
     const [category, setCategory] = useState('other');
+    const [amount, setAmount] = useState('');
 
     const handleTextChange = (text: string) => {
         setInputText(text);
@@ -25,6 +26,7 @@ const NewItemScreen = () => {
             const newItem = {
                 name: inputText,
                 category: category,
+                amount: amount || '0',
             };
 
             if (listType === 'pantry') {
@@ -39,45 +41,59 @@ const NewItemScreen = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <TextInput
-                style={styles.input}
-                value={inputText}
-                onChangeText={handleTextChange}
-                placeholder="Enter Item Name"
-                placeholderTextColor="#b45309"
-            />
-
-            <View style={styles.pickerStyle}>
-                <Picker
-                    selectedValue={category}
-                    onValueChange={(itemValue) => setCategory(itemValue)}
-                    style={styles.picker}
-                    dropdownIconColor={'#b45309'}
-                >
-                    {categories.map((cat) => (
-                        <Picker.Item
-                            key={cat.value}
-                            label={cat.label}
-                            value={cat.value}
-                            color={'#b45309'}
-                        />
-                    ))}
-                </Picker>
-            </View>
-
-            <View style={styles.buttonContainer}>
-                <AppButton
-                    text="Done"
-                    onPress={handleDone}
-                    isFullWidth={false}
-                    width={150}
-                    borderPadding={20}
-                    borderColor={'#fff'}
-                    textColor={'#EADDCA'}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <SafeAreaView style={styles.container}>
+                <TextInput
+                    style={styles.input}
+                    value={inputText}
+                    onChangeText={handleTextChange}
+                    placeholder="Enter Item Name"
+                    placeholderTextColor="#b45309"
                 />
-            </View>
-        </SafeAreaView>
+
+                <View style={styles.pickerStyle}>
+                    <Picker
+                        selectedValue={category}
+                        onValueChange={(itemValue) => setCategory(itemValue)}
+                        style={styles.picker}
+                        dropdownIconColor={'#b45309'}
+                    >
+                        {categories.map((cat) => (
+                            <Picker.Item
+                                key={cat.value}
+                                label={cat.label}
+                                value={cat.value}
+                                color={'#b45309'}
+                            />
+                        ))}
+                    </Picker>
+                </View>
+
+                <TextInput
+                    placeholder="Amount"
+                    placeholderTextColor="#b45309"
+                    style={styles.input}
+                    keyboardType="numeric"
+                    maxLength={12}
+                    onChangeText={(text) => {
+                        const numericValue = text.replace(/[^0-9]/g, '');
+                        setAmount(numericValue);
+                    }}
+                />
+
+                <View style={styles.buttonContainer}>
+                    <AppButton
+                        text="Done"
+                        onPress={handleDone}
+                        isFullWidth={false}
+                        width={150}
+                        borderPadding={20}
+                        borderColor={'#fff'}
+                        textColor={'#EADDCA'}
+                    />
+                </View>
+            </SafeAreaView>
+        </TouchableWithoutFeedback>
         );
     };
 
