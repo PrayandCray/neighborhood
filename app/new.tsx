@@ -1,6 +1,7 @@
 import AppButton from "@/components/button";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { SelectList} from "react-native-dropdown-select-list";
 import { SafeAreaView, View, StyleSheet, Text, TextInput, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { UseItems } from './context/ItemContext';
@@ -12,6 +13,17 @@ const NewItemScreen = () => {
     const {addToPantry, addToGrocery, categories} = UseItems();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');
+    const [unit, setUnit] = useState('count')
+
+    const units = [
+        {key: 'count', value: 'count'},
+        {key: 'g', value: 'g'},
+        {key: 'kg', value: 'kg'},
+        {key: 'L', value: 'L'},
+        {key: 'ml', value: 'ml'},
+        {key: 'lb', value: 'lb'},
+        {key: 'oz', value: 'oz'},
+    ];
 
     const handleTextChange = (text: string) => {
         setInputText(text);
@@ -26,7 +38,7 @@ const NewItemScreen = () => {
             const newItem = {
                 name: inputText,
                 category: category,
-                amount: amount || '0',
+                amount: `${amount || '1'} ${unit}`,
             };
 
             if (listType === 'pantry') {
@@ -69,17 +81,45 @@ const NewItemScreen = () => {
                     </Picker>
                 </View>
 
-                <TextInput
-                    placeholder="Amount"
-                    placeholderTextColor="#b45309"
-                    style={styles.input}
-                    keyboardType="numeric"
-                    maxLength={12}
-                    onChangeText={(text) => {
-                        const numericValue = text.replace(/[^0-9]/g, '');
-                        setAmount(numericValue);
+                <View style={styles.amountContainer}>
+                    <View style={styles.amountInputWrapper}>
+                        <TextInput
+                            placeholder="1"
+                            placeholderTextColor="#b45309"
+                            style={styles.amountInput}
+                            keyboardType="numeric"
+                            maxLength={12}
+                            value={amount}
+                            onChangeText={(text) => {
+                                const numericValue = text.replace(/[^0-9]/g, '');
+                                setAmount(numericValue);
+                            }}
+                        />
+                    </View>
+                    <SelectList
+                        setSelected={setUnit}
+                        data={units}
+                        save="value"
+                        search={false}
+                        defaultOption={{ key: 'count', value: 'count' }}
+                        boxStyles={styles.unitDropdown}
+                        inputStyles={{
+                            color: '#b45309',
+                            justifyContent: 'center',
+                            alignItems: 'center',
                     }}
-                />
+                        dropdownStyles={styles.unitDropdownList}
+                        dropdownTextStyles={{
+                            color: '#b45309',
+                            fontSize: 14,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                    }}
+                        dropdownItemStyles={{
+                            paddingVertical: 8,
+                        }}
+                    />
+                </View>
 
                 <View style={styles.buttonContainer}>
                     <AppButton
@@ -104,6 +144,7 @@ const NewItemScreen = () => {
             backgroundColor: '#EADDCA',
             width: '100%',
             paddingTop: 20,
+            zIndex: 1
         },
         buttonContainer: {
             paddingTop: 50,
@@ -127,6 +168,47 @@ const NewItemScreen = () => {
             backgroundColor: 'transparent',
             overflow: 'hidden',
         },
+        amountContainer: {
+            width: '90%',
+            flexDirection: 'row',
+            gap: 10,
+            height: 45,
+            alignItems: 'center',
+            zIndex: 2,
+            position: 'relative',
+        },
+        amountInputWrapper: {
+            flex: 2,
+            height: 40,
+            borderWidth: 1,
+            borderColor: '#b45309',
+            borderRadius: 10,
+            overflow: 'hidden',
+        },
+        amountInput: {
+            flex: 1,
+            height: '100%',
+            padding: 10,
+            color: '#b45309',
+        },
+        unitDropdown: {
+            flex: 1,
+            height: 40,
+            borderColor: '#b45309',
+            borderRadius: 10,
+            backgroundColor: 'transparent',
+            width: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 3,
+        },
+        unitDropdownList: {
+            position: 'absolute',
+            width: '100%',
+            top: 45,
+            borderColor: '#b45309',
+            backgroundColor: '#fff',
+        },
         picker: {
             width: '100%',
             height: 60,
@@ -140,7 +222,7 @@ const NewItemScreen = () => {
             borderWidth: 1,
             borderColor: '#b45309',
             borderRadius: 10,
-        }
+        },
     });
 
 export default NewItemScreen;
