@@ -92,7 +92,7 @@ const List = () => {
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.listExampleContainer}>
+                <View style={styles.listItemContainer}>
 
                     <Text style={[styles.listItem, {paddingLeft: 26}]}>
                         Name
@@ -111,8 +111,14 @@ const List = () => {
                                 Category
                             </Text>
                         </View>
+                        <View style={styles.categoryContainer}>
+                            <Text style={styles.categoryLabel}>
+                                Edit
+                            </Text>
+                        </View>
                     </View>
-                    <View style={{paddingLeft: 100, paddingRight: 14}}>
+
+                    <View style={{paddingLeft: 60, paddingRight: 14}}>
                         <Ionicons
                             name="trash-outline"
                             size={24}
@@ -143,6 +149,18 @@ const List = () => {
                                         </Text>
                                     </View>
                                 )}
+                                <View>
+                                    <AppButton
+                                        text="Edit"
+                                        isFullWidth={true}
+                                        fontSize={12}
+                                        fontWeight="normal"
+                                        backgroundColor="#fef3c7"
+                                        onPress={() => console.log('Edit Item')}
+                                        textColor="#4076cc"
+                                        borderColor="#b45309"
+                                    />
+                                </View>
                             </View>
                             <Ionicons
                                 name="trash-outline"
@@ -220,7 +238,6 @@ const styles = StyleSheet.create({
     listExampleContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        //alignItems: 'flex-start',
         paddingVertical: 6,
         borderBottomWidth: 1,
         backgroundColor: '#fff',

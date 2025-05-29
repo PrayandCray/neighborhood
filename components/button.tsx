@@ -6,6 +6,7 @@ interface AppButtonProps {
     onPress: () => void;
     disabled?: boolean;
     width?: number;
+    fontWeight?: 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
     isFullWidth?: boolean;
     borderPadding?: number;
     borderColor?: string;
@@ -25,10 +26,15 @@ const AppButton: React.FC<AppButtonProps> = ({
     textColor,
     backgroundColor,
     fontSize,
+    fontWeight,
 }) => {
     const buttonWidthStyle = isFullWidth
     ? {}
     : { width : width };
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
     return (
         <Pressable
             onPress={onPress}
@@ -53,7 +59,8 @@ const AppButton: React.FC<AppButtonProps> = ({
                 <Text style={[
                     styles.text,
                     textColor && { color: textColor },
-                    fontSize ? { fontSize: fontSize } : undefined
+                    fontSize ? { fontSize: fontSize } : undefined,
+                    fontWeight ? { fontWeight: fontWeight } : { fontWeight: 'bold' },
                 ]}>
                     {text}
                 </Text>
@@ -66,7 +73,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 12,
+        padding: 8,
         borderRadius: 12,
     },
     button: {
@@ -87,7 +94,6 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 16,
-        fontWeight: '600',
         textAlign: 'center',
     },
 });

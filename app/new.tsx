@@ -60,7 +60,7 @@ const NewItemScreen = () => {
                     value={inputText}
                     onChangeText={handleTextChange}
                     placeholder="Enter Item Name"
-                    placeholderTextColor="#b45309"
+                    placeholderTextColor="#a96733"
                 />
 
                 <View style={styles.pickerStyle}>
@@ -84,8 +84,8 @@ const NewItemScreen = () => {
                 <View style={styles.amountContainer}>
                     <View style={styles.amountInputWrapper}>
                         <TextInput
-                            placeholder="1"
-                            placeholderTextColor="#b45309"
+                            placeholder="Enter Amount (Default: 1)"
+                            placeholderTextColor="#a96733"
                             style={styles.amountInput}
                             keyboardType="numeric"
                             maxLength={12}
