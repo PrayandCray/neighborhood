@@ -15,6 +15,8 @@ type ItemContextType = {
     addToGrocery: (itemName: { name: string; category: string, amount: string }) => void;
     removeFromPantry: (id: string) => void;
     removeFromGrocery: (id: string) => void;
+    updatePantryItem: (id: string, updates: { name?: string; amount?: string; category?: string }) => void;
+    updateGroceryItem: (id: string, updates: { name?: string; amount?: string; category?: string }) => void;
 };
 
 const ItemContext = createContext<ItemContextType | undefined>(undefined)
@@ -33,6 +35,19 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         { label: 'Snacks', value: 'snacks' },
         { label: 'Beverages', value: 'beverages' },
     ];
+
+    const updatePantryItem = (id: string, updates: { name?: string; amount?: string; category?: string }) => {
+        setPantryItems(prev => prev.map(item =>
+            item.id === id ? { ...item, ...updates } : item
+        ));
+    };
+
+    const updateGroceryItem = (id: string, updates: { name?: string; amount?: string; category?: string }) => {
+        setGroceryItems(prev => prev.map(item =>
+            item.id === id ? { ...item, ...updates } : item
+        ));
+    };
+
 
     const addToPantry = (item: { name : string; category : string; amount : string}) => {
         setPantryItems(prev=> [...prev, {
@@ -53,6 +68,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
 
+
     const removeFromPantry = (id: string) => {
         setPantryItems(prev=> prev.filter(item => item.id !== id));
     }
@@ -70,6 +86,8 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             addToGrocery,
             removeFromPantry,
             removeFromGrocery,
+            updatePantryItem,
+            updateGroceryItem,
         }}>
             {children}
         </ItemContext.Provider>

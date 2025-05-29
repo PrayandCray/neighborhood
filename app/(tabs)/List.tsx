@@ -156,7 +156,13 @@ const List = () => {
                                         fontSize={12}
                                         fontWeight="normal"
                                         backgroundColor="#fef3c7"
-                                        onPress={() => console.log('Edit Item')}
+                                        onPress={() => router.push({
+                                            pathname: '/edit',
+                                            params: {
+                                                itemId: item.id,
+                                                listType: activeList === 'first' ? 'pantry' : 'grocery'
+                                            }
+                                        })}
                                         textColor="#4076cc"
                                         borderColor="#b45309"
                                     />

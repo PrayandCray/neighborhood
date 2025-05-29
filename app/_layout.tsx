@@ -41,6 +41,29 @@ export default function StackLayout(){
                       };
                   }}
               />
+
+              <Stack.Screen
+                  name="edit"
+                  options={({
+                                route,
+                            }: {
+                      route: { params?: { listType?: string; headerTitle?: string } }
+                  }) => {
+                      const listType = route.params?.listType;
+                      const headerTitle = route.params?.headerTitle ||
+                          (listType === 'pantry' ? 'Edit Pantry Item' : 'Edit Grocery Item');
+
+                      return {
+                          presentation: 'modal',
+                          animation: 'slide_from_bottom',
+                          headerTitle: headerTitle,
+                          headerTitleAlign: 'center',
+                          headerStyle: {backgroundColor: '#EADDCA', textColor: '#b45309'},
+                          headerTintColor: '#b45309',
+                      };
+                  }}
+              />
+
           </Stack>
       </ItemProvider>
   );
