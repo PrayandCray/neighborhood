@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TextInput, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { UseItems } from './context/ItemContext';
-import { LinearGradient } from 'expo-linear-gradient';
 import AppButton from '@/components/button';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from "react-native-dropdown-select-list";

@@ -599,7 +599,7 @@
     <inspection_tool class="com.intellij.reactbuddy.ArrayToJSXMapInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="com.intellij.reactbuddy.EmptyAttributeInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="com.intellij.reactbuddy.EmptyRefInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="com.intellij.reactbuddy.ExhaustiveDepsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="com.intellij.reactbuddy.ExhaustiveDepsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="com.intellij.reactbuddy.PaletteExtLocalInspection" enabled="true" level="WARNING" enabled_by_default="true" />
   </profile>
 </component>

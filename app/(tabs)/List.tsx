@@ -44,7 +44,7 @@ const List = () => {
             // @ts-ignore
             return catA.localeCompare(catB);
         });
-    }, [currentItems, sortByCategory, itemCategories]);
+    }, [sortByCategory, currentItems, itemCategories]);
 
     return (
         <LinearGradient
@@ -60,23 +60,6 @@ const List = () => {
                 <Text style={styles.subtitle}>
                     This is where your lists are stored
                 </Text>
-
-                <View style={styles.buttonContainer}>
-                    <AppButton
-                        text="My Pantry"
-                        onPress={() => setActiveList('first')}
-                        width={130}
-                        borderPadding={10}
-                        borderColor={activeList === 'first' ? '#fff' : '#b45309'}
-                        textColor={'#EADDCA'}/>
-                    <AppButton
-                        text='Grocery List'
-                        onPress={() => setActiveList('second')}
-                        width={130}
-                        borderPadding={10}
-                        borderColor={activeList === 'second' ? '#fff' : '#b45309'}
-                        textColor={'#EADDCA'}/>
-                </View>
 
                 <View style={styles.sortButtonContainer}>
                     <TouchableOpacity
@@ -98,11 +81,8 @@ const List = () => {
                         Name
                     </Text>
                     <View style={{gap: 16, flexDirection: 'row'}}>
-                        <View style={[styles.amountDisplayContainer, {
-                            paddingHorizontal: 5,
-                            paddingVertical: 1,
-                        }]}>
-                            <Text>
+                        <View style={styles.categoryContainer}>
+                            <Text style={styles.categoryLabel}>
                                 Amt.
                             </Text>
                         </View>
@@ -112,13 +92,13 @@ const List = () => {
                             </Text>
                         </View>
                         <View style={styles.categoryContainer}>
-                            <Text style={styles.categoryLabel}>
+                            <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
                                 Edit
                             </Text>
                         </View>
                     </View>
 
-                    <View style={{paddingLeft: 60, paddingRight: 14}}>
+                    <View style={{alignSelf: 'flex-end', paddingRight: 12}}>
                         <Ionicons
                             name="trash-outline"
                             size={24}
@@ -137,19 +117,19 @@ const List = () => {
                     persistentScrollbar={true}
                     renderItem={({item}) => (
                         <View style={styles.listItemContainer}>
-                            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', gap: 16}}>
-                                <Text style={styles.listItem}>{item.name}</Text>
-                                <Text style={styles.amountDisplayContainer}>
+                            <View style={styles.itemContentContainer}>
+                                <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
+                                <Text style={[styles.categoryContainer, styles.categoryLabel]} numberOfLines={1}>
                                     {item.amount ? `${item.amount}` : ''}
                                 </Text>
                                 {item.category && (
                                     <View style={styles.categoryContainer}>
-                                        <Text style={styles.categoryLabel}>
+                                        <Text style={styles.categoryLabel} numberOfLines={1}>
                                             {itemCategories.find(cat => cat.value === item.category)?.label || 'Other'}
                                         </Text>
                                     </View>
                                 )}
-                                <View>
+                                <View style={styles.editButtonContainer}>
                                     <AppButton
                                         text="Edit"
                                         isFullWidth={true}
@@ -167,19 +147,42 @@ const List = () => {
                                         borderColor="#b45309"
                                     />
                                 </View>
+                                <View style={styles.trashContainer}>
+                                    <Ionicons
+                                        name="trash-outline"
+                                        size={24}
+                                        color="#b45309"
+                                        onPress={() => removeItem(item.id)}
+                                    />
+                                </View>
                             </View>
-                            <Ionicons
-                                name="trash-outline"
-                                size={24}
-                                color="#b45309"
-                                onPress={() => removeItem(item.id)}
-                            />
+
                         </View>
                     )}
                     ListHeaderComponent={
-                        <Text style={styles.listHeaderText}>
-                            {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
-                        </Text>
+                        <View>
+                            <View style={[styles.buttonContainer, {paddingBottom: 5}]}>
+                                <AppButton
+                                    text="My Pantry"
+                                    onPress={() => setActiveList('first')}
+                                    width={120}
+                                    fontSize={12}
+                                    borderPadding={10}
+                                    borderColor={activeList === 'first' ? '#fff' : '#b45309'}
+                                    textColor={'#EADDCA'}/>
+                                <AppButton
+                                    text='Grocery List'
+                                    onPress={() => setActiveList('second')}
+                                    width={120}
+                                    fontSize={12}
+                                    borderPadding={10}
+                                    borderColor={activeList === 'second' ? '#fff' : '#b45309'}
+                                    textColor={'#EADDCA'}/>
+                            </View>
+                            <Text style={[styles.listHeaderText, {paddingTop: 16}]}>
+                                {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
+                            </Text>
+                        </View>
                     }
                     ListEmptyComponent={
                         <Text style={styles.emptyList}>
@@ -281,6 +284,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#b45309',
     },
+    itemContentContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginRight: 16,
+    },
     listExampleText: {
         color: '#b45309',
         fontSize: 16,
@@ -297,9 +307,8 @@ const styles = StyleSheet.create({
     listItem: {
         fontSize: 13,
         fontWeight: '600',
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        paddingEnd: 15,
+        flex: 1,
+        minWidth: 80,
     },
     categoryLabel: {
         fontSize: 12,
@@ -309,21 +318,17 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
     },
     categoryContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        padding: 5,
+        minWidth: 60,
+        paddingHorizontal: 8,
         borderRadius: 8,
         backgroundColor: '#fef3c7',
     },
-    amountDisplayContainer: {
-        flexDirection: 'row',
+    editButtonContainer: {
+        width: 60,
+    },
+    trashContainer: {
+        width: 40,
         alignItems: 'center',
-        gap: 10,
-        paddingVertical: 2,
-        paddingHorizontal: 8,
-        borderRadius: 8,
-        backgroundColor: '#CBC3E3',
     },
     emptyList: {
         flex: 1,

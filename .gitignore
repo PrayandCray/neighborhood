@@ -38,3 +38,5 @@ yarn-error.*
 
 app-example
 /.vscode/
+.idea/inspectionProfiles/Project_Default.xml
+eas.json
