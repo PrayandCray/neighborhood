@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import {useRouter, useLocalSearchParams} from 'expo-router';
 import AppButton from "@/components/button";
-import {SafeAreaView, View, Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import {SafeAreaView, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform} from 'react-native';
 import { UseItems } from '../context/ItemContext';
 import {Ionicons} from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -77,35 +77,33 @@ const List = () => {
 
                 <View style={styles.listItemContainer}>
 
-                    <Text style={[styles.listItem, {paddingLeft: 26}]}>
+                    <Text style={[styles.listItem, {flex: 1}]}>
                         Name
                     </Text>
-                    <View style={{gap: 16, flexDirection: 'row'}}>
-                        <View style={styles.categoryContainer}>
-                            <Text style={styles.categoryLabel}>
-                                Amt.
-                            </Text>
-                        </View>
-                        <View style={styles.categoryContainer}>
-                            <Text style={styles.categoryLabel}>
-                                Category
-                            </Text>
-                        </View>
-                        <View style={styles.categoryContainer}>
-                            <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
-                                Edit
-                            </Text>
-                        </View>
-                    </View>
 
-                    <View style={{alignSelf: 'flex-end', paddingRight: 12}}>
-                        <Ionicons
-                            name="trash-outline"
-                            size={24}
-                            color="#b45309"
-                            style={{paddingTop: 6}}
-                        />
-                    </View>
+                        <View style={{gap: 8, flexDirection: 'row'}}>
+                            <View style={styles.categoryContainer}>
+                                <Text style={styles.categoryLabel}>
+                                    Amt.
+                                </Text>
+                            </View>
+                            <View style={styles.categoryContainer}>
+                                <Text style={styles.categoryLabel}>
+                                    Category
+                                </Text>
+                            </View>
+                            <View style={styles.categoryContainer}>
+                                <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
+                                    Edit
+                                </Text>
+                            </View>
+                            <View style={styles.categoryContainer}>
+                                <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                    Delete
+                                </Text>
+                            </View>
+                        </View>
+
 
                 </View>
 
@@ -147,7 +145,7 @@ const List = () => {
                                         borderColor="#b45309"
                                     />
                                 </View>
-                                <View style={styles.trashContainer}>
+                                <View style={[styles.trashContainer, {alignSelf: 'center'}]}>
                                     <Ionicons
                                         name="trash-outline"
                                         size={24}
@@ -244,15 +242,6 @@ const styles = StyleSheet.create({
         gap: 8,
         paddingBottom: 5,
     },
-    listExampleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        paddingVertical: 6,
-        borderBottomWidth: 1,
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        borderBottomColor: '#fff',
-    },
     sortButtonContainer: {
         alignItems: 'center',
         paddingVertical: 6,
@@ -278,9 +267,10 @@ const styles = StyleSheet.create({
     },
     listItemContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 10,
+        width: '100%',
+        paddingHorizontal: 8,
+        paddingVertical: 8,
         borderBottomWidth: 1,
         borderBottomColor: '#b45309',
     },
@@ -288,14 +278,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
-        marginRight: 16,
-    },
-    listExampleText: {
-        color: '#b45309',
-        fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'center',
+        gap: 4,
     },
     listHeaderText: {
         color: '#b45309',
@@ -305,30 +288,38 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     listItem: {
-        fontSize: 13,
+        flex: 2,
+        fontSize: 11,
         fontWeight: '600',
-        flex: 1,
-        minWidth: 80,
+        paddingRight: 4,
     },
     categoryLabel: {
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: '400',
         color: '#d97706',
         textAlign: 'center',
-        paddingVertical: 5,
+        paddingVertical: 4,
     },
     categoryContainer: {
-        minWidth: 60,
-        paddingHorizontal: 8,
+        flex: 1,
+        minWidth: 50,
+        maxWidth: Platform.select({
+            ios: 60,
+            android: 52,
+        }),
+        paddingHorizontal: 4,
         borderRadius: 8,
         backgroundColor: '#fef3c7',
     },
     editButtonContainer: {
-        width: 60,
+        maxWidth: 60,
+        minWidth: 40,
+        flex: 1,
     },
     trashContainer: {
-        width: 40,
+        width: 32,
         alignItems: 'center',
+        marginLeft: 4,
     },
     emptyList: {
         flex: 1,
