@@ -3,7 +3,6 @@ import {useRouter, useLocalSearchParams} from 'expo-router';
 import AppButton from "@/components/button";
 import {SafeAreaView, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform} from 'react-native';
 import { UseItems } from '../context/ItemContext';
-import {Ionicons} from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
 
 const List = () => {
@@ -24,6 +23,7 @@ const List = () => {
         pantryItems,
         groceryItems,
         categories: itemCategories,
+        unitOptions: itemUnits,
         removeFromPantry,
         removeFromGrocery,
     } = UseItems();
@@ -43,6 +43,7 @@ const List = () => {
 
             // @ts-ignore
             return catA.localeCompare(catB);
+
         });
     }, [sortByCategory, currentItems, itemCategories]);
 
@@ -76,12 +77,17 @@ const List = () => {
                 </View>
 
                 <View style={styles.listItemContainer}>
-
-                    <Text style={[styles.listItem, {flex: 1}]}>
-                        Name
-                    </Text>
-
-                        <View style={{gap: 8, flexDirection: 'row'}}>
+                        <View style={{
+                            gap: Platform.select({
+                                ios: 8,
+                                android: 4,
+                            }),
+                            flexDirection: 'row',
+                            paddingBottom: 2,
+                        }}>
+                            <Text style={[styles.listItem, {flex: 5}]}>
+                                Name
+                            </Text>
                             <View style={styles.categoryContainer}>
                                 <Text style={styles.categoryLabel}>
                                     Amt.
@@ -97,9 +103,14 @@ const List = () => {
                                     Edit
                                 </Text>
                             </View>
-                            <View style={styles.categoryContainer}>
+                            <View style={styles.categorySmallContainer}>
                                 <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
-                                    Delete
+                                    - 1
+                                </Text>
+                            </View>
+                            <View style={styles.categorySmallContainer}>
+                                <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                    + 1
                                 </Text>
                             </View>
                         </View>
@@ -115,23 +126,27 @@ const List = () => {
                     persistentScrollbar={true}
                     renderItem={({item}) => (
                         <View style={styles.listItemContainer}>
+
                             <View style={styles.itemContentContainer}>
+
                                 <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
-                                <Text style={[styles.categoryContainer, styles.categoryLabel]} numberOfLines={1}>
-                                    {item.amount ? `${item.amount}` : ''}
-                                </Text>
-                                {item.category && (
-                                    <View style={styles.categoryContainer}>
-                                        <Text style={styles.categoryLabel} numberOfLines={1}>
-                                            {itemCategories.find(cat => cat.value === item.category)?.label || 'Other'}
-                                        </Text>
-                                    </View>
-                                )}
-                                <View style={styles.editButtonContainer}>
+                                <View style={{flexDirection: 'column', gap: 4, alignItems: 'center'}}>
+                                    <Text style={[styles.categoryContainer, styles.categoryLabel]} numberOfLines={1}>
+                                        {`${item.amount || '1'} ${item.unit || 'count'}`}
+                                    </Text>
+                                    {item.category && (
+                                        <View style={styles.categoryContainer}>
+                                            <Text style={styles.categoryLabel} numberOfLines={1}>
+                                                {itemCategories.find(cat => cat.value === item.category)?.label || 'Other'}
+                                            </Text>
+                                        </View>
+                                    )}
+                                </View>
+                                <View style={[styles.categoryContainer, {alignSelf: 'center'}]}>
                                     <AppButton
                                         text="Edit"
                                         isFullWidth={true}
-                                        fontSize={12}
+                                        fontSize={10}
                                         fontWeight="normal"
                                         backgroundColor="#fef3c7"
                                         onPress={() => router.push({
@@ -145,14 +160,29 @@ const List = () => {
                                         borderColor="#b45309"
                                     />
                                 </View>
-                                <View style={[styles.trashContainer, {alignSelf: 'center'}]}>
-                                    <Ionicons
-                                        name="trash-outline"
-                                        size={24}
-                                        color="#b45309"
-                                        onPress={() => removeItem(item.id)}
-                                    />
+                                <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
+                                    <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
+                                        <TouchableOpacity
+                                            onPress={() => removeItem(item.id)}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                                -1
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
+                                        <TouchableOpacity
+                                            onPress={() => removeItem(item.id)}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                                +1
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
+
                             </View>
 
                         </View>
@@ -269,16 +299,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        paddingHorizontal: 8,
         paddingVertical: 8,
         borderBottomWidth: 1,
         borderBottomColor: '#b45309',
     },
     itemContentContainer: {
         flex: 1,
+        justifyContent: 'flex-end',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4,
+        gap: 8,
     },
     listHeaderText: {
         color: '#b45309',
@@ -303,18 +333,22 @@ const styles = StyleSheet.create({
     categoryContainer: {
         flex: 1,
         minWidth: 50,
-        maxWidth: Platform.select({
-            ios: 60,
-            android: 52,
-        }),
+        maxWidth: 60,
         paddingHorizontal: 4,
         borderRadius: 8,
         backgroundColor: '#fef3c7',
     },
-    editButtonContainer: {
-        maxWidth: 60,
-        minWidth: 40,
-        flex: 1,
+    plusMinusContainer: {
+        flex: 0,
+        flexDirection: "row",
+        gap: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    categorySmallContainer: {
+        width: 30,
+        borderRadius: 8,
+        backgroundColor: '#fef3c7',
     },
     trashContainer: {
         width: 32,

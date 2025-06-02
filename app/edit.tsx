@@ -13,6 +13,7 @@ const EditScreen = () => {
         pantryItems,
         groceryItems,
         categories,
+        unitOptions: units,
         updatePantryItem,
         updateGroceryItem
     } = UseItems();
@@ -24,23 +25,14 @@ const EditScreen = () => {
     const [name, setName] = useState(item?.name || '');
     const [amount, setAmount] = useState(item?.amount || '');
     const [category, setCategory] = useState(item?.category || 'other');
-    const [unit, setUnit] = useState('count')
-
-    const units = [
-        {key: 'count', value: 'count'},
-        {key: 'g', value: 'g'},
-        {key: 'kg', value: 'kg'},
-        {key: 'L', value: 'L'},
-        {key: 'ml', value: 'ml'},
-        {key: 'lb', value: 'lb'},
-        {key: 'oz', value: 'oz'},
-    ];
+    const [unit, setUnit] = useState(item?.unit || 'count');
 
     const handleSave = () => {
         const updates = {
             name,
             amount,
             category,
+            unit,
         };
 
         if (listType === 'pantry') {
@@ -91,7 +83,7 @@ const EditScreen = () => {
                             data={units}
                             save="value"
                             search={false}
-                            defaultOption={{ key: 'count', value: 'count' }}
+                            defaultOption={{ key: unit, value: unit }}
                             boxStyles={styles.unitDropdown}
                             inputStyles={{
                                 color: '#b45309',

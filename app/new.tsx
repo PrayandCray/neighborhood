@@ -10,20 +10,10 @@ const NewItemScreen = () => {
     const router = useRouter();
     const {listType} = useLocalSearchParams();
     const [inputText, setInputText] = useState('');
-    const {addToPantry, addToGrocery, categories} = UseItems();
+    const {addToPantry, addToGrocery, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');
     const [unit, setUnit] = useState('count')
-
-    const units = [
-        {key: 'count', value: 'count'},
-        {key: 'g', value: 'g'},
-        {key: 'kg', value: 'kg'},
-        {key: 'L', value: 'L'},
-        {key: 'ml', value: 'ml'},
-        {key: 'lb', value: 'lb'},
-        {key: 'oz', value: 'oz'},
-    ];
 
     const handleTextChange = (text: string) => {
         setInputText(text);
@@ -38,14 +28,15 @@ const NewItemScreen = () => {
             const newItem = {
                 name: inputText,
                 category: category,
-                amount: `${amount || '1'} ${unit}`,
+                amount: amount || '1',
+                unit: unit || 'count',
             };
 
             if (listType === 'pantry') {
-                addToPantry(newItem)
+                addToPantry(newItem);
                 console.log(newItem);
             } else if (listType === 'grocery') {
-                addToGrocery(newItem)
+                addToGrocery(newItem);
                 console.log(newItem);
             }
             router.back();
@@ -98,7 +89,7 @@ const NewItemScreen = () => {
                     </View>
                     <SelectList
                         setSelected={setUnit}
-                        data={units}
+                        data={unitOptions}
                         save="value"
                         search={false}
                         defaultOption={{ key: 'count', value: 'count' }}
