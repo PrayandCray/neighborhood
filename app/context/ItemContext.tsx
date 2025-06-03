@@ -13,12 +13,16 @@ type ItemContextType = {
     groceryItems: ListItem[];
     categories: { label: string; value: string }[];
     unitOptions: { key: string; value: string }[];
-    addToPantry: (itemName: { amount: string; category: string; name: string }) => void;
-    addToGrocery: (itemName: { amount: string; category: string; name: string }) => void;
+    addToPantry: (item: { name: string; category: string; amount: string; unit: string }) => void;
+    addToGrocery: (item: { name: string; category: string; amount: string; unit: string }) => void;
     removeFromPantry: (id: string) => void;
     removeFromGrocery: (id: string) => void;
-    updatePantryItem: (id: string, updates: { amount: string; category: string; name: string }) => void;
-    updateGroceryItem: (id: string, updates: { amount: string; category: string; name: string }) => void;
+    removeSinglePantryItem: (id: string) => void;
+    removeSingleGroceryItem: (id: string) => void;
+    addSinglePantryItem: (id: string) => void;
+    addSingleGroceryItem: (id: string) => void;
+    updatePantryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => void;
+    updateGroceryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => void;
 };
 
 const ItemContext = createContext<ItemContextType | undefined>(undefined)
@@ -91,6 +95,58 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         setGroceryItems(prev=> prev.filter(item => item.id !== id));
     }
 
+    const removeSinglePantryItem = (id: string) => {
+        setPantryItems(prev => prev.map(item =>{
+            if (item.id === id) {
+                const newAmount = Math.max(0, parseInt(item.amount) - 1);
+                if (newAmount === 0) {
+                    return item;
+                }
+                return { ...item, amount: newAmount.toString() };
+            }
+            return item;
+        }));
+    };
+
+    const removeSingleGroceryItem = (id: string) => {
+        setGroceryItems(prev => prev.map(item => {
+            if (item.id === id) {
+                const newAmount = Math.max(0, parseInt(item.amount) - 1);
+                if (newAmount === 0) {
+                    return item;
+                }
+                return { ...item, amount: newAmount.toString() };
+            }
+            return item;
+        }));
+    };
+
+    const addSinglePantryItem = (id: string) => {
+        setPantryItems(prev => prev.map(item =>{
+            if (item.id === id) {
+                const newAmount = Math.max(0, parseInt(item.amount) + 1);
+                if (newAmount === 0) {
+                    return item;
+                }
+                return { ...item, amount: newAmount.toString() };
+            }
+            return item;
+        }));
+    };
+
+    const addSingleGroceryItem = (id: string) => {
+        setGroceryItems(prev => prev.map(item => {
+            if (item.id === id) {
+                const newAmount = Math.max(0, parseInt(item.amount) + 1);
+                if (newAmount === 0) {
+                    return item;
+                }
+                return { ...item, amount: newAmount.toString() };
+            }
+            return item;
+        }));
+    };
+
     return (
         <ItemContext.Provider value={{
             pantryItems,
@@ -101,6 +157,10 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             addToGrocery,
             removeFromPantry,
             removeFromGrocery,
+            removeSinglePantryItem,
+            removeSingleGroceryItem,
+            addSinglePantryItem,
+            addSingleGroceryItem,
             updatePantryItem,
             updateGroceryItem,
         }}>

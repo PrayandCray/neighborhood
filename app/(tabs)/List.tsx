@@ -26,6 +26,10 @@ const List = () => {
         unitOptions: itemUnits,
         removeFromPantry,
         removeFromGrocery,
+        removeSinglePantryItem,
+        removeSingleGroceryItem,
+        addSinglePantryItem,
+        addSingleGroceryItem,
     } = UseItems();
 
     const currentItems = activeList === 'first' ? pantryItems : groceryItems;
@@ -163,7 +167,13 @@ const List = () => {
                                 <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
                                     <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
                                         <TouchableOpacity
-                                            onPress={() => removeItem(item.id)}
+                                            onPress={() => {
+                                                if (activeList === 'first') {
+                                                    removeSinglePantryItem(item.id)
+                                                } else {
+                                                    removeSingleGroceryItem(item.id)
+                                                }
+                                            }}
                                             activeOpacity={0.7}
                                         >
                                             <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
@@ -173,7 +183,13 @@ const List = () => {
                                     </View>
                                     <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
                                         <TouchableOpacity
-                                            onPress={() => removeItem(item.id)}
+                                            onPress={() => {
+                                                if (activeList === 'first') {
+                                                    addSinglePantryItem(item.id)
+                                                } else {
+                                                    addSingleGroceryItem(item.id)
+                                                }
+                                            }}
                                             activeOpacity={0.7}
                                         >
                                             <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
