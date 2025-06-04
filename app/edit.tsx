@@ -46,7 +46,13 @@ const EditScreen = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback
+            onPress={() => {
+                if (Platform.OS !== 'web') {
+                    Keyboard.dismiss();
+                }
+            }}
+        >
             <SafeAreaView style={styles.content}>
 
                 <View style={styles.container}>

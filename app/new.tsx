@@ -44,7 +44,7 @@ const NewItemScreen = () => {
         }
     };
 
-    const Content = () => (
+    return (
         <TouchableWithoutFeedback
             onPress={() => {
                 if (Platform.OS !== 'web') {
@@ -135,8 +135,6 @@ const NewItemScreen = () => {
             </SafeAreaView>
         </TouchableWithoutFeedback>
     );
-
-    return <Content/>;
 }
 
 const styles = StyleSheet.create({
