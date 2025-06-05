@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Pressable, Text, View } from 'react-native';
+import { StyleSheet, Pressable, Text, View, Platform } from 'react-native';
 
 interface AppButtonProps {
     text: string;
@@ -21,7 +21,6 @@ const AppButton: React.FC<AppButtonProps> = ({
     disabled = false,
     width = 120,
     isFullWidth = false,
-    borderColor,
     borderPadding,
     textColor,
     backgroundColor,
@@ -31,9 +30,6 @@ const AppButton: React.FC<AppButtonProps> = ({
     const buttonWidthStyle = isFullWidth
     ? {}
     : { width : width };
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     // @ts-ignore
     return (
         <Pressable
@@ -73,18 +69,23 @@ const styles = StyleSheet.create({
     buttonContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 8,
         borderRadius: 12,
     },
     button: {
-        padding: 12,
+        overflow: 'hidden',
+        padding: Platform.select
+        ({
+            ios: 12,
+            android: 8,
+            web: 0,
+        }),
         borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#b45309',
     },
     primary: {
-        backgroundColor: '#b45309',
+        backgroundColor: 'transparent',
     },
     pressed: {
         opacity: 0.8

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import {useRouter, useLocalSearchParams} from 'expo-router';
 import AppButton from "@/components/button";
+import AppWrapper from "@/components/appwrapper";
 import {SafeAreaView, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform} from 'react-native';
 import { UseItems } from '../context/ItemContext';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -56,208 +57,214 @@ const List = () => {
             colors={['#E2E2E2', '#B39171', '#843F00']}
             locations={[0, 0.275, 1]}
             style={styles.container}>
-            <SafeAreaView>
+            <AppWrapper>
+                <SafeAreaView style={{flex: 1, maxHeight: Platform.OS === 'web' ? '100vh' : '100%'}}>
 
-                <Text style={styles.title}>
-                    List
-                </Text>
+                    <Text style={styles.title}>
+                        List
+                    </Text>
 
-                <Text style={styles.subtitle}>
-                    This is where your lists are stored
-                </Text>
+                    <Text style={styles.subtitle}>
+                        This is where your lists are stored
+                    </Text>
 
-                <View style={styles.sortButtonContainer}>
-                    <TouchableOpacity
-                        onPress={() => setSortByCategory(!sortByCategory)}
-                        activeOpacity={0.45}
-                        style={[styles.sortButton, sortByCategory && styles.sortButtonActive]}>
-                        <Text style={[
-                            styles.sortButtonText,
-                            sortByCategory && styles.sortButtonTextActive
-                        ]}>
-                            {sortByCategory ? 'Sort by Date Added' : 'Sort by Category'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.listItemContainer}>
-                        <View style={{
-                            gap: Platform.select({
-                                ios: 8,
-                                android: 4,
-                            }),
-                            flexDirection: 'row',
-                            paddingBottom: 2,
-                        }}>
-                            <Text style={[styles.listItem, {flex: 5}]}>
-                                Name
+                    <View style={styles.sortButtonContainer}>
+                        <TouchableOpacity
+                            onPress={() => setSortByCategory(!sortByCategory)}
+                            activeOpacity={0.45}
+                            style={[styles.sortButton, sortByCategory && styles.sortButtonActive]}>
+                            <Text style={[
+                                styles.sortButtonText,
+                                sortByCategory && styles.sortButtonTextActive
+                            ]}>
+                                {sortByCategory ? 'Sort by Date Added' : 'Sort by Category'}
                             </Text>
-                            <View style={styles.categoryContainer}>
-                                <Text style={styles.categoryLabel}>
-                                    Amt.
-                                </Text>
-                            </View>
-                            <View style={styles.categoryContainer}>
-                                <Text style={styles.categoryLabel}>
-                                    Category
-                                </Text>
-                            </View>
-                            <View style={styles.categoryContainer}>
-                                <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
-                                    Edit
-                                </Text>
-                            </View>
-                            <View style={styles.categorySmallContainer}>
-                                <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
-                                    - 1
-                                </Text>
-                            </View>
-                            <View style={styles.categorySmallContainer}>
-                                <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
-                                    + 1
-                                </Text>
-                            </View>
-                        </View>
+                        </TouchableOpacity>
+                    </View>
 
-
-                </View>
-
-                <FlatList
-                    style={styles.listContainer}
-                    data={sortedItems}
-                    keyExtractor={(item) => item.id.toString()}
-                    showsHorizontalScrollIndicator={true}
-                    persistentScrollbar={true}
-                    renderItem={({item}) => (
-                        <View style={styles.listItemContainer}>
-
-                            <View style={styles.itemContentContainer}>
-
-                                <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
-                                <View style={{flexDirection: 'column', gap: 4, alignItems: 'center'}}>
-                                    <Text style={[styles.categoryContainer, styles.categoryLabel]} numberOfLines={1}>
-                                        {`${item.amount || '1'} ${item.unit || 'count'}`}
+                    <View style={styles.listItemContainer}>
+                            <View style={{
+                                gap: Platform.select({
+                                    ios: 8,
+                                    android: 4,
+                                    web: 8,
+                                }),
+                                flexDirection: 'row',
+                                paddingBottom: 2,
+                            }}>
+                                <Text style={[styles.listItem, {flex: 5}]}>
+                                    Name
+                                </Text>
+                                <View style={styles.categoryContainer}>
+                                    <Text style={styles.categoryLabel}>
+                                        Amt.
                                     </Text>
-                                    {item.category && (
-                                        <View style={styles.categoryContainer}>
-                                            <Text style={styles.categoryLabel} numberOfLines={1}>
-                                                {itemCategories.find(cat => cat.value === item.category)?.label || 'Other'}
-                                            </Text>
+                                </View>
+                                <View style={styles.categoryContainer}>
+                                    <Text style={styles.categoryLabel}>
+                                        Category
+                                    </Text>
+                                </View>
+                                <View style={styles.categoryContainer}>
+                                    <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
+                                        Edit
+                                    </Text>
+                                </View>
+                                <View style={styles.categorySmallContainer}>
+                                    <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                        - 1
+                                    </Text>
+                                </View>
+                                <View style={styles.categorySmallContainer}>
+                                    <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                        + 1
+                                    </Text>
+                                </View>
+                            </View>
+
+
+                    </View>
+
+                    <FlatList
+                        style={styles.listContainer}
+                        data={sortedItems}
+                        scrollEnabled={true}
+                        keyExtractor={(item) => item.id.toString()}
+                        showsHorizontalScrollIndicator={true}
+                        persistentScrollbar={true}
+                        renderItem={({item}) => (
+                            <View style={styles.listItemContainer}>
+
+                                <View style={styles.itemContentContainer}>
+
+                                    <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
+                                    <View style={{flexDirection: 'column', gap: 4, alignItems: 'center'}}>
+                                        <Text style={[styles.categoryContainer, styles.categoryLabel]} numberOfLines={1}>
+                                            {`${item.amount || '1'} ${item.unit || 'count'}`}
+                                        </Text>
+                                        {item.category && (
+                                            <View style={styles.categoryContainer}>
+                                                <Text style={styles.categoryLabel} numberOfLines={1}>
+                                                    {itemCategories.find(cat => cat.value === item.category)?.label || 'Other'}
+                                                </Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                    <View>
+                                        <AppButton
+                                            text="Edit"
+                                            isFullWidth={false}
+                                            width='auto'
+                                            paddingRight={8}
+                                            fontSize={10}
+                                            fontWeight="normal"
+                                            backgroundColor="#fef3c7"
+                                            onPress={() => router.push({
+                                                pathname: '/edit',
+                                                params: {
+                                                    itemId: item.id,
+                                                    listType: activeList === 'first' ? 'pantry' : 'grocery'
+                                                }
+                                            })}
+                                            textColor="#4076cc"
+                                            borderColor="#fef3c7"
+                                        />
+                                    </View>
+                                    <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
+                                        <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    if (activeList === 'first') {
+                                                        removeSinglePantryItem(item.id)
+                                                    } else {
+                                                        removeSingleGroceryItem(item.id)
+                                                    }
+                                                }}
+                                                activeOpacity={0.7}
+                                            >
+                                                <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                                    -1
+                                                </Text>
+                                            </TouchableOpacity>
                                         </View>
-                                    )}
+                                        <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    if (activeList === 'first') {
+                                                        addSinglePantryItem(item.id)
+                                                    } else {
+                                                        addSingleGroceryItem(item.id)
+                                                    }
+                                                }}
+                                                activeOpacity={0.7}
+                                            >
+                                                <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                                    +1
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+
                                 </View>
-                                <View style={[styles.categoryContainer, {alignSelf: 'center'}]}>
+
+                            </View>
+                        )}
+                        ListHeaderComponent={
+                            <View>
+                                <View style={[styles.buttonContainer, {paddingBottom: 5}]}>
                                     <AppButton
-                                        text="Edit"
-                                        isFullWidth={true}
-                                        fontSize={10}
-                                        fontWeight="normal"
-                                        backgroundColor="#fef3c7"
-                                        onPress={() => router.push({
-                                            pathname: '/edit',
-                                            params: {
-                                                itemId: item.id,
-                                                listType: activeList === 'first' ? 'pantry' : 'grocery'
-                                            }
-                                        })}
-                                        textColor="#4076cc"
-                                        borderColor="#b45309"
-                                    />
+                                        text="My Pantry"
+                                        onPress={() => setActiveList('first')}
+                                        width={120}
+                                        fontSize={12}
+                                        borderPadding={10}
+                                        borderColor={activeList === 'first' ? '#fff' : '#b45309'}
+                                        textColor={'#EADDCA'}/>
+                                    <AppButton
+                                        text='Grocery List'
+                                        onPress={() => setActiveList('second')}
+                                        width={120}
+                                        fontSize={12}
+                                        borderPadding={10}
+                                        borderColor={activeList === 'second' ? '#fff' : '#b45309'}
+                                        textColor={'#EADDCA'}/>
                                 </View>
-                                <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
-                                    <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                if (activeList === 'first') {
-                                                    removeSinglePantryItem(item.id)
-                                                } else {
-                                                    removeSingleGroceryItem(item.id)
-                                                }
-                                            }}
-                                            activeOpacity={0.7}
-                                        >
-                                            <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
-                                                -1
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                if (activeList === 'first') {
-                                                    addSinglePantryItem(item.id)
-                                                } else {
-                                                    addSingleGroceryItem(item.id)
-                                                }
-                                            }}
-                                            activeOpacity={0.7}
-                                        >
-                                            <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
-                                                +1
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-
+                                <Text style={[styles.listHeaderText, {paddingTop: 16}]}>
+                                    {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
+                                </Text>
                             </View>
-
-                        </View>
-                    )}
-                    ListHeaderComponent={
-                        <View>
-                            <View style={[styles.buttonContainer, {paddingBottom: 5}]}>
-                                <AppButton
-                                    text="My Pantry"
-                                    onPress={() => setActiveList('first')}
-                                    width={120}
-                                    fontSize={12}
-                                    borderPadding={10}
-                                    borderColor={activeList === 'first' ? '#fff' : '#b45309'}
-                                    textColor={'#EADDCA'}/>
-                                <AppButton
-                                    text='Grocery List'
-                                    onPress={() => setActiveList('second')}
-                                    width={120}
-                                    fontSize={12}
-                                    borderPadding={10}
-                                    borderColor={activeList === 'second' ? '#fff' : '#b45309'}
-                                    textColor={'#EADDCA'}/>
-                            </View>
-                            <Text style={[styles.listHeaderText, {paddingTop: 16}]}>
-                                {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
+                        }
+                        ListEmptyComponent={
+                            <Text style={styles.emptyList}>
+                                {activeList === 'first' ? 'Your pantry is empty!' : 'Your grocery list is empty!'}
                             </Text>
-                        </View>
-                    }
-                    ListEmptyComponent={
-                        <Text style={styles.emptyList}>
-                            {activeList === 'first' ? 'Your pantry is empty!' : 'Your grocery list is empty!'}
-                        </Text>
-                    }
-                />
-                <View style={styles.buttonContainer}>
-                    <AppButton
-                        text="Scan Items"
-                        onPress={() => console.log('New Scan Item')}
-                        isFullWidth={false}
-                        width={150}
-                        borderPadding={20}
-                        borderColor={'#fff'}
-                        textColor={'#EADDCA'}
+                        }
                     />
-                    <AppButton
-                        text="Manually Add"
-                        onPress={() => router.push({
-                            pathname: '/new',
-                            params: { listType: activeList === 'first' ? 'pantry' : 'grocery'}
-                        })}
-                        isFullWidth={false}
-                        width={150}
-                        borderPadding={20}
-                        borderColor={'#fff'}
-                        textColor={'#EADDCA'}
-                    />
-                </View>
-            </SafeAreaView>
+                    <View style={styles.buttonContainer}>
+                        <AppButton
+                            text="Scan Items"
+                            onPress={() => console.log('New Scan Item')}
+                            isFullWidth={false}
+                            width={150}
+                            borderPadding={20}
+                            borderColor={'#fff'}
+                            textColor={'#EADDCA'}
+                        />
+                        <AppButton
+                            text="Manually Add"
+                            onPress={() => router.push({
+                                pathname: '/new',
+                                params: { listType: activeList === 'first' ? 'pantry' : 'grocery'}
+                            })}
+                            isFullWidth={false}
+                            width={150}
+                            borderPadding={20}
+                            borderColor={'#fff'}
+                            textColor={'#EADDCA'}
+                        />
+                    </View>
+                </SafeAreaView>
+            </AppWrapper>
         </LinearGradient>
     );
 }
@@ -270,13 +277,18 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         backgroundColor: '#EADDCA',
         padding: 16,
-        paddingBottom: 80,
+        paddingBottom: Platform.select({
+            web: 16,
+            default: 80,
+        }),
         gap: 16,
         width: '100%',
+        height: Platform.OS === 'web' ? '100vh' : '100%',
 
     },
     listContainer: {
         flex: 2,
+        maxHeight: Platform.OS === 'web' ? '50vh' : undefined,
         backgroundColor: '#fff',
         borderRadius: 15,
         padding: 16,
@@ -325,6 +337,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 8,
+        minWidth: 0,
     },
     listHeaderText: {
         color: '#b45309',
@@ -360,6 +373,14 @@ const styles = StyleSheet.create({
         gap: 4,
         alignItems: 'center',
         justifyContent: 'center',
+        marginLeft: Platform.select({
+            web: 16,
+            default: 0,
+        }),
+        marginRight: Platform.select({
+            web: 16,
+            default: 0,
+        }),
     },
     categorySmallContainer: {
         width: 30,

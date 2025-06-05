@@ -13,6 +13,7 @@ export default function _layout() {
                     position: 'absolute',
                     borderTopWidth: 0,
                 },
+                tabBarLabelPosition: 'beside-icon',
                 tabBarIcon: ({ focused, color, size }) => {
                     switch (route.name) {
                         case 'Home':
