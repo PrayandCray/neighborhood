@@ -1,25 +1,37 @@
 import { ItemProvider } from "@/app/context/ItemContext";
-import { Stack } from "expo-router";
-import { useState } from "react";
+import { Stack, useRouter } from "expo-router";
 import "./globals.css";
 
 export default function StackLayout(){
+    const router = useRouter();
+    const isSignedIn = false; // TODO, replace w actual auth logic
 
   return(
+
       <ItemProvider>
           <Stack
               screenOptions={{
                   animation: 'slide_from_bottom',
                   headerStyle: {backgroundColor: '#b45309',},
                   headerTintColor: '#EADDCA',
+                  headerShown: true,
               }}
           >
-            <Stack.Screen
-              name="(tabs)"
-              options={
-                {headerShown: false,}
-          }
-          />
+
+              <Stack.Screen
+                  name="signup"
+                  options={{
+                      headerShown: false,
+                  }}
+              />
+
+              <Stack.Screen
+                  name="(tabs)"
+                  options={{
+                      headerShown: false,
+                  }}
+              />
+
               <Stack.Screen
                   name="new"
                   options={({

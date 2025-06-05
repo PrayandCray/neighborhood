@@ -1,6 +1,7 @@
 import { View, Platform, StyleSheet} from 'react-native';
+import React from "react";
 
-const AppWrapper = ({ children }) => {
+const AppWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
         <View style={styles.wrapper}>
             {children}

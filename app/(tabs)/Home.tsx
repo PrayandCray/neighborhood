@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#b45309',
         marginBottom: 8,
-        marginTop: Platform.OS === 'web' ? '20vh' : '20%',
+        marginTop: '20%',
     },
     subtitle: {
         fontSize: 14,
