@@ -42,3 +42,4 @@ app-example
 eas.json
 
 .vercel
+firebaseConfig.js

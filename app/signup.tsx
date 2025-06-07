@@ -2,12 +2,12 @@ import {SafeAreaView, View, Text, TextInput, StyleSheet } from 'react-native';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
-import AppButton from "@/components/button";
+import AppButton from "../components/button";
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
-export default function Signup() {
+function Signup() {
     const router = useRouter();
 
     const [username, setUsername] = useState('');
@@ -54,14 +54,14 @@ export default function Signup() {
 
                 <View style={{ width: '100%', paddingBottom: '5%'}}>
                     <Text style={styles.descriptionText}>
-                        Create a username
+                        Enter your Email
                     </Text>
 
                     <TextInput
                         value={username}
                         onChangeText={setUsername}
                         style={styles.input}
-                        placeholder="(e.g. john_doe)"
+                        placeholder="(e.g. johndoe@gmail.com)"
                         placeholderTextColor={'lightgray'}
                     />
                 </View>
@@ -75,7 +75,6 @@ export default function Signup() {
                         value={password}
                         onChangeText={setPassword}
                         style={styles.input}
-                        secureTextEntry={true}
                         placeholder="(e.g. password123)"
                         placeholderTextColor={'lightgray'}
                     />
@@ -138,3 +137,5 @@ const styles = StyleSheet.create({
     },
 
 })
+
+export default Signup;
