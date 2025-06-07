@@ -1,37 +1,30 @@
-import {SafeAreaView, View, Text, TextInput, StyleSheet } from 'react-native';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/firebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+import { View, SafeAreaView, StyleSheet, Text, TextInput } from 'react-native';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebaseConfig";
 import AppButton from "../components/button";
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
-function Signup() {
+function Login() {
     const router = useRouter();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSignup = async () => {
+    const handleLogin = async () => {
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, username, password);
+            const userCredential = await signInWithEmailAndPassword(auth, username, password);
             const user = userCredential.user;
 
-            // Save additional data in Firestore
-            await setDoc(doc(db, "users", user.uid), {
-                email: user.email,
-                createdAt: new Date(),
-            });
-
-            console.log("User registered:", user.email);
+            console.log("User logged in:", user.email);
             router.push('/(tabs)/Home');
         } catch (error) {
             if (error instanceof Error) {
-                console.error("Signup error:", error.message);
-                alert("Signup failed: " + error.message);
+                console.error("Login error:", error.message);
+                alert("Login failed: " + error.message);
             } else {
-                console.error("Unexpected signup error:", error);
+                console.error("Unexpected login error:", error);
                 alert("An unexpected error occurred.");
             }
         }
@@ -43,13 +36,12 @@ function Signup() {
             style={styles.container}
         >
             <SafeAreaView style={{ flex: 1, alignItems: 'center', width: '100%' }}>
-
                 <Text style={[styles.title, {paddingTop: '10%'}]}>
-                    Sign Up
+                    Log In
                 </Text>
 
                 <Text style={styles.subtitle}>
-                    Welcome to Shelfie! Please sign up to get started.
+                    Welcome back to Shelfie! Please log in to continue.
                 </Text>
 
                 <View style={{ width: '100%', paddingBottom: '5%'}}>
@@ -58,51 +50,50 @@ function Signup() {
                     </Text>
 
                     <TextInput
+                        style={styles.input}
+                        placeholder="Email"
                         value={username}
                         onChangeText={setUsername}
-                        style={styles.input}
-                        placeholder="(e.g. johndoe@gmail.com)"
-                        placeholderTextColor={'lightgray'}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
                     />
-                </View>
 
-                <View style={{ width: '100%', paddingBottom: '5%'}}>
                     <Text style={styles.descriptionText}>
-                        Create a password
+                        Enter your Password
                     </Text>
 
                     <TextInput
+                        style={styles.input}
+                        placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
-                        style={styles.input}
-                        secureTextEntry={true}
-                        placeholder="(e.g. password123)"
-                        placeholderTextColor={'lightgray'}
+                        secureTextEntry
                     />
-                </View>
+                    <View style={{ width: '100%', paddingBottom: '5%', alignItems: 'center'}}>
+                        <View style={{paddingTop: '1%'}}>
+                            <AppButton
+                                onPress={() => router.push('/signup')}
+                                text={'Don\'t have an account? Sign Up'}
+                                width={'100%'}
+                                backgroundColor={'transparent'}
+                                fontSize={10}
+                                fontWeight={'200'}
+                            />
+                        </View>
 
-                <View style={{paddingTop: '1%'}}>
-                    <AppButton
-                        onPress={() => router.push('/login')}
-                        text={'Already have an account? Log In'}
-                        width={'100%'}
-                        backgroundColor={'transparent'}
-                        fontSize={10}
-                        fontWeight={'200'}
-                    />
-                </View>
+                        <View style={{paddingTop: '5%'}}>
+                            <AppButton
+                                onPress={() => handleLogin()}
+                                text={'Log In'}
+                                fontWeight={'200'}
+                            />
+                        </View>
+                    </View>
 
-                <View style={{paddingTop: '5%'}}>
-                    <AppButton
-                        onPress={handleSignup}
-                        text={'Sign Up'}
-                        fontWeight={'600'}
-                    />
                 </View>
-
             </SafeAreaView>
         </LinearGradient>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -149,4 +140,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default Signup;
+export default Login;
