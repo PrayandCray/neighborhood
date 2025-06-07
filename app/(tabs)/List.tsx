@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import {useRouter, useLocalSearchParams} from 'expo-router';
-import AppButton from "@/components/button";
+import { UseItems } from '@/app/context/ItemContext';
 import AppWrapper from "@/components/appwrapper";
-import {SafeAreaView, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform} from 'react-native';
-import { UseItems } from '../context/ItemContext';
+import AppButton from "@/components/button";
 import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React from 'react';
+import { FlatList, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const List = () => {
     const router = useRouter();
@@ -14,19 +14,10 @@ const List = () => {
     );
     const [sortByCategory, setSortByCategory] = React.useState(false);
 
-    useEffect(() => {
-        if (initialList) {
-            setActiveList(initialList === 'second' ? 'second' : 'first');
-        }
-    }, [initialList]);
-
     const {
         pantryItems,
         groceryItems,
         categories: itemCategories,
-        unitOptions: itemUnits,
-        removeFromPantry,
-        removeFromGrocery,
         removeSinglePantryItem,
         removeSingleGroceryItem,
         addSinglePantryItem,
@@ -34,23 +25,21 @@ const List = () => {
     } = UseItems();
 
     const currentItems = activeList === 'first' ? pantryItems : groceryItems;
-    const removeItem = activeList === 'first' ? removeFromPantry : removeFromGrocery;
 
     const sortedItems = React.useMemo(() => {
         if (!sortByCategory) return currentItems;
 
         return [...currentItems].sort((a, b) => {
-            const catA = itemCategories.find(cat => cat.value === a.category)?.label;
-            const catB = itemCategories.find(cat => cat.value === b.category)?.label;
+            const catA = itemCategories.find((cat: { value: string; label: string }) => cat.value === a.category)?.label;
+            const catB = itemCategories.find((cat: { value: string; label: string }) => cat.value === b.category)?.label;
 
             if (catA === 'Other' && catB !== 'Other') return 1;
             if (catB === 'Other' && catA !== 'Other') return -1;
 
-            // @ts-ignore
-            return catA.localeCompare(catB);
-
+            return catA?.localeCompare(catB || '') || 0;
         });
     }, [sortByCategory, currentItems, itemCategories]);
+
 
     return (
         <LinearGradient
@@ -58,7 +47,7 @@ const List = () => {
             locations={[0, 0.275, 1]}
             style={styles.container}>
             <AppWrapper>
-                <SafeAreaView style={{flex: 1, maxHeight: Platform.OS === 'web' ? '100vh' : '100%'}}>
+                <SafeAreaView style={{ flex: 1, maxHeight:'100%' }}>
 
                     <Text style={styles.title}>
                         List
@@ -153,9 +142,7 @@ const List = () => {
                                     <View>
                                         <AppButton
                                             text="Edit"
-                                            isFullWidth={false}
-                                            width='auto'
-                                            paddingRight={8}
+                                            isFullWidth={true}
                                             fontSize={10}
                                             fontWeight="normal"
                                             backgroundColor="#fef3c7"
@@ -283,12 +270,10 @@ const styles = StyleSheet.create({
         }),
         gap: 16,
         width: '100%',
-        height: Platform.OS === 'web' ? '100vh' : '100%',
 
     },
     listContainer: {
         flex: 2,
-        maxHeight: Platform.OS === 'web' ? '50vh' : undefined,
         backgroundColor: '#fff',
         borderRadius: 15,
         padding: 16,
@@ -420,4 +405,3 @@ const styles = StyleSheet.create({
 });
 
 export default List;
-

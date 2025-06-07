@@ -66,7 +66,7 @@ function Signup() {
                     />
                 </View>
 
-                <View style={{ width: '100%', paddingBottom: '5%'}}>
+                <View style={{ width: '100%'}}>
                     <Text style={styles.descriptionText}>
                         Create a password
                     </Text>
@@ -81,18 +81,18 @@ function Signup() {
                     />
                 </View>
 
-                <View style={{paddingTop: '1%'}}>
+                <View>
                     <AppButton
                         onPress={() => router.push('/login')}
+                        isFullWidth={true}
                         text={'Already have an account? Log In'}
-                        width={'100%'}
                         backgroundColor={'transparent'}
                         fontSize={10}
                         fontWeight={'200'}
                     />
                 </View>
 
-                <View style={{paddingTop: '5%'}}>
+                <View>
                     <AppButton
                         onPress={handleSignup}
                         text={'Sign Up'}

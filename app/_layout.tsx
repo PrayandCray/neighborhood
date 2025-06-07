@@ -1,12 +1,9 @@
 import { ItemProvider } from "@/app/context/ItemContext";
-import { Stack, useRouter } from "expo-router";
-import "./globals.css";
 import '@/firebaseConfig';
+import { Stack } from "expo-router";
+import "./globals.css";
 
 export default function StackLayout(){
-    const router = useRouter();
-    const isSignedIn = false; // TODO, replace w actual auth logic
-
   return(
       <ItemProvider>
           <Stack

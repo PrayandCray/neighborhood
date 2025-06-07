@@ -69,23 +69,23 @@ function Login() {
                         onChangeText={setPassword}
                         secureTextEntry
                     />
-                    <View style={{ width: '100%', paddingBottom: '5%', alignItems: 'center'}}>
-                        <View style={{paddingTop: '1%'}}>
+                    <View style={{ width: '100%', alignItems: 'center'}}>
+                        <View>
                             <AppButton
                                 onPress={() => router.push('/signup')}
                                 text={'Don\'t have an account? Sign Up'}
-                                width={'100%'}
+                                isFullWidth={true}
                                 backgroundColor={'transparent'}
                                 fontSize={10}
                                 fontWeight={'200'}
                             />
                         </View>
 
-                        <View style={{paddingTop: '5%'}}>
+                        <View>
                             <AppButton
                                 onPress={() => handleLogin()}
                                 text={'Log In'}
-                                fontWeight={'200'}
+                                fontWeight={'600'}
                             />
                         </View>
                     </View>

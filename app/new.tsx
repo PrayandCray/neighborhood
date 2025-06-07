@@ -1,9 +1,9 @@
 import AppButton from "@/components/button";
+import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { Keyboard, Platform, SafeAreaView, StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SelectList } from "react-native-dropdown-select-list";
-import { SafeAreaView, View, StyleSheet, TextInput, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { UseItems } from './context/ItemContext';
 
 const NewItemScreen = () => {
@@ -26,21 +26,26 @@ const NewItemScreen = () => {
 
     const handleDone = () => {
         if (inputText.trim()) {
-            const newItem = {
-                name: inputText,
-                category: category,
-                amount: amount || '1',
-                unit: unit || 'count',
-            };
+            try{
+                const newItem = {
+                    name: inputText,
+                    category: category,
+                    amount: amount || '1',
+                    unit: unit || 'count',
+                };
 
-            if (listType === 'pantry') {
-                addToPantry(newItem);
-                console.log(newItem);
-            } else if (listType === 'grocery') {
-                addToGrocery(newItem);
-                console.log(newItem);
+                if (listType === 'pantry') {
+                    addToPantry(newItem);
+                    console.log(newItem);
+                } else if (listType === 'grocery') {
+                    addToGrocery(newItem);
+                    console.log(newItem);
+                }
+                router.back();
+            } catch (error) {
+                console.error('Error adding item:', error);
+                alert('Failed to add item. Please try again.')
             }
-            router.back();
         }
     };
 
