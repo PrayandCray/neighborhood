@@ -15,6 +15,9 @@ type ItemContextType = {
     groceryItems: ListItem[];
     categories: { label: string; value: string }[];
     unitOptions: { key: string; value: string }[];
+    isLoading: boolean;
+    error: Error | null;
+    isAuthenticated: boolean;
     fetchItems: () => Promise<void>;
     addToPantry: (item: { name: string; category: string; amount: string; unit: string}) => Promise<void>;
     addToGrocery: (item: { name: string; category: string; amount: string; unit: string}) => Promise<void>;
@@ -34,52 +37,100 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     const [pantryItems, setPantryItems] = useState<ListItem[]>([]);
     const [groceryItems, setGroceryItems] = useState<ListItem[]>([]);
 
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
     useEffect(() => {
-    const userId = auth.currentUser?.uid;
-    if (!userId) return;
-
-    const pantryQuery = query(
-        collection(db, 'users', userId, 'items'),
-        where('listType', '==', 'pantry')
-    );
-    
-    const unsubscribePantry = onSnapshot(pantryQuery, (snapshot) => {
-        const items = snapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                name: data.name ?? '',
-                category: data.category ?? 'other',
-                amount: data.amount ?? '1',
-                unit: data.unit ?? 'count',
-            } as ListItem;
-        });
-        setPantryItems(items);
-    });
-
-    const groceryQuery = query(
-        collection(db, 'users', userId, 'items'),
-        where('listType', '==', 'grocery')
-    );
-        const unsubscribeGrocery = onSnapshot(groceryQuery, (snapshot) => {
-            const items = snapshot.docs.map(doc => {
-                const data = doc.data();
-                return {
-                    id: doc.id,
-                    name: data.name ?? '',
-                    category: data.category ?? '',
-                    amount: data.amount ?? '',
-                    unit: data.unit ?? '',
-                } as ListItem;
-            });
-            setGroceryItems(items);
+        const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+            console.log('Auth state changed:', user ? `logged in as ${user.uid}` : 'logged out');
+            setIsAuthenticated(!!user);
+            setCurrentUserId(user?.uid || null);
+            
+            if (!user) {
+                setPantryItems([]);
+                setGroceryItems([]);
+                setError(null);
+            }
         });
 
-        return () => {
-            unsubscribePantry();
-            unsubscribeGrocery();
-        };
+        return () => unsubscribeAuth();
     }, []);
+
+    useEffect(() => {
+        let unsubscribePantry: (() => void) | undefined;
+        let unsubscribeGrocery: (() => void) | undefined;
+
+        const setupListeners = async () => {
+            if (!currentUserId) {
+                setIsLoading(false);
+                return;
+            }
+
+            console.log(`Setting up listeners for user: ${currentUserId}`);
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                // clear data and then setup new incase if user signs in and out
+                setPantryItems([]);
+                setGroceryItems([]);
+
+                const pantryQuery = query(
+                    collection(db, 'users', currentUserId, 'items'),
+                    where('listType', '==', 'pantry')
+                );
+
+                const groceryQuery = query(
+                    collection(db, 'users', currentUserId, 'items'),
+                    where('listType', '==', 'grocery')
+                );
+
+                unsubscribePantry = onSnapshot(pantryQuery, (snapshot) => {
+                    const items = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    } as ListItem));
+                    console.log(`Received ${items.length} pantry items for user ${currentUserId}`);
+                    setPantryItems(items);
+                });
+
+                unsubscribeGrocery = onSnapshot(groceryQuery, (snapshot) => {
+                    const items = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    } as ListItem));
+                    console.log(`Received ${items.length} grocery items for user ${currentUserId}`);
+                    setGroceryItems(items);
+                });
+
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error setting up listeners:', error);
+                setError(error as Error);
+                setIsLoading(false);
+            }
+        };
+
+        setupListeners();
+
+        // cleanup
+        return () => {
+            console.log('Cleaning up listeners...');
+            if (unsubscribePantry) unsubscribePantry();
+            if (unsubscribeGrocery) unsubscribeGrocery();
+        };
+    }, [currentUserId]);
+
+    useEffect(() => {
+        console.log('Current state:', {
+            isLoading,
+            error: error?.message,
+            pantryItemsCount: pantryItems.length,
+            groceryItemsCount: groceryItems.length
+        });
+    }, [isLoading, error, pantryItems, groceryItems]);
 
     const fetchItems = async () => {
         try {
@@ -89,7 +140,6 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             // return them pantry items from big boy cloud
             const pantryQuery = query(
                 collection(db, 'users', userId, 'items'),
-                where('userId', '==', userId),
                 where('listType', '==', 'pantry'),
             );
             const pantrySnapshot = await getDocs(pantryQuery);
@@ -102,7 +152,6 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             // ofc dont forget that big boy grocery list
             const groceryQuery = query(
                 collection(db, 'users', userId, 'items'),
-                where('userId', '==', userId),
                 where('listType', '==', 'grocery'),
             );
 
@@ -318,7 +367,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             if (!item) return;
 
             const newAmount = parseInt(item.amount) + 1;
-            const docRef = doc(db, 'users', userId, 'items');
+            const docRef = doc(db, 'users', userId, 'items', id);
             await updateDoc(docRef, { amount: newAmount.toString() });
 
             setPantryItems(prev => prev.map(item => {
@@ -342,7 +391,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             if (!item) return;
 
             const newAmount = parseInt(item.amount) + 1;
-            const docRef = doc(db, 'users', userId, 'items');
+            const docRef = doc(db, 'users', userId, 'items', id);
             await updateDoc(docRef, { amount: newAmount.toString() });
 
             setGroceryItems(prev => prev.map(item => {
@@ -375,6 +424,9 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             addSingleGroceryItem,
             updatePantryItem,
             updateGroceryItem,
+            isLoading,
+            error,
+            isAuthenticated,
         }}>
             {children}
         </ItemContext.Provider>

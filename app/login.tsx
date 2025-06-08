@@ -1,32 +1,42 @@
-import { View, SafeAreaView, StyleSheet, Text, TextInput } from 'react-native';
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
-import AppButton from "../components/button";
-import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import AppButton from "../components/button";
 
 function Login() {
     const router = useRouter();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('')
 
     const handleLogin = async () => {
+        if (!username || !password) {
+            setError('Please fill in all fields');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
         try {
             const userCredential = await signInWithEmailAndPassword(auth, username, password);
-            const user = userCredential.user;
-
-            console.log("User logged in:", user.email);
+            
+            console.log("User logged in:", userCredential.user.email);
             router.push('/(tabs)/Home');
         } catch (error) {
             if (error instanceof Error) {
-                console.error("Login error:", error.message);
-                alert("Login failed: " + error.message);
+                console.error("Login error:", error);
+                setError('Invalid email or password');
             } else {
-                console.error("Unexpected login error:", error);
-                alert("An unexpected error occurred.");
+                setError('An unexpected error occurred');
             }
+        } finally {
+            setLoading(false);
         }
     };
 

@@ -2,7 +2,7 @@ import { auth, db } from "@/firebaseConfig";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import AppButton from "../components/button";
@@ -12,8 +12,18 @@ function Signup() {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('')
 
     const handleSignup = async () => {
+        if (!username || !password) {
+            setError('Please fill in all fields');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, username, password);
             const user = userCredential.user;
@@ -21,9 +31,12 @@ function Signup() {
             // Save additional data in Firestore
             await setDoc(doc(db, "users", user.uid), {
                 email: user.email,
-                createdAt: new Date(),
+                createdAt: new Date().toISOString(),
             });
-            await setDoc(doc(db, "users", user.uid, "items"), {});
+            const itemsCollectionRef = collection(db, "users", user.uid, "items");
+            await setDoc(doc(itemsCollectionRef, "initial"), {
+                createdAt: new Date().toISOString(),
+            });
 
             console.log("User registered:", user.email);
             router.push('/(tabs)/Home');
@@ -35,6 +48,8 @@ function Signup() {
                 console.error("Unexpected signup error:", error);
                 alert("An unexpected error occurred.");
             }
+        } finally {
+            setLoading(false)
         }
     };
 
