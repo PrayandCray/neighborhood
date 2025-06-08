@@ -18,6 +18,7 @@ const List = () => {
         pantryItems,
         groceryItems,
         categories: itemCategories,
+        fetchItems,
         removeSinglePantryItem,
         removeSingleGroceryItem,
         addSinglePantryItem,

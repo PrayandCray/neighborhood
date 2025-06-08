@@ -1,11 +1,11 @@
-import {SafeAreaView, View, Text, TextInput, StyleSheet } from 'react-native';
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/firebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
-import AppButton from "../components/button";
-import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import AppButton from "../components/button";
 
 function Signup() {
     const router = useRouter();
@@ -23,6 +23,7 @@ function Signup() {
                 email: user.email,
                 createdAt: new Date(),
             });
+            await setDoc(doc(db, "users", user.uid, "items"), {});
 
             console.log("User registered:", user.email);
             router.push('/(tabs)/Home');

@@ -11,7 +11,7 @@ const NewItemScreen = () => {
     const inputRef = React.useRef(null);
     const {listType} = useLocalSearchParams();
     const [inputText, setInputText] = useState('');
-    const {addToPantry, addToGrocery, categories, unitOptions} = UseItems();
+    const {addToPantry, addToGrocery, pantryItems, groceryItems, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');
     const [unit, setUnit] = useState('count');
@@ -37,9 +37,11 @@ const NewItemScreen = () => {
                 if (listType === 'pantry') {
                     addToPantry(newItem);
                     console.log(newItem);
+                    console.log(pantryItems)
                 } else if (listType === 'grocery') {
                     addToGrocery(newItem);
                     console.log(newItem);
+                    console.log(groceryItems)
                 }
                 router.back();
             } catch (error) {
