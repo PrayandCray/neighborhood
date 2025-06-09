@@ -1,9 +1,10 @@
-import React from 'react';
-import {View, Text, StyleSheet, Platform} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import AppButton from "@/components/button";
-import { useRouter } from 'expo-router';
 import Appwrapper from "@/components/appwrapper";
+import AppButton from "@/components/button";
+import { auth } from "@/firebaseConfig";
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const Home = () => {
     const router = useRouter();
@@ -34,6 +35,14 @@ const Home = () => {
         }, 150);
     };
 
+    const Logout = () => {
+        auth.signOut();
+        router.push({
+            pathname: '/signup'
+        })
+        console.log(auth)
+    }
+
     return (
 
         <LinearGradient
@@ -53,7 +62,8 @@ const Home = () => {
                         text="Add New Item to Pantry"
                         onPress={handleAddNewPantryItem}
                         isFullWidth={false}
-                        width={150}
+                        // @ts-ignore
+                        width='45%'
                         borderPadding={20}
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
@@ -63,11 +73,26 @@ const Home = () => {
                         text="Add New Item to Grocery"
                         onPress={handleAddNewGroceryItem}
                         isFullWidth={false}
-                        width={150}
+                        // @ts-ignore
+                        width='45%' 
                         borderPadding={20}
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
                     />
+                </View>
+                <View style={{ flex: 1, justifyContent: 'flex-end', width: '100%' }}>
+                    <View style={{ alignItems: 'center', marginBottom: '20%' }}>
+                        <AppButton
+                            text="Logout"
+                            onPress={Logout}
+                            isFullWidth={false}
+                            // @ts-ignore
+                            width='45%'
+                            borderPadding={20}
+                            borderColor={'#fff'}
+                            textColor={'#EADDCA'}
+                        />
+                    </View>
                 </View>
             </Appwrapper>
         </LinearGradient>
