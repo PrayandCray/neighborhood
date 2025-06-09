@@ -1,29 +1,32 @@
+import { auth } from '@/firebaseConfig';
 import { Redirect } from 'expo-router';
-import { useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { UseItems } from './context/ItemContext';
 
 const StartPage = () => {
     const { isAuthenticated, isLoading } = UseItems();
+    const [checkingAuth, setCheckingAuth] = useState(true);
 
     useEffect(() => {
-        console.log('StartPage state:', { isAuthenticated, isLoading });
-    }, [isAuthenticated, isLoading]);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            console.log('Checking auth:', user ? `User ${user.email} found` : 'No user found');
+            setCheckingAuth(false);
+        });
 
-    if (isLoading) {
+        return () => unsubscribe();
+    }, []);
+
+    if (checkingAuth || isLoading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                 <ActivityIndicator size="large" color="#b45309" />
             </View>
         );
     }
 
-    console.log('Redirecting to:', isAuthenticated ? '/(tabs)/Home' : '/signup');
-    if (isAuthenticated) {
-        return <Redirect href="/(tabs)/Home" />;
-    }
-        
-    return <Redirect href="/signup"/>;
+    return isAuthenticated ? <Redirect href="/(tabs)/Home" /> : <Redirect href="/signup" />;
 };
 
 export default StartPage;
