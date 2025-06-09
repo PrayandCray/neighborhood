@@ -1,6 +1,7 @@
 import { UseItems } from '@/app/context/ItemContext';
 import AppWrapper from "@/components/appwrapper";
 import AppButton from "@/components/button";
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -18,7 +19,8 @@ const List = () => {
         pantryItems,
         groceryItems,
         categories: itemCategories,
-        fetchItems,
+        removeFromGrocery,
+        removeFromPantry,
         removeSinglePantryItem,
         removeSingleGroceryItem,
         addSinglePantryItem,
@@ -128,6 +130,7 @@ const List = () => {
                                 <View style={styles.itemContentContainer}>
 
                                     <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
+
                                     <View style={{flexDirection: 'column', gap: 4, alignItems: 'center'}}>
                                         <Text style={[styles.categoryContainer, styles.categoryLabel]} numberOfLines={1}>
                                             {`${item.amount || '1'} ${item.unit || 'count'}`}
@@ -158,6 +161,7 @@ const List = () => {
                                             borderColor="#fef3c7"
                                         />
                                     </View>
+                                    
                                     <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
                                         <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
                                             <TouchableOpacity
@@ -175,13 +179,14 @@ const List = () => {
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
+
                                         <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
                                             <TouchableOpacity
                                                 onPress={() => {
                                                     if (activeList === 'first') {
                                                         addSinglePantryItem(item.id)
                                                     } else {
-                                                        addSingleGroceryItem(item.id)
+                                                        re(item.id)
                                                     }
                                                 }}
                                                 activeOpacity={0.7}
@@ -191,6 +196,22 @@ const List = () => {
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
+
+                                    </View>
+
+                                    <View style={styles.trashContainer}>
+                                            <Ionicons
+                                                name = 'trash-bin-outline'
+                                                size = {20}
+                                                color = "#b45309"
+                                                onPress={() => {
+                                                    if (activeList === 'first') {
+                                                        removeFromPantry(item.id);
+                                                    } else {
+                                                        removeFromGrocery(item.id);
+                                                    }
+                                                }}
+                                            />
                                     </View>
 
                                 </View>
@@ -322,7 +343,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
+        gap: '1%',
         minWidth: 0,
     },
     listHeaderText: {
@@ -374,7 +395,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fef3c7',
     },
     trashContainer: {
-        width: 32,
         alignItems: 'center',
         marginLeft: 4,
     },

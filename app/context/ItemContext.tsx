@@ -195,9 +195,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
                 
             const docRef = doc(db, 'users', userId, 'items', id);
             await updateDoc(docRef, updates);
-            setPantryItems(prev => prev.map(item =>
-                item.id === id ? { ...item, ...updates } : item
-            ));
+
         }   catch (error) {
             console.error('Error updating pantry item:', error);
             throw error;
@@ -211,9 +209,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             if (!userId) throw new Error('User not authenticated');
             const docRef = doc(db, 'users', userId, 'items', id);
             await updateDoc(docRef, updates);
-            setGroceryItems(prev => prev.map(item =>
-                item.id === id ? { ...item, ...updates } : item
-            ));
+
         } catch (error) {
             console.error('Error updating grocery item:', error);
             throw error;
@@ -227,7 +223,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             const userId = auth.currentUser?.uid;
             if (!userId) throw new Error('User not authenticated');
 
-            const docRef = await addDoc(
+            addDoc(
                 collection(db, 'users', userId, 'items'),
                 {
                     ...item,
@@ -237,12 +233,8 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             );
 
-            const newItem = {
-                id: docRef.id,
-                ...item,
-            } as ListItem;
+            console.log('added pantry item:', item)
 
-            setPantryItems(prev => [...prev, newItem]);
         } catch (error) {
             console.error('Error adding pantry item:', error);
             throw error;
@@ -255,7 +247,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             const userId = auth.currentUser?.uid;
             if (!userId) throw new Error('User not authenticated');
 
-            const docRef = await addDoc(
+            await addDoc(
                 collection(db, 'users', userId, 'items'),
                 {
                     ...item,
@@ -265,12 +257,8 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             );
 
-            const newItem = {
-                id: docRef.id,
-                ...item,
-            } as ListItem;
+            console.log('added grocery item:', item)
 
-            setGroceryItems(prev => [...prev, newItem]);
         } catch (error) {
             console.error('Error adding grocery item:', error);
             throw error;
@@ -285,7 +273,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             if (!userId) throw new Error('User not authenticated');
 
             await deleteDoc(doc(db, 'users', userId, 'items', id));
-            setPantryItems(prev => prev.filter(item => item.id !== id));
+
         } catch (error) {
             console.error('Error removing pantry item:', error);
             throw error;
@@ -298,7 +286,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             if (!userId) throw new Error('User not authenticated');
 
             await deleteDoc(doc(db, 'users', userId, 'items', id));
-            setGroceryItems(prev => prev.filter(item => item.id !== id));
+            
         } catch (error) {
             console.error('Error removing grocery item:', error);
             throw error;
@@ -320,12 +308,6 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             const docRef = doc(db, 'users', userId, 'items', id);
             await updateDoc(docRef, { amount: newAmount.toString() });
 
-            setPantryItems(prev => prev.map(item => {
-                if (item.id === id) {
-                    return { ...item, amount: newAmount.toString() };
-                }
-                return item;
-            }));
         } catch (error) {
             console.error('Error updating pantry item amount:', error);
             throw error;
@@ -346,12 +328,6 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             const docRef = doc(db, 'users', userId, 'items', id);
             await updateDoc(docRef, { amount: newAmount.toString() });
 
-            setGroceryItems(prev => prev.map(item => {
-                if (item.id === id) {
-                    return { ...item, amount: newAmount.toString() };
-                }
-                return item;
-            }));
         } catch (error) {
             console.error('Error updating grocery item amount:', error);
             throw error;
@@ -370,12 +346,6 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             const docRef = doc(db, 'users', userId, 'items', id);
             await updateDoc(docRef, { amount: newAmount.toString() });
 
-            setPantryItems(prev => prev.map(item => {
-                if (item.id === id) {
-                    return { ...item, amount: newAmount.toString() };
-                }
-                return item;
-            }));
         } catch (error) {
             console.error('Error updating pantry item amount:', error);
             throw error;
@@ -394,12 +364,6 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             const docRef = doc(db, 'users', userId, 'items', id);
             await updateDoc(docRef, { amount: newAmount.toString() });
 
-            setGroceryItems(prev => prev.map(item => {
-                if (item.id === id) {
-                    return { ...item, amount: newAmount.toString() };
-                }
-                return item;
-            }));
         } catch (error) {
             console.error('Error updating grocery item amount:', error);
             throw error;
