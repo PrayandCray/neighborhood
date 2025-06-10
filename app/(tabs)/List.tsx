@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const List = () => {
     const router = useRouter();
@@ -14,6 +14,7 @@ const List = () => {
         initialList === 'second' ? 'second' : 'first'
     );
     const [sortByCategory, setSortByCategory] = React.useState(false);
+    const [search, setSearch] = React.useState('');
 
     const {
         pantryItems,
@@ -42,6 +43,15 @@ const List = () => {
             return catA?.localeCompare(catB || '') || 0;
         });
     }, [sortByCategory, currentItems, itemCategories]);
+
+    function filterItemsBySearch(input: string, items: typeof sortedItems) {
+        if (!input) return items;
+        return items.filter(item =>
+            item.name.toLowerCase().includes(input.toLowerCase()),
+        );
+    }
+
+    const searchItems = React.useMemo(() => filterItemsBySearch(search, sortedItems), [search, sortedItems]);
 
 
     return (
@@ -119,7 +129,7 @@ const List = () => {
 
                     <FlatList
                         style={styles.listContainer}
-                        data={sortedItems}
+                        data={searchItems}
                         scrollEnabled={true}
                         keyExtractor={(item) => item.id.toString()}
                         showsHorizontalScrollIndicator={true}
@@ -186,7 +196,7 @@ const List = () => {
                                                     if (activeList === 'first') {
                                                         addSinglePantryItem(item.id)
                                                     } else {
-                                                        re(item.id)
+                                                        addSingleGroceryItem(item.id)
                                                     }
                                                 }}
                                                 activeOpacity={0.7}
@@ -219,8 +229,25 @@ const List = () => {
                             </View>
                         )}
                         ListHeaderComponent={
-                            <View>
-                                <View style={[styles.buttonContainer, {paddingBottom: 5}]}>
+                            <View style={{gap: '10'}}>
+                                <View style={styles.searchBar}>
+                                    <Ionicons
+                                        style={{paddingLeft: '2%'}}
+                                        name='search'
+                                        size={20}
+                                        color="#b45309"
+                                    />
+                                    <TextInput
+                                        style={{paddingLeft: '3%', color: '#b45309', width: '100%'}}
+                                        placeholder='Search'
+                                        placeholderTextColor='#b45309'
+                                        value={search}
+                                        onChangeText={(text) => {
+                                            setSearch(text);
+                                        }}
+                                    />
+                                </View>
+                                <View style={[styles.buttonContainer, {paddingBottom: '0.5%'}]}>
                                     <AppButton
                                         text="My Pantry"
                                         onPress={() => setActiveList('first')}
@@ -238,14 +265,14 @@ const List = () => {
                                         borderColor={activeList === 'second' ? '#fff' : '#b45309'}
                                         textColor={'#EADDCA'}/>
                                 </View>
-                                <Text style={[styles.listHeaderText, {paddingTop: 16}]}>
+                                <Text style={styles.listHeaderText}>
                                     {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
                                 </Text>
                             </View>
                         }
                         ListEmptyComponent={
                             <Text style={styles.emptyList}>
-                                {activeList === 'first' ? 'Your pantry is empty!' : 'Your grocery list is empty!'}
+                                No Items Found
                             </Text>
                         }
                     />
@@ -398,6 +425,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 4,
     },
+    searchBar: {
+        flexDirection: 'row',
+        paddingVertical: 8,
+        backgroundColor: '#fef3c7',
+        borderRadius: 25
+    },
     emptyList: {
         flex: 1,
         alignItems: 'center',
@@ -409,7 +442,6 @@ const styles = StyleSheet.create({
     },
     title: {
         alignSelf: 'center',
-        paddingTop: 30,
         fontSize: 20,
         fontWeight: 'bold',
         color: '#b45309',
