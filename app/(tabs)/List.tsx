@@ -1,6 +1,7 @@
 import { UseItems } from '@/app/context/ItemContext';
 import AppWrapper from "@/components/appwrapper";
 import AppButton from "@/components/button";
+import PantryForwardPopup from '@/components/itempopup';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -15,6 +16,39 @@ const List = () => {
     );
     const [sortByCategory, setSortByCategory] = React.useState(false);
     const [search, setSearch] = React.useState('');
+    const [isPopupVisible, setIsPopupVisible] = React.useState(false);
+    const [selectedItem, setSelectedItem] = React.useState<{id: string; name:string} | null>(null);
+
+    const handleDecrement = async (item: { id: string; name: string; amount: string }) => {
+        const newAmount = Math.max(0, parseInt(item.amount) - 1);
+        
+        if (newAmount === 0) {
+            setSelectedItem(item);
+            setIsPopupVisible(true);
+        } else {
+            if (activeList === 'first') {
+                await removeSinglePantryItem(item.id);
+            } else {
+                await removeSingleGroceryItem(item.id);
+            }
+        }
+    };
+
+    const handleConfirmMove = async () => {
+        if (selectedItem) {
+            try {
+                if (activeList === 'first') {
+                    await removeFromPantry(selectedItem.id);
+                } else {
+                    await removeFromGrocery(selectedItem.id);
+                }
+            } catch (error) {
+                console.error('failed to remove item', error)
+            }
+        }
+        setIsPopupVisible(false);
+        setSelectedItem(null);
+    };
 
     const {
         pantryItems,
@@ -175,13 +209,12 @@ const List = () => {
                                     <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
                                         <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
                                             <TouchableOpacity
-                                                onPress={() => {
-                                                    if (activeList === 'first') {
-                                                        removeSinglePantryItem(item.id)
-                                                    } else {
-                                                        removeSingleGroceryItem(item.id)
-                                                    }
-                                                }}
+                                                onPress={() => handleDecrement({
+                                                    id: item.id,
+                                                    name: item.name,
+                                                    amount: item.amount
+                                                })
+                                            }
                                                 activeOpacity={0.7}
                                             >
                                                 <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
@@ -299,6 +332,12 @@ const List = () => {
                             textColor={'#EADDCA'}
                         />
                     </View>
+                    <PantryForwardPopup
+                        isVisible={isPopupVisible}
+                        onClose={() => setIsPopupVisible(false)}
+                        onConfirm={handleConfirmMove}
+                        itemName={selectedItem?.name}
+                    />
                 </SafeAreaView>
             </AppWrapper>
         </LinearGradient>
