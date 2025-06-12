@@ -54,6 +54,8 @@ const List = () => {
         pantryItems,
         groceryItems,
         categories: itemCategories,
+        stores,
+        addStore,
         removeFromGrocery,
         removeFromPantry,
         removeSinglePantryItem,

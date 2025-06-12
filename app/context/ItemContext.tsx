@@ -8,6 +8,12 @@ export type ListItem = {
     category: string;
     amount: string;
     unit: string;
+    store: string;
+};
+
+export type Store = {
+    label: string;
+    value: string;
 };
 
 type ItemContextType = {
@@ -15,10 +21,12 @@ type ItemContextType = {
     groceryItems: ListItem[];
     categories: { label: string; value: string }[];
     unitOptions: { key: string; value: string }[];
+    stores: Store[];
     isLoading: boolean;
     error: Error | null;
     isAuthenticated: boolean;
     fetchItems: () => Promise<void>;
+    addStore: (storeName: string) => Promise<void>;
     addToPantry: (item: { name: string; category: string; amount: string; unit: string}) => Promise<void>;
     addToGrocery: (item: { name: string; category: string; amount: string; unit: string}) => Promise<void>;
     removeFromPantry: (id: string) => Promise<void>;
@@ -36,11 +44,33 @@ const ItemContext = createContext<ItemContextType | undefined>(undefined);
 export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     const [pantryItems, setPantryItems] = useState<ListItem[]>([]);
     const [groceryItems, setGroceryItems] = useState<ListItem[]>([]);
+    const [stores, setStores] = useState<Store[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+    const categories = [
+        {label: 'Other', value: 'other' },
+        { label: 'Fruits', value: 'fruits' },
+        { label: 'Vegetables', value: 'vegetables' },
+        { label: 'Dairy', value: 'dairy' },
+        { label: 'Meat', value: 'meat' },
+        { label: 'Grains', value: 'grains' },
+        { label: 'Snacks', value: 'snacks' },
+        { label: 'Beverages', value: 'beverages' },
+    ];
+
+    const unitOptions = [
+        { key: 'count', value: 'count' },
+        { key: 'g', value: 'g' },
+        { key: 'kg', value: 'kg' },
+        { key: 'L', value: 'L' },
+        { key: 'ml', value: 'ml' },
+        { key: 'lb', value: 'lb' },
+        { key: 'oz', value: 'oz' },
+    ];
 
     useEffect(() => {
         const unsubscribeAuth = auth.onAuthStateChanged((user) => {
@@ -124,13 +154,22 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     }, [currentUserId]);
 
     useEffect(() => {
-        console.log('Current state:', {
-            isLoading,
-            error: error?.message,
-            pantryItemsCount: pantryItems.length,
-            groceryItemsCount: groceryItems.length
+        if (!currentUserId) return;
+
+        const storesQuery = query(collection(db, 'users', currentUserId, 'stores'));
+        const unsubscribe = onSnapshot(storesQuery, (snapshot) => {
+            const storesList = snapshot.docs.map(doc => ({
+                label: doc.data().label,
+                value: doc.data().value,
+            }));
+            setStores(prev => [
+                { label: 'General', value: 'general' },
+                ...storesList
+            ]);
         });
-    }, [isLoading, error, pantryItems, groceryItems]);
+
+        return () => unsubscribe();
+    }, [currentUserId]);
 
     const fetchItems = async () => {
         try {
@@ -166,27 +205,6 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             console.error("Error fetching items:", error);
         }
     };
-
-    const categories = [
-        {label: 'Other', value: 'other' },
-        { label: 'Fruits', value: 'fruits' },
-        { label: 'Vegetables', value: 'vegetables' },
-        { label: 'Dairy', value: 'dairy' },
-        { label: 'Meat', value: 'meat' },
-        { label: 'Grains', value: 'grains' },
-        { label: 'Snacks', value: 'snacks' },
-        { label: 'Beverages', value: 'beverages' },
-    ];
-
-    const unitOptions = [
-        { key: 'count', value: 'count' },
-        { key: 'g', value: 'g' },
-        { key: 'kg', value: 'kg' },
-        { key: 'L', value: 'L' },
-        { key: 'ml', value: 'ml' },
-        { key: 'lb', value: 'lb' },
-        { key: 'oz', value: 'oz' },
-    ];
 
     const updatePantryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => {
         try {
@@ -293,6 +311,30 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
+    const addStore = async (storeName: string) => {
+        try {
+            const userId = auth.currentUser?.uid;
+            if (!userId) throw new Error('User not authenticated');
+
+            const storeValue = storeName.toLowerCase().replace(/\s+/g, ''); // for lowercase and no spaces
+
+            if (stores.some(store => store.value === storeValue)) {
+                throw new Error('Store already exists!')
+            }
+            
+            const storeDoc = await addDoc(collection(db, 'users', userId, 'stores'), {
+                label: storeName,
+                value: storeValue,
+                createdAt: new Date()
+            });
+
+            setStores(prev => [...prev, {label: storeName, value: storeValue}]);
+            console.log('Added new store:', storeName);
+
+        } catch (error) {
+            console.error("Error adding store:", error);
+        } throw error;
+    };
 
     const removeSinglePantryItem = async (id: string) => {
         try {
@@ -377,6 +419,8 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             groceryItems,
             categories,
             unitOptions,
+            stores,
+            addStore,
             fetchItems,
             addToPantry,
             addToGrocery,

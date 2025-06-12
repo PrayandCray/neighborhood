@@ -11,10 +11,11 @@ const NewItemScreen = () => {
     const inputRef = React.useRef(null);
     const {listType} = useLocalSearchParams();
     const [inputText, setInputText] = useState('');
-    const {addToPantry, addToGrocery, pantryItems, groceryItems, categories, unitOptions} = UseItems();
+    const {addToPantry, addToGrocery, addStore, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');
     const [unit, setUnit] = useState('count');
+    const [store, setStore] = useState('any')
 
     const handleTextChange = (text: string) => {
         setInputText(text);
@@ -32,6 +33,7 @@ const NewItemScreen = () => {
                     category: category,
                     amount: amount || '1',
                     unit: unit || 'count',
+                    ...(listType === 'grocery' && {store: store})
                 };
 
                 if (listType === 'pantry') {
@@ -127,6 +129,45 @@ const NewItemScreen = () => {
                         }}
                     />
                 </View>
+
+                {listType === 'grocery' && (
+                    <View style={styles.pickerStyle}>
+                        <SelectList
+                            setSelected={setStore}
+                            data={stores.map(store => ({
+                                key: store.value,
+                                value: store.label
+                            }))}
+                            save="key"
+                            search={false}
+                            defaultOption={{key: 'general', value: 'General'}}
+                            boxStyles={styles.unitDropdown} // fix styling over here it looks really bad
+                            inputStyles={{
+                                color: '#b45309',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                            dropdownStyles={styles.unitDropdownList} // also here
+                            dropdownTextStyles={{
+                                color: '#b45309',
+                                fontSize: 12,
+                            }}
+                            dropdownItemStyles={{
+                                paddingVertical: 8
+                            }}
+                            placeholder="General"
+                        />
+                        <AppButton
+                            text="+"
+                            onPress={() => {/* add store modal func here */}}
+                            isFullWidth={false}
+                            fontSize={14}
+                            backgroundColor="#b45309"
+                            textColor="#EADDCA"
+                        />    
+                    </View>
+
+                )}
 
                 <View style={styles.buttonContainer}>
                     <AppButton
