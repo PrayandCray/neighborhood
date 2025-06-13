@@ -61,6 +61,7 @@ function Login() {
 
                     <TextInput
                         style={styles.input}
+                        placeholderTextColor={'lightgray'}
                         placeholder="Email"
                         value={username}
                         onChangeText={setUsername}
@@ -74,6 +75,7 @@ function Login() {
 
                     <TextInput
                         style={styles.input}
+                        placeholderTextColor={'lightgray'}
                         placeholder="Password"
                         value={password}
                         onChangeText={setPassword}

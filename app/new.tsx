@@ -131,7 +131,17 @@ const NewItemScreen = () => {
                 </View>
 
                 {listType === 'grocery' && (
-                    <View style={styles.pickerStyle}>
+                    <View style={styles.storeContainer}>
+                        <View style={{width: '68.5%'}}>
+                            <AppButton
+                                text="+ Add New Store"
+                                onPress={() => {/* add store modal func here */}}
+                                isFullWidth={true}
+                                fontSize={14}
+                                backgroundColor="#b45309"
+                                textColor="#EADDCA"
+                            />  
+                        </View>
                         <SelectList
                             setSelected={setStore}
                             data={stores.map(store => ({
@@ -141,31 +151,25 @@ const NewItemScreen = () => {
                             save="key"
                             search={false}
                             defaultOption={{key: 'general', value: 'General'}}
-                            boxStyles={styles.unitDropdown} // fix styling over here it looks really bad
-                            inputStyles={{
-                                color: '#b45309',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                            dropdownStyles={styles.unitDropdownList} // also here
-                            dropdownTextStyles={{
-                                color: '#b45309',
-                                fontSize: 12,
-                            }}
-                            dropdownItemStyles={{
-                                paddingVertical: 8
-                            }}
-                            placeholder="General"
-                        />
-                        <AppButton
-                            text="+"
-                            onPress={() => {/* add store modal func here */}}
-                            isFullWidth={false}
-                            fontSize={14}
-                            backgroundColor="#b45309"
-                            textColor="#EADDCA"
-                        />    
-                    </View>
+                            boxStyles={styles.unitDropdown}
+                        inputStyles={{
+                            color: '#b45309',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                        dropdownStyles={styles.unitDropdownList}
+                        dropdownTextStyles={{
+                            color: '#b45309',
+                            fontSize: 14,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                        dropdownItemStyles={{
+                            paddingVertical: 8,
+                        }}
+                        placeholder={'General'}
+                        />  
+                        </View>
 
                 )}
 
@@ -256,6 +260,16 @@ const styles = StyleSheet.create({
         top: 45,
         borderColor: '#b45309',
         backgroundColor: '#fff',
+    },
+    storeContainer: {
+        position: 'relative',
+        width: '90%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        zIndex: 1,
+        marginTop: 10,
+        height: 45,   
     },
     picker: {
         width: '100%',
