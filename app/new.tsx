@@ -135,7 +135,7 @@ const NewItemScreen = () => {
                         <View style={{width: '68.5%'}}>
                             <AppButton
                                 text="+ Add New Store"
-                                onPress={() => {/* add store modal func here */}}
+                                onPress={() => {router.push({pathname: '/new_store'})}}
                                 isFullWidth={true}
                                 fontSize={14}
                                 backgroundColor="#b45309"

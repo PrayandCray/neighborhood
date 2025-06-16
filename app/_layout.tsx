@@ -59,6 +59,26 @@ export default function StackLayout(){
               />
 
               <Stack.Screen
+                  name="new_store"
+                  options={({
+                                route,
+                            }: {
+                      route: { params?: { headerTitle?: string } }
+                  }) => {
+                      const headerTitle = route.params?.headerTitle || 'Add new Store'
+
+                      return {
+                          presentation: 'modal',
+                          animation: 'slide_from_bottom',
+                          headerTitle: headerTitle,
+                          headerTitleAlign: 'center',
+                          headerStyle: {backgroundColor: '#EADDCA'},
+                          headerTintColor: '#b45309',
+                      };
+                  }}
+              />
+
+              <Stack.Screen
                   name="edit"
                   options={({
                                 route,

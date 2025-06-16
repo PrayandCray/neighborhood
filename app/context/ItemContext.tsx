@@ -328,12 +328,12 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
                 createdAt: new Date()
             });
 
-            setStores(prev => [...prev, {label: storeName, value: storeValue}]);
             console.log('Added new store:', storeName);
 
         } catch (error) {
             console.error("Error adding store:", error);
-        } throw error;
+            throw error;
+        }
     };
 
     const removeSinglePantryItem = async (id: string) => {
