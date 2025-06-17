@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { UseItems } from './context/ItemContext';
 import AppButton from '@/components/button';
 import { Picker } from '@react-native-picker/picker';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Keyboard, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SelectList } from "react-native-dropdown-select-list";
+import { UseItems } from './context/ItemContext';
 
 const EditScreen = () => {
     const { itemId, listType } = useLocalSearchParams();
@@ -14,6 +14,7 @@ const EditScreen = () => {
         groceryItems,
         categories,
         unitOptions: units,
+        stores,
         updatePantryItem,
         updateGroceryItem
     } = UseItems();
@@ -26,6 +27,7 @@ const EditScreen = () => {
     const [amount, setAmount] = useState(item?.amount || '');
     const [category, setCategory] = useState(item?.category || 'other');
     const [unit, setUnit] = useState(item?.unit || 'count');
+    const [store, setStore] = useState(item?.store || 'general');
 
     const handleSave = () => {
         const updates = {
@@ -33,6 +35,7 @@ const EditScreen = () => {
             amount,
             category,
             unit,
+            store: store || null,
         };
 
         if (listType === 'pantry') {
@@ -126,6 +129,49 @@ const EditScreen = () => {
                             ))}
                         </Picker>
                     </View>
+
+                    {listType === 'grocery' && (
+                    <View style={styles.storeContainer}>
+                        <View style={{width: '68.5%'}}>
+                            <AppButton
+                                text="+ Add New Store"
+                                onPress={() => {router.push({pathname: '/new_store'})}}
+                                isFullWidth={true}
+                                fontSize={14}
+                                backgroundColor="#b45309"
+                                textColor="#EADDCA"
+                            />  
+                        </View>
+                        <SelectList
+                            setSelected={setStore}
+                            data={stores.map(store => ({
+                                key: store.value,
+                                value: store.label
+                            }))}
+                            save="key"
+                            search={false}
+                            defaultOption={{key: 'general', value: 'General'}}
+                            boxStyles={styles.unitDropdown}
+                        inputStyles={{
+                            color: '#b45309',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                        dropdownStyles={styles.unitDropdownList}
+                        dropdownTextStyles={{
+                            color: '#b45309',
+                            fontSize: 14,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                        dropdownItemStyles={{
+                            paddingVertical: 8,
+                        }}
+                        placeholder={'General'}
+                        />  
+                        </View>
+                    )}
+
                 </View>
 
                 <View style={styles.buttonContainer}>
@@ -187,6 +233,17 @@ const styles = StyleSheet.create({
         height: '100%',
         padding: 10,
         color: '#b45309',
+    },
+    storeContainer: {
+        position: 'relative',
+        width: '90%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        gap: 10,
+        zIndex: 1,
+        marginTop: 10,
+        height: 45,   
     },
     unitDropdown: {
         flex: 1,

@@ -11,7 +11,7 @@ const NewItemScreen = () => {
     const inputRef = React.useRef(null);
     const {listType} = useLocalSearchParams();
     const [inputText, setInputText] = useState('');
-    const {addToPantry, addToGrocery, addStore, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
+    const {addToPantry, addToGrocery, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');
     const [unit, setUnit] = useState('count');

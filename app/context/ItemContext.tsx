@@ -27,6 +27,7 @@ type ItemContextType = {
     isAuthenticated: boolean;
     fetchItems: () => Promise<void>;
     addStore: (storeName: string) => Promise<void>;
+    updateStore: (storeId: string, updates: { label?: string; value?: string }) => Promise<void>;
     addToPantry: (item: { name: string; category: string; amount: string; unit: string}) => Promise<void>;
     addToGrocery: (item: { name: string; category: string; amount: string; unit: string}) => Promise<void>;
     removeFromPantry: (id: string) => Promise<void>;
@@ -336,6 +337,18 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
+    const updateStore = async (storeId: string, updates: { label?: string; value?: string }) => {
+        try {
+            const userId = auth.currentUser?.uid;
+            if (!userId) throw new Error('User not authenticated');
+            const storeRef = doc(db, 'users', userId, 'stores', storeId);
+            await updateDoc(storeRef, updates);
+        } catch (error) {
+            console.error("Error updating store:", error);
+            throw error;
+        }
+    }
+
     const removeSinglePantryItem = async (id: string) => {
         try {
             const userId = auth.currentUser?.uid;
@@ -421,6 +434,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             unitOptions,
             stores,
             addStore,
+            updateStore,
             fetchItems,
             addToPantry,
             addToGrocery,

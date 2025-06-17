@@ -130,33 +130,44 @@ const List = () => {
                                 flexDirection: 'row',
                                 paddingBottom: 2,
                             }}>
-                                <Text style={[styles.listItem, {flex: 5}]}>
+                                <Text style={[styles.listItem, {flex: 5, paddingTop: '4%', paddingLeft: '4%'}]}>
                                     Name
                                 </Text>
-                                <View style={styles.categoryContainer}>
-                                    <Text style={styles.categoryLabel}>
-                                        Amt.
-                                    </Text>
+                                <View style={{flexDirection: 'column', gap: 2, height: '100%'}}>
+                                    <View style={styles.categoryContainer}>
+                                        <Text style={styles.categoryLabel}>
+                                            Amt.
+                                        </Text>
+                                    </View>
+                                    <View style={styles.categoryContainer}>
+                                        <Text style={styles.categoryLabel}>
+                                            Category
+                                        </Text>
+                                    </View>
                                 </View>
-                                <View style={styles.categoryContainer}>
-                                    <Text style={styles.categoryLabel}>
-                                        Category
-                                    </Text>
-                                </View>
-                                <View style={styles.categoryContainer}>
+                                <View style={[styles.categoryContainer, {justifyContent: 'center'}]}>
                                     <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
                                         Edit
                                     </Text>
                                 </View>
-                                <View style={styles.categorySmallContainer}>
-                                    <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
-                                        - 1
-                                    </Text>
+                                <View style={{flexDirection: 'column', gap: 2, paddingRight: '5%'}}>
+                                    <View style={styles.categorySmallContainer}>
+                                        <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
+                                            - 1
+                                        </Text>
+                                    </View>
+                                    <View style={styles.categorySmallContainer}>
+                                        <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
+                                            + 1
+                                        </Text>
+                                    </View>
                                 </View>
-                                <View style={styles.categorySmallContainer}>
-                                    <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
-                                        + 1
-                                    </Text>
+                                <View style={{justifyContent: 'center'}}>
+                                    <Ionicons
+                                        name = 'trash-bin-outline'
+                                        size = {20}
+                                        color = "#b45309"
+                                    />
                                 </View>
                             </View>
 
@@ -176,6 +187,10 @@ const List = () => {
                                 <View style={styles.itemContentContainer}>
 
                                     <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
+
+                                    {activeList === 'second' && (
+                                        <Text style={[styles.categoryLabel, styles.categoryContainer, {paddingVertical: '4%'}]} numberOfLines={1}>{item.store}</Text>
+                                    )}
 
                                     <View style={{flexDirection: 'column', gap: 4, alignItems: 'center'}}>
                                         <Text style={[styles.categoryContainer, styles.categoryLabel]} numberOfLines={1}>
@@ -219,7 +234,7 @@ const List = () => {
                                             }
                                                 activeOpacity={0.7}
                                             >
-                                                <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                                <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
                                                     -1
                                                 </Text>
                                             </TouchableOpacity>
@@ -236,7 +251,7 @@ const List = () => {
                                                 }}
                                                 activeOpacity={0.7}
                                             >
-                                                <Text style={[styles.categoryLabel, {color: "#b45309"}]}>
+                                                <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
                                                     +1
                                                 </Text>
                                             </TouchableOpacity>
@@ -401,8 +416,10 @@ const styles = StyleSheet.create({
     listItemContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         width: '100%',
-        paddingVertical: 8,
+        paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#b45309',
     },
