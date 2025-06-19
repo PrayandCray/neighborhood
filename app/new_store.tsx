@@ -27,7 +27,7 @@ const NewListScreen = () => {
 
         try {
             setIsLoading(true);
-            await addStore(inputText.trim());
+            await addStore(inputText);
             // Wait a brief moment to ensure store is added
             setTimeout(() => {
                 setIsLoading(false);

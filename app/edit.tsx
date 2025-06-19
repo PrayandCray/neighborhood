@@ -27,7 +27,7 @@ const EditScreen = () => {
     const [amount, setAmount] = useState(item?.amount || '');
     const [category, setCategory] = useState(item?.category || 'other');
     const [unit, setUnit] = useState(item?.unit || 'count');
-    const [store, setStore] = useState(item?.store || 'general');
+    const [store, setStore] = useState(item?.store || 'General');
 
     const handleSave = () => {
         const updates = {
@@ -35,7 +35,7 @@ const EditScreen = () => {
             amount,
             category,
             unit,
-            store: store || 'general',
+            store: store || 'General',
             listType: listType as string,
         };
 
@@ -133,44 +133,43 @@ const EditScreen = () => {
 
                     {listType === 'grocery' && (
                     <View style={styles.storeContainer}>
-                        <View style={{width: '68.5%'}}>
+                        <View style={{ width: '68.5%' }}>
                             <AppButton
                                 text="+ Add New Store"
-                                onPress={() => {router.push({pathname: '/new_store'})}}
+                                onPress={() => { router.push({ pathname: '/new_store' }) }}
                                 isFullWidth={true}
                                 fontSize={14}
                                 backgroundColor="#b45309"
                                 textColor="#EADDCA"
-                            />  
+                            />
                         </View>
                         <SelectList
                             setSelected={setStore}
                             data={stores.map(store => ({
-                                key: store.value,
+                                key: store.label,
                                 value: store.label
                             }))}
-                            save="key"
+                            save="value"
                             search={false}
-                            defaultOption={{key: 'general', value: 'General'}}
+                            defaultOption={{ key: store, value: store }}
                             boxStyles={styles.unitDropdown}
-                        inputStyles={{
-                            color: '#b45309',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                        dropdownStyles={styles.unitDropdownList}
-                        dropdownTextStyles={{
-                            color: '#b45309',
-                            fontSize: 14,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                        dropdownItemStyles={{
-                            paddingVertical: 8,
-                        }}
-                        placeholder={'General'}
-                        />  
-                        </View>
+                            inputStyles={{
+                                color: '#b45309',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                            dropdownStyles={styles.unitDropdownList}
+                            dropdownTextStyles={{
+                                color: '#b45309',
+                                fontSize: 14,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                            dropdownItemStyles={{
+                                paddingVertical: 8,
+                            }}
+                        />
+                    </View>
                     )}
 
                 </View>

@@ -40,7 +40,16 @@ const List = () => {
                 if (activeList === 'first') {
                     await removeFromPantry(selectedItem.id);
                 } else {
-                    await removeFromGrocery(selectedItem.id);
+                    if (activeList == 'second') {
+                        const groceryItem = groceryItems.find(item => item.id === selectedItem.id);
+                        if (groceryItem) {
+                            await updateGroceryItem(selectedItem.id as string, {
+                                ...groceryItem,
+                                listType: 'first',
+                            });
+                        }
+                        await removeFromGrocery(selectedItem.id);
+                    }
                 }
             } catch (error) {
                 console.error('failed to remove item', error)
@@ -60,6 +69,7 @@ const List = () => {
         removeFromPantry,
         removeSinglePantryItem,
         removeSingleGroceryItem,
+        updateGroceryItem,
         addSinglePantryItem,
         addSingleGroceryItem,
     } = UseItems();
@@ -355,6 +365,7 @@ const List = () => {
                         onConfirm={handleConfirmMove}
                         itemName={selectedItem?.name}
                         itemId={selectedItem?.id}
+                        listType={activeList}
                     />
                 </SafeAreaView>
             </AppWrapper>

@@ -1,6 +1,7 @@
 import { UseItems } from "@/app/context/ItemContext";
+import { useRouter } from "expo-router";
 import React from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 import AppButton from "./button";
 
@@ -10,6 +11,7 @@ interface PantryPopupProps {
     onConfirm: () => void;
     itemName?: string;
     itemId?: string;
+    listType?: string;
 }
 
 const PantryForwardPopup: React.FC<PantryPopupProps> = ({ 
@@ -17,14 +19,24 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
     onClose, 
     onConfirm, 
     itemName,
-    itemId
+    itemId,
+    listType,
 }) => {
 
     const {
         stores,
-        removeFromPantry,
         updatePantryItem,
     } = UseItems();
+
+    const [amount, setAmount] = React.useState('');
+
+    React.useEffect(() => {
+        if (isVisible) {
+            setAmount(''); 
+        }
+    }, [isVisible]);
+
+    const router = useRouter();
 
     return (
         <Modal
@@ -37,6 +49,7 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
             useNativeDriver={true}
             hideModalContentWhileAnimating={true}
         >
+            {listType === 'first' &&
             <View style={styles.popupContent}>
                 <Text style={styles.title}>
                     Where do you want to move {itemName || 'item'}?
@@ -47,6 +60,31 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
                         <Text style={[styles.title, {fontSize: 14, color: 'black', fontWeight: '600'}]}>
                             Grocery Stores:
                         </Text>
+                        <TextInput style={styles.textInputStyle}
+                        keyboardType="numeric"
+                        placeholder='Enter Item Amount'
+                        placeholderTextColor='#444444'
+                        value={amount}
+                        onChangeText={setAmount}
+                        />
+                            <TouchableOpacity style={{ alignItems: 'center', marginBottom: 10 }}>
+                                <AppButton
+                                    text="+ Add New Store"
+                                    onPress={() => {
+                                        onClose();
+                                        setTimeout(() => {
+                                            router.push({ pathname: '/new_store' });
+                                        }, 300); // delay 4 modal to close
+                                    }}
+                                    isFullWidth={false}
+                                    //@ts-ignore
+                                    width='60%' 
+                                    fontSize={14}
+                                    backgroundColor="#b45309"
+                                    textColor="#EADDCA"
+                                />
+                            </TouchableOpacity>
+
                         <FlatList
                         style={styles.storeList}
                             data={stores}
@@ -57,17 +95,14 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
                                         style={{ padding: 10, textAlign: 'center' }}
                                         onPress={() => {
                                             if (itemId) {
-
-                                                // Move item to grocery list and assign store
-                                                updatePantryItem(itemId, {
-                                                    listType: 'grocery',
-                                                    store: typeof item === 'string' ? item : item.value,
-                                                    unit: '1'
-                                                });
-                                                onClose();
-                                            }
-                                        }}
-                                    >
+                                            updatePantryItem(itemId, {
+                                                listType: 'grocery',
+                                                store: typeof item === 'string' ? item : item.label,
+                                                unit: 'count',
+                                                amount: amount || '1',
+                                            })};
+                                            onClose();
+                                        }}>
                                         {typeof item === 'string' ? item : item.label || item.value}
                                     </Text>
                                 </View>
@@ -91,6 +126,48 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
                     </View>
                 </View>
             </View>
+            }
+
+            {listType === 'second' &&
+            
+            <View style={styles.popupContent}>
+                <Text style={styles.title}>
+                    Do you want to move {itemName || 'item'} to the Pantry?
+                </Text>
+
+                <TextInput style={styles.textInputStyle}
+                    placeholder='Enter Item Amount'
+                    placeholderTextColor='#444444 '
+                    keyboardType="numeric"
+                    value={amount}
+                    onChangeText={setAmount}
+                />
+
+                <View style={styles.buttonContainer}>
+                        <AppButton
+                            text="No"
+                            onPress={onClose}
+                            backgroundColor="#6B7280"
+                            width={120}
+                        />
+                        <AppButton
+                            text="Yes"
+                            onPress={() => {
+                                if (itemId) {
+                                updatePantryItem(itemId, {
+                                    listType: 'pantry',
+                                    unit: 'count',
+                                    amount: amount || '1',
+                                })};
+                                onClose();
+                            }}
+                            backgroundColor="#DC2626"
+                            width={120}
+                        />
+                    </View>
+            </View>
+
+            }
         </Modal>
     );
 };
@@ -128,6 +205,16 @@ const styles = StyleSheet.create({
         color: '#1F2937',
         marginBottom: 20,
         textAlign: 'center',
+    },
+    textInputStyle: {
+        height: 40,
+        borderColor: '#b45309',
+        borderWidth: 1,
+        borderRadius: 8,
+        alignSelf: 'center',
+        paddingHorizontal: 10,
+        marginBottom: 10,
+        width: '90%',
     },
     buttonContainer: {
         flexDirection: 'row',

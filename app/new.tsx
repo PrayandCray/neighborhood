@@ -132,46 +132,45 @@ const NewItemScreen = () => {
 
                 {listType === 'grocery' && (
                     <View style={styles.storeContainer}>
-                        <View style={{width: '68.5%'}}>
+                        <View style={{ width: '68.5%' }}>
                             <AppButton
                                 text="+ Add New Store"
-                                onPress={() => {router.push({pathname: '/new_store'})}}
+                                onPress={() => { router.push({ pathname: '/new_store' }) }}
                                 isFullWidth={true}
                                 fontSize={14}
                                 backgroundColor="#b45309"
                                 textColor="#EADDCA"
-                            />  
+                            />
                         </View>
                         <SelectList
                             setSelected={setStore}
                             data={stores.map(store => ({
-                                key: store.value,
+                                key: store.label,
                                 value: store.label
                             }))}
-                            save="key"
+                            save="value"
                             search={false}
-                            defaultOption={{key: 'general', value: 'General'}}
+                            defaultOption={{ key: 'general', value: 'General' }}
                             boxStyles={styles.unitDropdown}
-                        inputStyles={{
-                            color: '#b45309',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                        dropdownStyles={styles.unitDropdownList}
-                        dropdownTextStyles={{
-                            color: '#b45309',
-                            fontSize: 14,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                        dropdownItemStyles={{
-                            paddingVertical: 8,
-                        }}
-                        placeholder={'General'}
-                        />  
-                        </View>
-
-                )}
+                            inputStyles={{
+                                color: '#b45309',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                            dropdownStyles={styles.unitDropdownList}
+                            dropdownTextStyles={{
+                                color: '#b45309',
+                                fontSize: 14,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                            dropdownItemStyles={{
+                                paddingVertical: 8,
+                            }}
+                            placeholder="General"
+                        />
+                    </View>
+                    )}
 
                 <View style={styles.buttonContainer}>
                     <AppButton

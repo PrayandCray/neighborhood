@@ -36,8 +36,8 @@ type ItemContextType = {
     removeSingleGroceryItem: (id: string) => Promise<void>;
     addSinglePantryItem: (id: string) => Promise<void>;
     addSingleGroceryItem: (id: string) => Promise<void>;
-    updatePantryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store: string; listType: string}) => Promise<void>;
-    updateGroceryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => Promise<void>;
+    updatePantryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string; listType?: string}) => Promise<void>;
+    updateGroceryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string; listType?: string}) => Promise<void>;
 };
 
 const ItemContext = createContext<ItemContextType | undefined>(undefined);
