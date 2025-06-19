@@ -37,6 +37,19 @@ export default function StackLayout(){
               />
 
               <Stack.Screen
+                  name="scan"
+                  options={{
+                    headerShown: true,
+                    headerTitle: 'Scan Item',
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+                    headerTransparent: true,
+                    headerTintColor: '#b45309',
+                    headerBackButtonDisplayMode: 'minimal',
+                }}
+              />
+
+              <Stack.Screen
                   name="new"
                   options={({
                                 route,

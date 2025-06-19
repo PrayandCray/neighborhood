@@ -339,7 +339,7 @@ const List = () => {
                     <View style={styles.buttonContainer}>
                         <AppButton
                             text="Scan Items"
-                            onPress={() => console.log('New Scan Item')}
+                            onPress={() => router.push({ pathname: '/scan' })}
                             isFullWidth={false}
                             width={150}
                             borderPadding={20}
