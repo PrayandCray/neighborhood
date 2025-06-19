@@ -354,6 +354,7 @@ const List = () => {
                         onClose={() => setIsPopupVisible(false)}
                         onConfirm={handleConfirmMove}
                         itemName={selectedItem?.name}
+                        itemId={selectedItem?.id}
                     />
                 </SafeAreaView>
             </AppWrapper>

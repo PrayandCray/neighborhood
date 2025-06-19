@@ -35,7 +35,8 @@ const EditScreen = () => {
             amount,
             category,
             unit,
-            store: store || null,
+            store: store || 'general',
+            listType: listType as string,
         };
 
         if (listType === 'pantry') {

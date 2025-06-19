@@ -36,7 +36,7 @@ type ItemContextType = {
     removeSingleGroceryItem: (id: string) => Promise<void>;
     addSinglePantryItem: (id: string) => Promise<void>;
     addSingleGroceryItem: (id: string) => Promise<void>;
-    updatePantryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => Promise<void>;
+    updatePantryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store: string; listType: string}) => Promise<void>;
     updateGroceryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => Promise<void>;
 };
 
@@ -207,7 +207,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const updatePantryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => {
+    const updatePantryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string }) => {
         try {
             const userId = auth.currentUser?.uid;
             if (!userId) throw new Error('User not authenticated')
@@ -221,8 +221,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const updateGroceryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => {
-        const userId = auth.currentUser?.uid;
+    const updateGroceryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string }) => {
         try {
             const userId = auth.currentUser?.uid;
             if (!userId) throw new Error('User not authenticated');
