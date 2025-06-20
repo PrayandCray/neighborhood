@@ -62,9 +62,6 @@ const Home = () => {
                         text="Add New Item to Pantry"
                         onPress={handleAddNewPantryItem}
                         isFullWidth={false}
-                        // @ts-ignore
-                        width='45%'
-                        borderPadding={20}
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
                     />
@@ -73,9 +70,14 @@ const Home = () => {
                         text="Add New Item to Grocery"
                         onPress={handleAddNewGroceryItem}
                         isFullWidth={false}
-                        // @ts-ignore
-                        width='45%' 
-                        borderPadding={20}
+                        borderColor={'#fff'}
+                        textColor={'#EADDCA'}
+                    />
+                </View>
+                <View style={[styles.shortcutsContainer, {marginTop: 16}]}>
+                    <AppButton
+                        text='Scan Item'
+                        onPress={() => router.push('/scan')}
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
                     />
@@ -85,10 +87,7 @@ const Home = () => {
                         <AppButton
                             text="Logout"
                             onPress={Logout}
-                            isFullWidth={false}
-                            // @ts-ignore
-                            width='45%'
-                            borderPadding={20}
+                            isFullWidth={true}
                             borderColor={'#fff'}
                             textColor={'#EADDCA'}
                         />
@@ -108,11 +107,10 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     shortcutsContainer: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         gap: 16,
-        marginTop: 32,
     },
     title: {
         textAlign: 'center',
@@ -124,7 +122,7 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 14,
-        fontWeight: '600',
+        fontWeight: '500',
         color: '#d97706',
         textAlign: 'center',
         maxWidth: '80%',

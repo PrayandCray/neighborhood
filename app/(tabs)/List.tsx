@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SelectList } from 'react-native-dropdown-select-list';
 
 const List = () => {
     const router = useRouter();
@@ -18,6 +19,8 @@ const List = () => {
     const [search, setSearch] = React.useState('');
     const [isPopupVisible, setIsPopupVisible] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<{id: string; name:string} | null>(null);
+    const [store, setStore] = React.useState('General');
+    
 
     const handleDecrement = async (item: { id: string; name: string; amount: string }) => {
         const newAmount = Math.max(0, parseInt(item.amount) - 1);
@@ -96,6 +99,12 @@ const List = () => {
             item.name.toLowerCase().includes(input.toLowerCase()),
         );
     }
+
+    function filterItemsByStore(store: string, items: typeof sortedItems) {
+        if (!store || store === 'General') return items;
+        return items.filter(item => item.store === store);
+    }
+    const filteredItems = React.useMemo(() => filterItemsByStore(store, sortedItems), [store, sortedItems]);
 
     const searchItems = React.useMemo(() => filterItemsBySearch(search, sortedItems), [search, sortedItems]);
 
@@ -184,9 +193,51 @@ const List = () => {
 
                     </View>
 
+                     {activeList === 'second' && (
+                    <View style={styles.storeContainer}>
+                        <View style={{ width: '50%' }}>
+                            <AppButton
+                                text="+ Add New Store"
+                                onPress={() => { router.push({ pathname: '/new_store' }) }}
+                                isFullWidth={true}
+                                fontSize={14}
+                                backgroundColor="#b45309"
+                                textColor="#EADDCA"
+                            />
+                        </View>
+                        <SelectList
+                            setSelected={setStore}
+                            data={stores.map(store => ({
+                                key: store.label,
+                                value: store.label
+                            }))}
+                            save="value"
+                            search={false}
+                            defaultOption={{ key: store, value: store }}
+                            boxStyles={styles.unitDropdown}
+                            inputStyles={{
+                                color: '#b45309',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                            dropdownStyles={styles.unitDropdownList}
+                            dropdownTextStyles={{
+                                color: '#b45309',
+                                fontSize: 14,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                            dropdownItemStyles={{
+                                paddingVertical: 8,
+                            }}
+                        />
+                    </View>
+                    )}
+
+                    
                     <FlatList
                         style={styles.listContainer}
-                        data={searchItems}
+                        data={filterItemsBySearch(search, filteredItems)}
                         scrollEnabled={true}
                         keyExtractor={(item) => item.id.toString()}
                         showsHorizontalScrollIndicator={true}
@@ -488,6 +539,35 @@ const styles = StyleSheet.create({
             web: 16,
             default: 0,
         }),
+    },
+    storeContainer: {
+        position: 'relative',
+        width: '90%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        gap: 10,
+        zIndex: 1,
+        marginTop: 10,
+        height: 45,   
+    },
+    unitDropdown: {
+        flex: 1,
+        height: 40,
+        borderColor: '#b45309',
+        borderRadius: 10,
+        backgroundColor: 'transparent',
+        width: '80%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 3,
+    },
+    unitDropdownList: {
+        position: 'absolute',
+        width: '80%',
+        top: 45,
+        borderColor: '#b45309',
+        backgroundColor: '#fff',
     },
     categorySmallContainer: {
         width: 30,
