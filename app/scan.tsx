@@ -1,10 +1,14 @@
 import AppButton from '@/components/button';
+import ScanItemPopup from '@/components/scanItemPopup';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-const fetchProduct = async (barcode: string) => {
+const fetchProduct = async (
+    barcode: string
+): Promise<[string | null, string | null, string | null] | null> => {
     try {
         const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
         const data = await response.json();
@@ -12,8 +16,7 @@ const fetchProduct = async (barcode: string) => {
         const productName = data.product?.product_name || null;
         const generic_name = data.product?.generic_name || null;
         if (data.status === 1) {
-            return [productName, categories];
-            
+            return [productName, categories, generic_name] as [string | null, string | null, string | null];
         } else {
             return null;
         }
@@ -24,6 +27,13 @@ const fetchProduct = async (barcode: string) => {
 };
 
 const ScanScreen = () => {
+    const router = useRouter()
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const { initialList } = useLocalSearchParams<{ initialList: 'first' | 'second' }>();
+    const [activeList, setActiveList] = React.useState<'first' | 'second'>(
+            initialList === 'second' ? 'second' : 'first'
+        );
+    const [itemProduct, setItemProduct] = useState<[string | null, string | null, string | null] | null>(null)
     const [facing, setFacing] = useState<CameraType>('back');
     const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 
@@ -60,7 +70,8 @@ const ScanScreen = () => {
                     const barcodeValue = event.data;
                     fetchProduct(barcodeValue).then((product) => {
                         if (product) {
-                            console.log('Product found:', product);
+                            setItemProduct(product);
+                            setIsPopupVisible(true);
                         } else {
                             console.log('No product found for this barcode.');
                         }
@@ -80,7 +91,12 @@ const ScanScreen = () => {
                     }}
                 />
             </View>
-
+            <ScanItemPopup
+                isVisible={isPopupVisible}
+                barcodeItemList={itemProduct ? itemProduct.map(item => item ?? '') : []}
+                onClose={() => setIsPopupVisible(false)}
+                listType={activeList}
+            />
         </View>
     );
 }
