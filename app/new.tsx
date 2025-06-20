@@ -9,8 +9,8 @@ import { UseItems } from './context/ItemContext';
 const NewItemScreen = () => {
     const router = useRouter();
     const inputRef = React.useRef(null);
-    const {listType} = useLocalSearchParams();
-    const [inputText, setInputText] = useState('');
+    const {listType, itemName} = useLocalSearchParams();
+    const [inputText, setInputText] = useState<string>(typeof itemName === 'string' ? itemName : '');
     const {addToPantry, addToGrocery, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');

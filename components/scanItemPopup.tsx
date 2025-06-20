@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 
 interface ScanItemPopupProps {
@@ -7,6 +7,7 @@ interface ScanItemPopupProps {
     barcodeItemList: string[];
     listType?: string;
     onClose: () => void;
+    onConfirm?: (selectedItem: string) => void;
 }
 
 const ScanItemPopup: React.FC<ScanItemPopupProps> = ({
@@ -14,6 +15,7 @@ const ScanItemPopup: React.FC<ScanItemPopupProps> = ({
     barcodeItemList,
     listType,
     onClose,
+    onConfirm,
 }) => {
     const [itemName, setItemName] = React.useState('');
 
@@ -22,6 +24,13 @@ const ScanItemPopup: React.FC<ScanItemPopupProps> = ({
             setItemName('')
         }
     })
+
+    const processedList = barcodeItemList
+        .flatMap(item =>
+            typeof item === 'string'
+                ? item.split(',').map(str => str.trim()).filter(Boolean)
+                : []
+        );
 
     return (
         <Modal 
@@ -34,30 +43,37 @@ const ScanItemPopup: React.FC<ScanItemPopupProps> = ({
             useNativeDriver={true}
             hideModalContentWhileAnimating={true}
         >
-            <Text style={styles.title}>
-                New Scan Item for {listType === 'first' ? 'Pantry' : 'Grocery List'}
-            </Text>
-            <Text style={styles.subtitle}>
-                Pick a Name that Resembles the Item
-            </Text>
-            <FlatList
-                data={barcodeItemList}
-                keyExtractor={(item, index) => item}
-                renderItem={({item}) => (
-                    <TouchableOpacity
-                        onPress={() => {
-                            setItemName(item);
-                        }}
-                        style={{
-                            padding: 10,
-                            borderBottomWidth: 1,
-                            borderBottomColor: '#ccc',
-                        }}
-                    >
-                        <Text style={{ fontSize: 16 }}>{item}</Text>
-                    </TouchableOpacity>
-                )}
-            />
+            <View style={styles.popupContent}>
+                <Text style={styles.title}>
+                    New Scan Item for {listType}
+                </Text>
+                <Text style={styles.subtitle}>
+                    Pick a Name that Resembles the Item
+                </Text>
+                <FlatList
+                    data={processedList}
+                      keyExtractor={(item, index) => `${item ?? 'unknown'}-${index}`}
+                    renderItem={({item}) => (
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (!item) return;
+                                setItemName(item);
+                                if (onConfirm) {
+                                    onConfirm(item);
+                                }
+                                onClose();
+                            }}
+                            style={{
+                                padding: 10,
+                                borderBottomWidth: 1,
+                                borderBottomColor: '#ccc',
+                            }}
+                        >
+                            <Text style={{ fontSize: 16 }}>{item}</Text>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
         </Modal>
     );
 };
@@ -67,6 +83,19 @@ const styles = StyleSheet.create ({
         margin: 0,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    popupContent: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        width: '80%',
+        alignItems: 'center',
+        maxHeight: 400,
     },
     title: {
         fontSize: 18,

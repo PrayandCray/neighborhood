@@ -8,15 +8,14 @@ import { StyleSheet, Text, View } from 'react-native';
 
 const fetchProduct = async (
     barcode: string
-): Promise<[string | null, string | null, string | null] | null> => {
+): Promise<string[] | null> => {
     try {
         const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
         const data = await response.json();
         const categories = data.product?.categories || null;
         const productName = data.product?.product_name || null;
-        const generic_name = data.product?.generic_name || null;
         if (data.status === 1) {
-            return [productName, categories, generic_name] as [string | null, string | null, string | null];
+            return [productName, categories] as string[];
         } else {
             return null;
         }
@@ -29,13 +28,21 @@ const fetchProduct = async (
 const ScanScreen = () => {
     const router = useRouter()
     const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const { initialList } = useLocalSearchParams<{ initialList: 'first' | 'second' }>();
-    const [activeList, setActiveList] = React.useState<'first' | 'second'>(
-            initialList === 'second' ? 'second' : 'first'
-        );
-    const [itemProduct, setItemProduct] = useState<[string | null, string | null, string | null] | null>(null)
+    const { listType } = useLocalSearchParams<{ listType?: string }>();
+    const [itemProduct, setItemProduct] = useState<[string | null, string | null, string | null] | null>(null);
     const [facing, setFacing] = useState<CameraType>('back');
     const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+    const [hasScanned, setHasScanned] = React.useState(false);
+
+    const handleScanConfirm = (selectedItem: string) => {
+        setIsPopupVisible(false);
+        
+        console.log(listType);
+        router.push({
+            pathname: '/new',
+            params: {listType: listType, itemName: selectedItem}
+        })
+    }
 
     if (!cameraPermission) {
         return (
@@ -67,13 +74,17 @@ const ScanScreen = () => {
                     barcodeTypes: ['ean13', 'ean8', 'code128', 'itf14' ],
                 }}
                 onBarcodeScanned={(event) => {
+                    if (hasScanned) return;
+                    setHasScanned(true)
+
                     const barcodeValue = event.data;
                     fetchProduct(barcodeValue).then((product) => {
                         if (product) {
-                            setItemProduct(product);
+                            setItemProduct([...(product as [string | null, string | null]), null]);
                             setIsPopupVisible(true);
                         } else {
                             console.log('No product found for this barcode.');
+                            setHasScanned(false)
                         }
                     });
                 }}
@@ -93,9 +104,13 @@ const ScanScreen = () => {
             </View>
             <ScanItemPopup
                 isVisible={isPopupVisible}
-                barcodeItemList={itemProduct ? itemProduct.map(item => item ?? '') : []}
-                onClose={() => setIsPopupVisible(false)}
-                listType={activeList}
+                barcodeItemList={itemProduct ? itemProduct.filter((item): item is string => !!item && item.trim() !== '') : []}
+                onConfirm={handleScanConfirm}
+                onClose={() => {
+                    setIsPopupVisible(false);
+                    setHasScanned(false);
+                }}
+                listType={listType}
             />
         </View>
     );
