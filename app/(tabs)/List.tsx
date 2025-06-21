@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 
 const List = () => {
@@ -164,11 +164,12 @@ const List = () => {
                                         </Text>
                                     </View>
                                 </View>
-                                <View style={[styles.categoryContainer, {justifyContent: 'center'}]}>
-                                    <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
-                                        Edit
-                                    </Text>
-                                </View>
+                                    <Ionicons
+                                        style={{paddingHorizontal: 2, justifyContent: 'center', paddingTop: '4%'}}
+                                        name='create-outline'
+                                        size={20}
+                                        color="#4076cc"
+                                    />
                                 <View style={{flexDirection: 'column', gap: 2, paddingRight: '5%'}}>
                                     <View style={styles.categorySmallContainer}>
                                         <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
@@ -195,7 +196,13 @@ const List = () => {
 
                      {activeList === 'second' && (
                     <View style={styles.storeContainer}>
-                        <View style={{ width: '50%', alignSelf: 'center' }}>
+                        <View style={{ 
+                                width: '50%', 
+                                alignSelf: 'center',
+                                marginBottom: Platform.select({
+                                    web: '2%',
+                                }), 
+                            }}>
                             <AppButton
                                 text="+ Add New Store"
                                 onPress={() => { router.push({ pathname: '/new_store' }) }}
@@ -267,12 +274,8 @@ const List = () => {
                                         )}
                                     </View>
                                     <View>
-                                        <AppButton
-                                            text="Edit"
-                                            isFullWidth={true}
-                                            fontSize={10}
-                                            fontWeight="normal"
-                                            backgroundColor="#fef3c7"
+                                        <Pressable
+                                            style={{alignSelf: 'center', paddingHorizontal: 4,}}
                                             onPress={() => router.push({
                                                 pathname: '/edit',
                                                 params: {
@@ -280,9 +283,16 @@ const List = () => {
                                                     listType: activeList === 'first' ? 'pantry' : 'grocery'
                                                 }
                                             })}
-                                            textColor="#4076cc"
-                                            borderColor="#fef3c7"
-                                        />
+                                        >
+                                            <Text>
+                                                <Ionicons
+                                                    style={{paddingLeft: '5%', paddingRight: '2%', justifyContent: 'center'}}
+                                                    name='create-outline'
+                                                    size={20}
+                                                    color="#4076cc"
+                                                />
+                                            </Text>
+                                        </Pressable>
                                     </View>
                                     
                                     <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
@@ -542,10 +552,12 @@ const styles = StyleSheet.create({
         }),
     },
     storeContainer: {
+        marginBottom: '1%',
         position: 'relative',
         width: '90%',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
+        alignItems: 'center',
         alignSelf: 'center',
         gap: 10,
         zIndex: 1,

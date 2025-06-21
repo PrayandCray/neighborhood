@@ -60,6 +60,7 @@ const ScanScreen = () => {
                     text="Grant Camera Permission" 
                     onPress={requestCameraPermission}
                 />
+                <Text style={[styles.text, {marginTop: '2%'}]}>(does not work on web).</Text>
             </View>
         );
     }

@@ -127,12 +127,6 @@ function Signup() {
                             text={'Sign Up'}
                             fontWeight={'600'}
                         />
-                        <Text style={styles.subtitle}>Already logged in? Continue as usual</Text>
-                        <AppButton
-                            onPress={() => {router.push('/(tabs)/Home')}}
-                            text={'go Home'}
-                            fontWeight={'600'}
-                        />
                     </View>
 
                 </SafeAreaView>

@@ -41,6 +41,7 @@ const AppButton: React.FC<AppButtonProps> = ({
                 {
                     padding: borderPadding,
                     backgroundColor: '#b45309',
+                    ...(Platform.OS === 'web' ? {marginTop: 10, paddingVertical: 10, paddingHorizontal: 5} : {}),
                 },
                 pressed && styles.pressed,
                 disabled && styles.disabled,

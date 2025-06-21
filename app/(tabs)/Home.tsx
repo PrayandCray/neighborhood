@@ -84,12 +84,11 @@ const Home = () => {
                     />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', width: '100%' }}>
-                    <View style={{ alignItems: 'center', marginBottom: '20%' }}>
+                    <View style={{ alignItems: 'center', bottom: 55,}}>
                         <AppButton
                             text="Logout"
                             onPress={Logout}
                             isFullWidth={true}
-                            borderColor={'#fff'}
                             textColor={'#EADDCA'}
                         />
                     </View>
