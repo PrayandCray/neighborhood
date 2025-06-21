@@ -81,6 +81,12 @@ const Home = () => {
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
                     />
+                    <AppButton
+                        text='Walk and Talk'
+                        onPress={() => router.push('/speech_add')}
+                        borderColor={'#fff'}
+                        textColor={'#EADDCA'}
+                    />
                 </View>
                 <View style={{ flex: 1, justifyContent: 'flex-end', width: '100%' }}>
                     <View style={{ alignItems: 'center', marginBottom: '20%' }}>
