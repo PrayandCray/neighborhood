@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Pressable, Text, View, Platform } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface AppButtonProps {
     text: string;
@@ -7,6 +7,7 @@ interface AppButtonProps {
     disabled?: boolean;
     width?: number;
     fontWeight?: 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+    fontFace?: boolean;
     isFullWidth?: boolean;
     borderPadding?: number;
     borderColor?: string;

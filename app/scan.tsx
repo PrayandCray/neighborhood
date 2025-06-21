@@ -91,10 +91,6 @@ const ScanScreen = () => {
             />
             
             <View style={styles.cameraBottomView}>
-                <AppButton
-                    text='Scan Reciept'
-                    onPress={() => {router.push('/reciept_scan')}}
-                />
                 <Text style={[styles.text, {color: 'white', fontWeight: 500, bottom: 15}]}>Scan Barcode/Reciept</Text>
                 <Ionicons
                     name="camera-reverse"
@@ -128,8 +124,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     text: {
+        flex: 0,
+        textAlign: 'center',
+        justifyContent: 'center',
         fontSize: 18,
         color: '#333',
+        marginHorizontal: 24
     },
     cameraBottomView: {
         position: 'absolute',

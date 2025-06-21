@@ -1,4 +1,5 @@
 import AppButton from "@/components/button";
+import { Ionicons } from "@expo/vector-icons";
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -77,27 +78,41 @@ const NewItemScreen = () => {
                         selectedValue={category}
                         onValueChange={(itemValue) => setCategory(itemValue)}
                         style={styles.picker}
-                        dropdownIconColor={'#b45309'}
+                        dropdownIconColor='#EADDCA'
                     >
                         {categories.map((cat) => (
                             <Picker.Item
                                 key={cat.value}
                                 label={cat.label}
                                 value={cat.value}
-                                color={'#b45309'}
+                                color={'#a96733'}
                             />
                         ))}
                     </Picker>
+                    {Platform.OS === 'android' && (
+                        <Ionicons
+                            name="caret-down"
+                            size={12}
+                            color="#a96733"
+                            style={{
+                                position: 'absolute',
+                                right: 20,
+                                top: '60%',
+                                marginTop: -10,
+                                pointerEvents: 'none',
+                            }}
+                        />
+                    )}
                 </View>
 
                 <View style={styles.amountContainer}>
                     <View style={styles.amountInputWrapper}>
                         <TextInput
-                            placeholder="Enter Amount (Default: 1)"
+                            placeholder="Amount (Default: 1)"
                             placeholderTextColor="#a96733"
                             style={styles.amountInput}
                             keyboardType="numeric"
-                            maxLength={12}
+                            maxLength={10}
                             value={amount}
                             onChangeText={(text) => {
                                 const numericValue = text.replace(/[^0-9]/g, '');
@@ -113,26 +128,25 @@ const NewItemScreen = () => {
                         defaultOption={{key: 'count', value: 'count'}}
                         boxStyles={styles.unitDropdown}
                         inputStyles={{
-                            color: '#b45309',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            color: '#a96733',
+                            textAlign: 'left',
+                            fontWeight: '500',
                         }}
                         dropdownStyles={styles.unitDropdownList}
                         dropdownTextStyles={{
                             color: '#b45309',
                             fontSize: 14,
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            textAlign: 'left',
                         }}
-                        dropdownItemStyles={{
-                            paddingVertical: 8,
-                        }}
+                        arrowicon={
+                            <Ionicons name="caret-down" size={12} color="#a96733" style={{left: '10%'}} />
+                        }
                     />
                 </View>
 
                 {listType === 'grocery' && (
-                    <View style={styles.storeContainer}>
-                        <View style={{ width: '68.5%' }}>
+                    <View style={[styles.storeContainer, {justifyContent: 'center'}]}>
+                        <View style={{ width: '64%' }}>
                             <AppButton
                                 text="+ Add New Store"
                                 onPress={() => { router.push({ pathname: '/new_store' }) }}
@@ -153,7 +167,8 @@ const NewItemScreen = () => {
                             defaultOption={{ key: 'general', value: 'General' }}
                             boxStyles={styles.unitDropdown}
                             inputStyles={{
-                                color: '#b45309',
+                                fontWeight: '500',
+                                color: '#a96733',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                             }}
@@ -168,6 +183,9 @@ const NewItemScreen = () => {
                                 paddingVertical: 8,
                             }}
                             placeholder="General"
+                            arrowicon={
+                                <Ionicons name="caret-down" size={12} color="#a96733" style={{left: '10%'}} />
+                            }   
                         />
                     </View>
                     )}
@@ -209,11 +227,8 @@ const styles = StyleSheet.create({
         height: Platform.select({
             ios: 210,
         }),
-        marginVertical: 10,
-        borderWidth: Platform.select({
-            ios: 1,
-            android: 1,
-        }),
+        marginBottom: 10,
+        borderWidth: 1,
         borderColor: '#b45309',
         borderRadius: 10,
         backgroundColor: 'transparent',
@@ -243,19 +258,19 @@ const styles = StyleSheet.create({
         color: '#b45309',
     },
     unitDropdown: {
-        flex: 1,
+        flex: 2,
         height: 40,
         borderColor: '#b45309',
         borderRadius: 10,
         backgroundColor: 'transparent',
-        width: 100,
         justifyContent: 'center',
-        alignItems: 'center',
+        minWidth: 100,
+        paddingHorizontal: 8,
         zIndex: 3,
     },
     unitDropdownList: {
         position: 'absolute',
-        width: '100%',
+        minWidth: 100,
         top: 45,
         borderColor: '#b45309',
         backgroundColor: '#fff',

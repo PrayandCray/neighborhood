@@ -51,6 +51,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     const [error, setError] = useState<Error | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [userEmail, setUserEmail] = useState<string | null>(null)
 
     const categories = [
         {label: 'Other', value: 'other' },
@@ -74,20 +75,31 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     ];
 
     useEffect(() => {
+        setIsLoading(true);
         const unsubscribeAuth = auth.onAuthStateChanged((user) => {
             console.log('Auth state changed:', user ? `logged in as ${user.uid}` : 'logged out');
-            setIsAuthenticated(!!user);
+            console.log('User object:', user);
+            setIsAuthenticated(!!user?.uid);
             setCurrentUserId(user?.uid || null);
-            
+            setUserEmail(user?.email || "noemailfound");
+
             if (!user) {
                 setPantryItems([]);
                 setGroceryItems([]);
                 setError(null);
             }
+            setIsLoading(false);
         });
 
-        return () => unsubscribeAuth();
-    }, []);
+    return () => unsubscribeAuth();
+}, []);
+
+    useEffect(() => {
+        if (userEmail) {
+            console.log('Updated userEmail:', userEmail);
+            console.log('isAuthenticated:', isAuthenticated, 'isLoading:', isLoading);
+        }
+    }, [userEmail, isAuthenticated, isLoading]);
 
     useEffect(() => {
         let unsubscribePantry: (() => void) | undefined;

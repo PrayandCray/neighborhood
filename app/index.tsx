@@ -1,24 +1,36 @@
 import { auth } from '@/firebaseConfig';
 import { Redirect } from 'expo-router';
-import { onAuthStateChanged } from 'firebase/auth';
+import { getIdToken } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { UseItems } from './context/ItemContext';
 
 const StartPage = () => {
-    const { isAuthenticated, isLoading } = UseItems();
     const [checkingAuth, setCheckingAuth] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            console.log('Checking auth:', user ? `User ${user.email} found` : 'No user found');
-            setCheckingAuth(false);
-        });
+        let tries = 0;
+        const interval = setInterval(async () => {
+            if (auth.currentUser) {
+                try {
+                    await getIdToken(auth.currentUser);
+                    setIsAuthenticated(true);
+                } catch (e) {
+                    setIsAuthenticated(false);
+                }
+                setCheckingAuth(false);
+                clearInterval(interval);
+            } else if (tries > 20) { // ~2 seconds
+                setCheckingAuth(false);
+                clearInterval(interval);
+            }
+            tries++;
+        }, 100);
 
-        return () => unsubscribe();
+        return () => clearInterval(interval);
     }, []);
 
-    if (checkingAuth || isLoading) {
+    if (checkingAuth) {
         return (
             <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                 <ActivityIndicator size="large" color="#b45309" />

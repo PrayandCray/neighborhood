@@ -3,12 +3,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, doc, setDoc } from "firebase/firestore";
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Keyboard, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import AppButton from "../components/button";
+import { UseItems } from "./context/ItemContext";
 
 function Signup() {
     const router = useRouter();
+
+    const { isAuthenticated } = UseItems();
+    useEffect(() => {
+        if (isAuthenticated) router.replace('/(tabs)/Home');
+    }, [isAuthenticated]);
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -54,70 +60,84 @@ function Signup() {
     };
 
     return (
-        <LinearGradient
-            colors={['#E2E2E2', '#B39171', '#843F00']}
-            style={styles.container}
+        <TouchableWithoutFeedback 
+            onPress={() => {
+                if (Platform.OS !== 'web') {
+                    Keyboard.dismiss();
+                }
+            }}
         >
-            <SafeAreaView style={{ flex: 1, alignItems: 'center', width: '100%' }}>
+            <LinearGradient
+                colors={['#E2E2E2', '#B39171', '#843F00']}
+                style={styles.container}
+            >
+                <SafeAreaView style={{ flex: 1, alignItems: 'center', width: '100%' }}>
 
-                <Text style={[styles.title, {paddingTop: '10%'}]}>
-                    Sign Up
-                </Text>
-
-                <Text style={styles.subtitle}>
-                    Welcome to Shelfie! Please sign up to get started.
-                </Text>
-
-                <View style={{ width: '100%', paddingBottom: '5%'}}>
-                    <Text style={styles.descriptionText}>
-                        Enter your Email
+                    <Text style={[styles.title, {paddingTop: '10%'}]}>
+                        Sign Up
                     </Text>
 
-                    <TextInput
-                        value={username}
-                        onChangeText={setUsername}
-                        style={styles.input}
-                        placeholder="(e.g. johndoe@gmail.com)"
-                        placeholderTextColor={'lightgray'}
-                    />
-                </View>
-
-                <View style={{ width: '100%'}}>
-                    <Text style={styles.descriptionText}>
-                        Create a password
+                    <Text style={styles.subtitle}>
+                        Welcome to Shelfie! Please sign up to get started.
                     </Text>
 
-                    <TextInput
-                        value={password}
-                        onChangeText={setPassword}
-                        style={styles.input}
-                        secureTextEntry={true}
-                        placeholder="(e.g. password123)"
-                        placeholderTextColor={'lightgray'}
-                    />
-                </View>
+                    <View style={{ width: '100%', paddingBottom: '5%'}}>
+                        <Text style={styles.descriptionText}>
+                            Enter your Email
+                        </Text>
 
-                <View>
-                    <AppButton
-                        onPress={() => router.push('/login')}
-                        isFullWidth={true}
-                        text={'Already have an account? Log In'}
-                        backgroundColor={'transparent'}
-                        fontSize={10}
-                        fontWeight={'200'}
-                    />
-                </View>
+                        <TextInput
+                            value={username}
+                            onChangeText={setUsername}
+                            style={styles.input}
+                            placeholder=" (e.g. johndoe@gmail.com)"
+                            placeholderTextColor={'lightgray'}
+                        />
+                    </View>
 
-                <View>
-                    <AppButton
-                        onPress={handleSignup}
-                        text={'Sign Up'}
-                        fontWeight={'600'}
-                    />
-                </View>
+                    <View style={{ width: '100%'}}>
+                        <Text style={styles.descriptionText}>
+                            Create a password
+                        </Text>
 
-            </SafeAreaView>
-        </LinearGradient>
+                        <TextInput
+                            value={password}
+                            onChangeText={setPassword}
+                            style={styles.input}
+                            secureTextEntry={true}
+                            placeholder=" (e.g. password123)"
+                            placeholderTextColor={'lightgray'}
+                        />
+                    </View>
+
+                    <View>
+                        <AppButton
+                            onPress={() => router.push('/login')}
+                            isFullWidth={true}
+                            text={'Already have an account? Log In'}
+                            backgroundColor={'transparent'}
+                            fontSize={10}
+                            fontWeight={'200'}
+                        />
+                    </View>
+
+                    <View>
+                        <AppButton
+                            onPress={handleSignup}
+                            text={'Sign Up'}
+                            fontWeight={'600'}
+                        />
+                        <Text style={styles.subtitle}>Already logged in? Continue as usual</Text>
+                        <AppButton
+                            onPress={() => {router.push('/(tabs)/Home')}}
+                            text={'go Home'}
+                            fontWeight={'600'}
+                        />
+                    </View>
+
+                </SafeAreaView>
+            </LinearGradient>
+        </TouchableWithoutFeedback>
     )
 }
 
@@ -138,6 +158,7 @@ const styles = StyleSheet.create({
     },
 
     subtitle: {
+        width: '90%',
         fontSize: 16,
         color: '#843F00',
         marginBottom: 40,
@@ -155,12 +176,13 @@ const styles = StyleSheet.create({
     input: {
         alignSelf: 'center',
         width: '90%',
-        height: 40,
-        padding: 10,
+        height: 44,
         marginVertical: 8,
         borderWidth: 1,
         borderColor: '#b45309',
         borderRadius: 10,
+        textAlignVertical: 'center',
+        zIndex: 0
     },
 
 })

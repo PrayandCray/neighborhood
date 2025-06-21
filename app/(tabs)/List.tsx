@@ -195,12 +195,12 @@ const List = () => {
 
                      {activeList === 'second' && (
                     <View style={styles.storeContainer}>
-                        <View style={{ width: '50%' }}>
+                        <View style={{ width: '50%', alignSelf: 'center' }}>
                             <AppButton
                                 text="+ Add New Store"
                                 onPress={() => { router.push({ pathname: '/new_store' }) }}
                                 isFullWidth={true}
-                                fontSize={14}
+                                fontSize={13}
                                 backgroundColor="#b45309"
                                 textColor="#EADDCA"
                             />
@@ -216,6 +216,7 @@ const List = () => {
                             defaultOption={{ key: store, value: store }}
                             boxStyles={styles.unitDropdown}
                             inputStyles={{
+                                fontFamily: 'sans-serif',
                                 color: '#b45309',
                                 justifyContent: 'center',
                                 alignItems: 'center',
@@ -223,7 +224,7 @@ const List = () => {
                             dropdownStyles={styles.unitDropdownList}
                             dropdownTextStyles={{
                                 color: '#b45309',
-                                fontSize: 14,
+                                fontSize: 13,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}
@@ -343,7 +344,7 @@ const List = () => {
                             <View style={{gap: '10'}}>
                                 <View style={styles.searchBar}>
                                     <Ionicons
-                                        style={{paddingLeft: '2%'}}
+                                        style={{paddingLeft: '3%', alignSelf: 'center'}}
                                         name='search'
                                         size={20}
                                         color="#b45309"
@@ -580,7 +581,7 @@ const styles = StyleSheet.create({
     },
     searchBar: {
         flexDirection: 'row',
-        paddingVertical: 8,
+        paddingVertical: '2%',
         backgroundColor: '#fef3c7',
         borderRadius: 25
     },

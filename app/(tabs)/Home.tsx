@@ -7,6 +7,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const Home = () => {
+    console.log('Home screen rendered');
     const router = useRouter();
 
     const handleAddNewPantryItem = () => {
