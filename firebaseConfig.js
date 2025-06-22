@@ -12,7 +12,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyBB-iMgmr-MH9VY_yeajGJJYUe5UyGxZOE",
     authDomain: "pantry-manager-app-b595d.firebaseapp.com",
     projectId: "pantry-manager-app-b595d",
-    storageBucket: "pantry-manager-app-b595d.appspot.com", // fixed typo here
+    storageBucket: "pantry-manager-app-b595d.appspot.com",
     messagingSenderId: "567093583241",
     appId: "1:567093583241:web:243aec2ef4a648a6009558"
 };

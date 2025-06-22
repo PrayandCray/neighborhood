@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
         position: 'relative',
         width: '90%',
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
         alignSelf: 'center',
         gap: 10,
