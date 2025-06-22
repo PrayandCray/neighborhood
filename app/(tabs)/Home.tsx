@@ -1,6 +1,5 @@
 import Appwrapper from "@/components/appwrapper";
 import AppButton from "@/components/button";
-import { auth } from "@/firebaseConfig";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -35,14 +34,6 @@ const Home = () => {
             });
         }, 150);
     };
-
-    const Logout = () => {
-        auth.signOut();
-        router.push({
-            pathname: '/signup'
-        })
-        console.log(auth)
-    }
 
     return (
 
@@ -82,16 +73,6 @@ const Home = () => {
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
                     />
-                </View>
-                <View style={{ flex: 1, justifyContent: 'flex-end', width: '100%' }}>
-                    <View style={{ alignItems: 'center', bottom: 55,}}>
-                        <AppButton
-                            text="Logout"
-                            onPress={Logout}
-                            isFullWidth={true}
-                            textColor={'#EADDCA'}
-                        />
-                    </View>
                 </View>
             </Appwrapper>
         </LinearGradient>

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 
 export type ListItem = {
     id: string;
@@ -131,11 +132,49 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const addToPantry = async (item: ListItem) => {
-        setPantryItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
+        const duplicate = pantryItems.find(existingItem =>
+            existingItem.name.toLowerCase().trim() === item.name.toLowerCase().trim()
+        );
+
+        if (duplicate) {
+            duplicate.amount = (parseInt(duplicate.amount) +1). toString();
+        } else{
+            setPantryItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
+        }
+
     };
 
     const addToGrocery = async (item: ListItem) => {
-        setGroceryItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
+        const duplicate = groceryItems.find(existingItem =>
+            existingItem.name.toLowerCase().trim() === item.name.toLowerCase().trim()
+        );
+
+        const pantryDuplicate = pantryItems.find(existingItem =>
+            existingItem.name.toLowerCase().trim() === item.name.toLowerCase().trim()
+        );
+
+        if (duplicate) {
+            duplicate.amount = (parseInt(duplicate.amount) +1). toString();
+        } else {
+            if (pantryDuplicate) {
+                Alert.alert(
+                    'Already in pantry',
+                    `${item.name} is already in your pantry.`,
+                    [
+                        {
+                            text: 'Add anyway',
+                            onPress: () => setGroceryItems(prev => [...prev, { ...item, id: Date.now().toString() }])
+                        },
+                        { 
+                            text: 'Cancel', 
+                            style: 'cancel',
+                        }
+                    ]
+                );
+            } else {
+                setGroceryItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
+            }
+        }
     };
 
     const removeFromPantry = async (id: string) => {
