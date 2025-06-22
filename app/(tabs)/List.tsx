@@ -106,8 +106,6 @@ const List = () => {
     }
     const filteredItems = React.useMemo(() => filterItemsByStore(store, sortedItems), [store, sortedItems]);
 
-    const searchItems = React.useMemo(() => filterItemsBySearch(search, sortedItems), [search, sortedItems]);
-
 
     return (
         <LinearGradient

@@ -1,5 +1,4 @@
-import { auth, db } from '@/firebaseConfig';
-import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 export type ListItem = {
@@ -28,8 +27,8 @@ type ItemContextType = {
     fetchItems: () => Promise<void>;
     addStore: (storeName: string) => Promise<void>;
     updateStore: (storeId: string, updates: { label?: string; value?: string }) => Promise<void>;
-    addToPantry: (item: { name: string; category: string; amount: string; unit: string}) => Promise<void>;
-    addToGrocery: (item: { name: string; category: string; amount: string; unit: string}) => Promise<void>;
+    addToPantry: (item: ListItem) => Promise<void>;
+    addToGrocery: (item: ListItem) => Promise<void>;
     removeFromPantry: (id: string) => Promise<void>;
     removeFromGrocery: (id: string) => Promise<void>;
     removeSinglePantryItem: (id: string) => Promise<void>;
@@ -42,16 +41,19 @@ type ItemContextType = {
 
 const ItemContext = createContext<ItemContextType | undefined>(undefined);
 
+const PANTRY_KEY = 'pantryItems';
+const GROCERY_KEY = 'groceryItems';
+const STORES_KEY = 'stores'
+
 export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     const [pantryItems, setPantryItems] = useState<ListItem[]>([]);
     const [groceryItems, setGroceryItems] = useState<ListItem[]>([]);
     const [stores, setStores] = useState<Store[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
+    const [hasLoaded, setHasLoaded] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [userEmail, setUserEmail] = useState<string | null>(null)
+    const [isAuthenticated, setIsAuthenticated] = useState(true)
 
     const categories = [
         {label: 'Other', value: 'other' },
@@ -74,369 +76,145 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         { key: 'oz', value: 'oz' },
     ];
 
-    useEffect(() => {
-        setIsLoading(true);
-        const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-            console.log('Auth state changed:', user ? `logged in as ${user.uid}` : 'logged out');
-            console.log('User object:', user);
-            setIsAuthenticated(!!user?.uid);
-            setCurrentUserId(user?.uid || null);
-            setUserEmail(user?.email || "noemailfound");
 
-            if (!user) {
-                setPantryItems([]);
-                setGroceryItems([]);
-                setError(null);
-            }
-            setIsLoading(false);
-        });
-
-    return () => unsubscribeAuth();
-}, []);
+    //save changes to async
 
     useEffect(() => {
-        if (userEmail) {
-            console.log('Updated userEmail:', userEmail);
-            console.log('isAuthenticated:', isAuthenticated, 'isLoading:', isLoading);
+        fetchItems().then(() => setHasLoaded(true));
+    }, []);
+
+    useEffect(() => {
+        if (hasLoaded) {
+        AsyncStorage.setItem(PANTRY_KEY, JSON.stringify(pantryItems))
         }
-    }, [userEmail, isAuthenticated, isLoading]);
-
+    }, [pantryItems])
     useEffect(() => {
-        let unsubscribePantry: (() => void) | undefined;
-        let unsubscribeGrocery: (() => void) | undefined;
-
-        const setupListeners = async () => {
-            if (!currentUserId) {
-                setIsLoading(false);
-                return;
-            }
-
-            console.log(`Setting up listeners for user: ${currentUserId}`);
-            setIsLoading(true);
-            setError(null);
-
-            try {
-                // clear data and then setup new incase if user signs in and out
-                setPantryItems([]);
-                setGroceryItems([]);
-
-                const pantryQuery = query(
-                    collection(db, 'users', currentUserId, 'items'),
-                    where('listType', '==', 'pantry')
-                );
-
-                const groceryQuery = query(
-                    collection(db, 'users', currentUserId, 'items'),
-                    where('listType', '==', 'grocery')
-                );
-
-                unsubscribePantry = onSnapshot(pantryQuery, (snapshot) => {
-                    const items = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                    } as ListItem));
-                    console.log(`Received ${items.length} pantry items for user ${currentUserId}`);
-                    setPantryItems(items);
-                });
-
-                unsubscribeGrocery = onSnapshot(groceryQuery, (snapshot) => {
-                    const items = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                    } as ListItem));
-                    console.log(`Received ${items.length} grocery items for user ${currentUserId}`);
-                    setGroceryItems(items);
-                });
-
-                setIsLoading(false);
-            } catch (error) {
-                console.error('Error setting up listeners:', error);
-                setError(error as Error);
-                setIsLoading(false);
-            }
-        };
-
-        setupListeners();
-
-        // cleanup
-        return () => {
-            console.log('Cleaning up listeners...');
-            if (unsubscribePantry) unsubscribePantry();
-            if (unsubscribeGrocery) unsubscribeGrocery();
-        };
-    }, [currentUserId]);
-
+        if (hasLoaded) {
+            AsyncStorage.setItem(GROCERY_KEY, JSON.stringify(groceryItems))
+        }
+    }, [groceryItems])
     useEffect(() => {
-        if (!currentUserId) return;
+        if (hasLoaded) {
+            AsyncStorage.setItem(STORES_KEY, JSON.stringify(stores))
+        }
+    }, [stores])
 
-        const storesQuery = query(collection(db, 'users', currentUserId, 'stores'));
-        const unsubscribe = onSnapshot(storesQuery, (snapshot) => {
-            const storesList = snapshot.docs.map(doc => ({
-                label: doc.data().label,
-                value: doc.data().value,
-            }));
-            setStores(prev => [
-                { label: 'General', value: 'general' },
-                ...storesList
-            ]);
-        });
-
-        return () => unsubscribe();
-    }, [currentUserId]);
+    
 
     const fetchItems = async () => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) return;
-
-            // return them pantry items from big boy cloud
-            const pantryQuery = query(
-                collection(db, 'users', userId, 'items'),
-                where('listType', '==', 'pantry'),
-            );
-            const pantrySnapshot = await getDocs(pantryQuery);
-            const pantryData = pantrySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-            } as ListItem));
-            setPantryItems(pantryData);
-
-            // ofc dont forget that big boy grocery list
-            const groceryQuery = query(
-                collection(db, 'users', userId, 'items'),
-                where('listType', '==', 'grocery'),
-            );
-
-            const grocerySnapshot = await getDocs(groceryQuery);
-            const groceryData = grocerySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-            } as ListItem));
-
-            setGroceryItems(groceryData);
-        } catch(error) {
-            console.error("Error fetching items:", error);
-        }
+    setIsLoading(true);
+    try {
+        const [pantry, grocery, storeList] = await Promise.all([
+            AsyncStorage.getItem(PANTRY_KEY),
+            AsyncStorage.getItem(GROCERY_KEY),
+            AsyncStorage.getItem(STORES_KEY),
+        ]);
+        setPantryItems(pantry ? JSON.parse(pantry) : []);
+        setGroceryItems(grocery ? JSON.parse(grocery) : []);
+        setStores(storeList ? JSON.parse(storeList) : []);
+    } catch (err) {
+        setError(err as Error);
+    }
+    setIsLoading(false);
     };
 
-    const updatePantryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string }) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated')
-                
-            const docRef = doc(db, 'users', userId, 'items', id);
-            await updateDoc(docRef, updates);
-
-        }   catch (error) {
-            console.error('Error updating pantry item:', error);
-            throw error;
-        }
+    const updatePantryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => {
+        setPantryItems(prev => prev.map(item =>
+            item.id === id ? { ...item, ...updates } : item
+        ));
     };
 
-    const updateGroceryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string }) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-            const docRef = doc(db, 'users', userId, 'items', id);
-            await updateDoc(docRef, updates);
-
-        } catch (error) {
-            console.error('Error updating grocery item:', error);
-            throw error;
-        }
+    const updateGroceryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => {
+        setGroceryItems(prev => prev.map(item =>
+            item.id === id ? { ...item, ...updates } : item
+        ));
     };
 
-
-
-    const addToPantry = async (item: { name: string; category: string; amount: string; unit: string }) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            addDoc(
-                collection(db, 'users', userId, 'items'),
-                {
-                    ...item,
-                    userId,
-                    listType: 'pantry',
-                    createdAt: new Date(),
-                }
-            );
-
-            console.log('added pantry item:', item)
-
-        } catch (error) {
-            console.error('Error adding pantry item:', error);
-            throw error;
-        }
+    const addToPantry = async (item: ListItem) => {
+        setPantryItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
     };
 
-
-    const addToGrocery = async (item: { name : string; category : string; amount : string, unit: string}) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            await addDoc(
-                collection(db, 'users', userId, 'items'),
-                {
-                    ...item,
-                    userId,
-                    listType: 'grocery',
-                    createdAt: new Date(),
-                }
-            );
-
-            console.log('added grocery item:', item)
-
-        } catch (error) {
-            console.error('Error adding grocery item:', error);
-            throw error;
-        }
+    const addToGrocery = async (item: ListItem) => {
+        setGroceryItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
     };
-
-
 
     const removeFromPantry = async (id: string) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            await deleteDoc(doc(db, 'users', userId, 'items', id));
-
-        } catch (error) {
-            console.error('Error removing pantry item:', error);
-            throw error;
-        }
+        setPantryItems(prev => prev.filter(item => item.id !== id));
     };
 
     const removeFromGrocery = async (id: string) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            await deleteDoc(doc(db, 'users', userId, 'items', id));
-            
-        } catch (error) {
-            console.error('Error removing grocery item:', error);
-            throw error;
-        }
+        setGroceryItems(prev => prev.filter(item => item.id !== id));
     };
 
     const addStore = async (storeName: string) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            const storeValue = storeName.toLowerCase().replace(/\s+/g, ''); // for lowercase and no spaces
-
-            if (stores.some(store => store.value === storeValue)) {
-                throw new Error('Store already exists!')
-            }
-            
-            const storeDoc = await addDoc(collection(db, 'users', userId, 'stores'), {
-                label: storeName,
-                value: storeValue,
-                createdAt: new Date()
-            });
-
-            console.log('Added new store:', storeName);
-
-        } catch (error) {
-            console.error("Error adding store:", error);
-            throw error;
+        const storeValue = storeName.toLowerCase().replace(/\s+/g, '');
+        if (stores.some(store => store.value === storeValue)) {
+            setError(new Error('Store already exists!'));
+            return;
         }
+        setStores(prev => [...prev, { label: storeName, value: storeValue }]);
     };
 
     const updateStore = async (storeId: string, updates: { label?: string; value?: string }) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-            const storeRef = doc(db, 'users', userId, 'stores', storeId);
-            await updateDoc(storeRef, updates);
-        } catch (error) {
-            console.error("Error updating store:", error);
-            throw error;
-        }
-    }
-
-    const removeSinglePantryItem = async (id: string) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            const item = pantryItems.find(item => item.id === id);
-            if (!item) return;
-
-            const newAmount = Math.max(0, parseInt(item.amount) - 1);
-            if (newAmount === 0) return;
-
-            const docRef = doc(db, 'users', userId, 'items', id);
-            await updateDoc(docRef, { amount: newAmount.toString() });
-
-        } catch (error) {
-            console.error('Error updating pantry item amount:', error);
-            throw error;
-        }
+        setStores(prev =>
+            prev.map(store =>
+                store.value === storeId ? { ...store, ...updates} : store
+            )
+        );
     };
 
-    const removeSingleGroceryItem = async (id: string) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            const item = groceryItems.find(item => item.id === id);
-            if (!item) return;
-
-            const newAmount = Math.max(0, parseInt(item.amount) - 1);
-            if (newAmount === 0) return;
-
-            const docRef = doc(db, 'users', userId, 'items', id);
-            await updateDoc(docRef, { amount: newAmount.toString() });
-
-        } catch (error) {
-            console.error('Error updating grocery item amount:', error);
-            throw error;
-        }
+    const removeSinglePantryItem = async (id: string): Promise<void> => {
+        setPantryItems(prev => prev.map(item =>{
+            if (item.id === id) {
+                const newAmount = Math.max(0, parseInt(item.amount) - 1);
+                if (newAmount === 0) {
+                    return item;
+                }
+                return { ...item, amount: newAmount.toString() };
+            }
+            return item;
+        }));
     };
 
-    const addSinglePantryItem = async (id: string) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            const item = pantryItems.find(item => item.id === id);
-            if (!item) return;
-
-            const newAmount = parseInt(item.amount) + 1;
-            const docRef = doc(db, 'users', userId, 'items', id);
-            await updateDoc(docRef, { amount: newAmount.toString() });
-
-        } catch (error) {
-            console.error('Error updating pantry item amount:', error);
-            throw error;
-        }
+    const removeSingleGroceryItem = async (id: string): Promise<void> => {
+        setGroceryItems(prev => prev.map(item => {
+            if (item.id === id) {
+                const newAmount = Math.max(0, parseInt(item.amount) - 1);
+                if (newAmount === 0) {
+                    return item;
+                }
+                return { ...item, amount: newAmount.toString() };
+            }
+            return item;
+        }));
     };
 
-    const addSingleGroceryItem = async (id: string) => {
-        try {
-            const userId = auth.currentUser?.uid;
-            if (!userId) throw new Error('User not authenticated');
-
-            const item = groceryItems.find(item => item.id === id);
-            if (!item) return;
-
-            const newAmount = parseInt(item.amount) + 1;
-            const docRef = doc(db, 'users', userId, 'items', id);
-            await updateDoc(docRef, { amount: newAmount.toString() });
-
-        } catch (error) {
-            console.error('Error updating grocery item amount:', error);
-            throw error;
-        }
+    const addSinglePantryItem = async (id: string): Promise<void> => {
+        setPantryItems(prev => prev.map(item =>{
+            if (item.id === id) {
+                const newAmount = Math.max(0, parseInt(item.amount) + 1);
+                if (newAmount === 0) {
+                    return item;
+                }
+                return { ...item, amount: newAmount.toString() };
+            }
+            return item;
+        }));
     };
 
-
+    const addSingleGroceryItem = async (id: string): Promise<void> => {
+        setGroceryItems(prev => prev.map(item => {
+            if (item.id === id) {
+                const newAmount = Math.max(0, parseInt(item.amount) + 1);
+                if (newAmount === 0) {
+                    return item;
+                }
+                return { ...item, amount: newAmount.toString() };
+            }
+            return item;
+        }));
+    };
+    
     return (
         <ItemContext.Provider value={{
             pantryItems,

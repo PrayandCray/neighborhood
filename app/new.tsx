@@ -26,33 +26,32 @@ const NewItemScreen = () => {
         });
     };
 
-    const handleDone = () => {
-        if (inputText.trim()) {
-            try{
-                const newItem = {
-                    name: inputText,
-                    category: category,
-                    amount: amount || '1',
-                    unit: unit || 'count',
-                    ...(listType === 'grocery' && {store: store})
-                };
+    const handleDone = async () => {
+    if (inputText.trim()) {
+        try {
+            const newItem = {
+                id: Date.now().toString(),
+                name: inputText,
+                category,
+                amount: amount || '1',
+                unit: unit || 'count',
+                store: listType === 'grocery' ? store : 'any',
+            };
 
-                if (listType === 'pantry') {
-                    addToPantry(newItem);
-                    console.log(newItem);
-                    console.log(pantryItems)
-                } else if (listType === 'grocery') {
-                    addToGrocery(newItem);
-                    console.log(newItem);
-                    console.log(groceryItems)
-                }
-                router.back();
-            } catch (error) {
-                console.error('Error adding item:', error);
-                alert('Failed to add item. Please try again.')
+            if (listType === 'pantry') {
+                await addToPantry(newItem);
+                console.log('Added to pantry:', newItem);
+            } else if (listType === 'grocery') {
+                await addToGrocery(newItem);
+                console.log('Added to grocery:', newItem);
             }
+            router.back();
+        } catch (error) {
+            console.error('Error adding item:', error);
+            alert('Failed to add item. Please try again.');
         }
-    };
+    }
+};
 
     return (
         <TouchableWithoutFeedback
