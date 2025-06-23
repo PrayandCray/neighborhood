@@ -4,8 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { UseItems } from "../context/ItemContext";
 
 const Home = () => {
+    const {resetData} = UseItems();
+
     console.log('Home screen rendered');
     const router = useRouter();
 
@@ -70,6 +73,14 @@ const Home = () => {
                     <AppButton
                         text='Scan Item'
                         onPress={() => router.push('/scan')}
+                        borderColor={'#fff'}
+                        textColor={'#EADDCA'}
+                    />
+                </View>
+                <View style={{ alignSelf: "center", top: '45.5%'}}>
+                    <AppButton
+                        text='Reset Data'
+                        onPress={resetData}
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
                     />

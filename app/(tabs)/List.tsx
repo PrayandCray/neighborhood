@@ -193,64 +193,69 @@ const List = () => {
                     </View>
 
                      {activeList === 'second' && (
-                    <View style={[styles.storeContainer]}>
-                        <View style={{ 
-                                width: '50%', 
-                                flexDirection: 'row',
-                                alignSelf: 'center',
-                                marginBottom: Platform.select({
-                                    web: '2%',
-                                }), 
-                                gap: '2%',
-                                height: '145%',
-                                paddingVertical: 10,
-                                justifyContent: 'center',
-                            }}>
-                            <Pressable
-                                onPress={() => {router.push('/new_store')}}
-                                style={{backgroundColor: '#b45309', padding: '3%', borderRadius: 10, width: '50%'}}
-                            >
-                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
-                                    + Store
-                                </Text>
-                            </Pressable>
+                    <View>
+                        <Text style={[styles.subtitle, {color: '#b45309', paddingBottom: '0%', paddingTop: '2%'}]}>
+                            Sort by store
+                        </Text>
+                        <View style={[styles.storeContainer]}>
+                            <View style={{ 
+                                    width: '50%', 
+                                    flexDirection: 'row',
+                                    alignSelf: 'center',
+                                    marginBottom: Platform.select({
+                                        web: '2%',
+                                    }), 
+                                    gap: '2%',
+                                    height: '145%',
+                                    paddingVertical: 10,
+                                    justifyContent: 'center',
+                                }}>
+                                <Pressable
+                                    onPress={() => {router.push('/new_store')}}
+                                    style={{backgroundColor: '#b45309', padding: '3%', borderRadius: 10, width: '50%'}}
+                                >
+                                    <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                        + Store
+                                    </Text>
+                                </Pressable>
 
-                            <Pressable
-                                onPress={() => {router.push('/delete_store')}}
-                                style={{backgroundColor: '#b45309', padding: '3%', borderRadius: 10, width: '50%'}}
-                            >
-                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
-                                    - Store
-                                </Text>
-                            </Pressable>
+                                <Pressable
+                                    onPress={() => {router.push('/delete_store')}}
+                                    style={{backgroundColor: '#b45309', padding: '3%', borderRadius: 10, width: '50%'}}
+                                >
+                                    <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                        - Store
+                                    </Text>
+                                </Pressable>
+                            </View>
+                            <SelectList
+                                setSelected={setStore}
+                                data={stores.map(store => ({
+                                    key: store.label,
+                                    value: store.label
+                                }))}
+                                save="value"
+                                search={false}
+                                defaultOption={{ key: store, value: store }}
+                                boxStyles={styles.unitDropdown}
+                                inputStyles={{
+                                    fontFamily: 'sans-serif',
+                                    color: '#b45309',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                                dropdownStyles={styles.unitDropdownList}
+                                dropdownTextStyles={{
+                                    color: '#b45309',
+                                    fontSize: 13,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                                dropdownItemStyles={{
+                                    paddingVertical: 8,
+                                }}
+                            />
                         </View>
-                        <SelectList
-                            setSelected={setStore}
-                            data={stores.map(store => ({
-                                key: store.label,
-                                value: store.label
-                            }))}
-                            save="value"
-                            search={false}
-                            defaultOption={{ key: store, value: store }}
-                            boxStyles={styles.unitDropdown}
-                            inputStyles={{
-                                fontFamily: 'sans-serif',
-                                color: '#b45309',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                            dropdownStyles={styles.unitDropdownList}
-                            dropdownTextStyles={{
-                                color: '#b45309',
-                                fontSize: 13,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}
-                            dropdownItemStyles={{
-                                paddingVertical: 8,
-                            }}
-                        />
                     </View>
                     )}
 

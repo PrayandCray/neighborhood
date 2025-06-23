@@ -5,11 +5,10 @@ import { Keyboard, Platform, SafeAreaView, StyleSheet, TouchableWithoutFeedback,
 import { SelectList } from "react-native-dropdown-select-list";
 import { UseItems } from "./context/ItemContext";
 
-
-const NewListScreen = () => {
+const DeleteStoreScreen = () => {
     const { itemId, listType } = useLocalSearchParams();
     const router = useRouter();
-    
+
     const {
         pantryItems,
         groceryItems,
@@ -17,17 +16,19 @@ const NewListScreen = () => {
         deleteStore,
     } = UseItems();
 
-    const HandleDeleteStore = (store: string) => {
-        deleteStore(store);
-        router.back();
-    }
-
     const item = listType === 'pantry'
         ? pantryItems.find(item => item.id === itemId)
         : groceryItems.find(item => item.id === itemId);
-        
-    const [store, setStore] = useState(item?.store || 'General');
 
+    // Use store value, not label
+    const [store, setStore] = useState(item?.store || 'general');
+
+    const handleDeleteStore = (storeValue: string) => {
+        deleteStore(storeValue);
+        console.log(`Deleted store ${storeValue}`);
+        console.log('list of current stores', stores);
+        router.back();
+    };
 
     return (
         <TouchableWithoutFeedback
@@ -41,17 +42,20 @@ const NewListScreen = () => {
                 <View style={styles.storeContainer}>
                     <AppButton
                         text='Delete'
-                        onPress={() => { HandleDeleteStore(store); }}
+                        onPress={() => handleDeleteStore(store)}
                     />
                     <SelectList
                         setSelected={setStore}
                         data={stores.map(store => ({
-                            key: store.label,
+                            key: store.value,
                             value: store.label
                         }))}
-                        save="value"
+                        save="key"
                         search={false}
-                        defaultOption={{ key: store, value: store }}
+                        defaultOption={{
+                            key: store,
+                            value: stores.find(s => s.value === store)?.label || store
+                        }}
                         boxStyles={styles.unitDropdown}
                         inputStyles={{
                             fontFamily: 'sans-serif',
@@ -71,15 +75,13 @@ const NewListScreen = () => {
                         }}
                     />
                 </View>
-
             </SafeAreaView>
         </TouchableWithoutFeedback>
-    )
-
-}
+    );
+};
 
 const styles = StyleSheet.create({
-     container: {
+    container: {
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#EADDCA',
@@ -133,8 +135,8 @@ const styles = StyleSheet.create({
         gap: 10,
         zIndex: 1,
         marginTop: 10,
-        height: 45,   
+        height: 45,
     },
-})
+});
 
-export default NewListScreen;
+export default DeleteStoreScreen;

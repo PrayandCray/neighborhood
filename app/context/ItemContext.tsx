@@ -39,6 +39,7 @@ type ItemContextType = {
     addSingleGroceryItem: (id: string) => Promise<void>;
     updatePantryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string; listType?: string}) => Promise<void>;
     updateGroceryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string; listType?: string}) => Promise<void>;
+    resetData: () => Promise<void>;
 };
 
 const ItemContext = createContext<ItemContextType | undefined>(undefined);
@@ -179,7 +180,8 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
                             text: 'Cancel', 
                             style: 'cancel',
                         }
-                    ]
+                    ],
+                    { cancelable: false }
                 );
             } else {
                 setGroceryItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
@@ -213,18 +215,27 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const deleteStore = async (storeId: string) => {
+        console.log(storeId)
         if (storeId === 'general') {
-            Alert.alert('Cannot delete General Store', 'The General store cannot be deleted.');
+            Alert.alert('Failed to delete Store', 'The General store cannot be deleted.');
             return;
+        } else {
+            setStores(prev => {
+                const updatedStores = prev.filter(store => store.value !== storeId);
+                console.log(`Deleted store from context ${storeId}`)
+                return updatedStores;
+            });
+            useEffect(() => {
+                console.log('Stores updated:', stores);
+            }, [stores]);
+            setPantryItems(prev => prev.map(item => {
+                if (item.store === storeId) {
+                    return { ...item, storeId: 'general' };
+                } else {
+                    return item;
+                }
+            }))
         }
-        setStores(prev => prev.filter(store => store.value !== storeId));
-        setPantryItems(prev => prev.map(item => {
-            if (item.store === storeId) {
-                return { ...item, store: 'general' };
-            } else {
-                return item;
-            }
-        }))
     }
 
     const removeSinglePantryItem = async (id: string): Promise<void> => {
@@ -278,6 +289,29 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             return item;
         }));
     };
+
+    const resetData = async (): Promise<void> => {
+        return new Promise((resolve) => {
+            Alert.alert(
+                'Delete all data',
+                'Are you sure you want to do this?',
+                [
+                  {text: 'Cancel', onPress: () => { console.log('Cancel Pressed'); resolve(); }, style: 'cancel'},
+                  { 
+                    text: 'OK', 
+                    onPress: async () => {
+                      await AsyncStorage.multiRemove([PANTRY_KEY, GROCERY_KEY, STORES_KEY]);
+                      setPantryItems([]);
+                      setGroceryItems([]);
+                      setStores([{ label: 'General', value: 'general' }]);
+                      resolve();
+                    }
+                  },
+                ],
+                {cancelable: true}
+            );
+        });
+    };
     
     return (
         <ItemContext.Provider value={{
@@ -300,6 +334,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             addSingleGroceryItem,
             updatePantryItem,
             updateGroceryItem,
+            resetData,
             isLoading,
             error,
             isAuthenticated,
