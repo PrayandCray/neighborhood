@@ -293,7 +293,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     const resetData = async (): Promise<void> => {
         return new Promise((resolve) => {
             Alert.alert(
-                'Delete all data',
+                'Reset all data',
                 'Are you sure you want to do this?',
                 [
                   {text: 'Cancel', onPress: () => { console.log('Cancel Pressed'); resolve(); }, style: 'cancel'},

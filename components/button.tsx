@@ -1,5 +1,5 @@
-import React from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useRef } from 'react';
+import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface AppButtonProps {
     text: string;
@@ -28,6 +28,23 @@ const AppButton: React.FC<AppButtonProps> = ({
     fontSize,
     fontWeight,
 }) => {
+    const scale = useRef(new Animated.Value(1)).current;
+
+    const onPressIn = () => {
+      Animated.spring(scale, {
+        toValue: 0.95,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const onPressOut = () => {
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }).start();
+    };
+
     const buttonWidthStyle = isFullWidth
     ? {}
     : { width : width };
@@ -35,6 +52,8 @@ const AppButton: React.FC<AppButtonProps> = ({
     return (
         <Pressable
             onPress={onPress}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
             disabled={disabled}
             style={({ pressed }) => [
                 styles.buttonContainer,
@@ -47,6 +66,7 @@ const AppButton: React.FC<AppButtonProps> = ({
                 disabled && styles.disabled,
             ]}
         >
+             <Animated.View style={[styles.button, { transform: [{ scale }] }]}>
             <View
                 style={[
                     styles.button,
@@ -63,6 +83,7 @@ const AppButton: React.FC<AppButtonProps> = ({
                     {text}
                 </Text>
             </View>
+            </Animated.View>
         </Pressable>
     );
 };
@@ -90,7 +111,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     pressed: {
-        opacity: 0.8
+        opacity: 0.5
     },
     disabled: {
         opacity: 0.5

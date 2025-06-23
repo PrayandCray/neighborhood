@@ -212,7 +212,7 @@ const List = () => {
                                 }}>
                                 <Pressable
                                     onPress={() => {router.push('/new_store')}}
-                                    style={{backgroundColor: '#b45309', padding: '3%', borderRadius: 10, width: '50%'}}
+                                    style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
                                 >
                                     <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
                                         + Store
@@ -221,7 +221,7 @@ const List = () => {
 
                                 <Pressable
                                     onPress={() => {router.push('/delete_store')}}
-                                    style={{backgroundColor: '#b45309', padding: '3%', borderRadius: 10, width: '50%'}}
+                                    style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
                                 >
                                     <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
                                         - Store
@@ -254,6 +254,9 @@ const List = () => {
                                 dropdownItemStyles={{
                                     paddingVertical: 8,
                                 }}
+                                arrowicon={
+                                    <Ionicons name="caret-down" size={12} color="#a96733" style={{left: '10%'}} />
+                                }
                             />
                         </View>
                     </View>
@@ -413,6 +416,9 @@ const List = () => {
                             <Text style={styles.emptyList}>
                                 No Items Found
                             </Text>
+                        }
+                        ListFooterComponent={
+                            <View style={{paddingBottom: 10}}></View>
                         }
                     />
                     <View style={styles.buttonContainer}>

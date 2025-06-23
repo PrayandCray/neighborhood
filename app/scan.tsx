@@ -90,9 +90,10 @@ const ScanScreen = () => {
                     });
                 }}
             />
-            
+
             <View style={styles.cameraBottomView}>
                 <Text style={[styles.text, {color: 'white', fontWeight: 500, bottom: 15}]}>Scan Barcode/Reciept</Text>
+                <Text style={[styles.text, {color: 'white', fontWeight: 300, bottom: 15}]}>Frame barcode clearly</Text>
                 <Ionicons
                     name="camera-reverse"
                     size={32}
