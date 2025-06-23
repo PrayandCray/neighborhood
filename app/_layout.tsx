@@ -50,6 +50,26 @@ export default function StackLayout(){
               />
 
               <Stack.Screen
+                  name="delete_store"
+                  options={({
+                                route,
+                            }: {
+                      route: { params?: { headerTitle?: string } }
+                  }) => {
+                      const headerTitle = route.params?.headerTitle || 'Delete Store';
+
+                      return {
+                          presentation: 'modal',
+                          animation: 'slide_from_bottom',
+                          headerTitle: headerTitle,
+                          headerTitleAlign: 'center',
+                          headerStyle: {backgroundColor: '#EADDCA'},
+                          headerTintColor: '#b45309',
+                      };
+                  }}
+              />
+
+              <Stack.Screen
                   name="new"
                   options={({
                                 route,

@@ -28,6 +28,7 @@ type ItemContextType = {
     fetchItems: () => Promise<void>;
     addStore: (storeName: string) => Promise<void>;
     updateStore: (storeId: string, updates: { label?: string; value?: string }) => Promise<void>;
+    deleteStore: (storeId: string) => Promise<void>
     addToPantry: (item: ListItem) => Promise<void>;
     addToGrocery: (item: ListItem) => Promise<void>;
     removeFromPantry: (id: string) => Promise<void>;
@@ -110,9 +111,18 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             AsyncStorage.getItem(GROCERY_KEY),
             AsyncStorage.getItem(STORES_KEY),
         ]);
+
+        // add a general store at beginning
+        if(storeList) {
+            const parsedStores = JSON.parse(storeList);
+            setStores(parsedStores.length > 0 ? parsedStores : [{ label: 'General', value: 'general' }])
+        } else {
+            setStores(storeList ? JSON.parse(storeList) : []);
+        }
+
         setPantryItems(pantry ? JSON.parse(pantry) : []);
         setGroceryItems(grocery ? JSON.parse(grocery) : []);
-        setStores(storeList ? JSON.parse(storeList) : []);
+        
     } catch (err) {
         setError(err as Error);
     }
@@ -202,6 +212,21 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         );
     };
 
+    const deleteStore = async (storeId: string) => {
+        if (storeId === 'general') {
+            Alert.alert('Cannot delete General Store', 'The General store cannot be deleted.');
+            return;
+        }
+        setStores(prev => prev.filter(store => store.value !== storeId));
+        setPantryItems(prev => prev.map(item => {
+            if (item.store === storeId) {
+                return { ...item, store: 'general' };
+            } else {
+                return item;
+            }
+        }))
+    }
+
     const removeSinglePantryItem = async (id: string): Promise<void> => {
         setPantryItems(prev => prev.map(item =>{
             if (item.id === id) {
@@ -263,6 +288,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             stores,
             addStore,
             updateStore,
+            deleteStore,
             fetchItems,
             addToPantry,
             addToGrocery,

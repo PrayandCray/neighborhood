@@ -193,22 +193,36 @@ const List = () => {
                     </View>
 
                      {activeList === 'second' && (
-                    <View style={styles.storeContainer}>
+                    <View style={[styles.storeContainer]}>
                         <View style={{ 
                                 width: '50%', 
+                                flexDirection: 'row',
                                 alignSelf: 'center',
                                 marginBottom: Platform.select({
                                     web: '2%',
                                 }), 
+                                gap: '2%',
+                                height: '145%',
+                                paddingVertical: 10,
+                                justifyContent: 'center',
                             }}>
-                            <AppButton
-                                text="+ Add New Store"
-                                onPress={() => { router.push({ pathname: '/new_store' }) }}
-                                isFullWidth={true}
-                                fontSize={13}
-                                backgroundColor="#b45309"
-                                textColor="#EADDCA"
-                            />
+                            <Pressable
+                                onPress={() => {router.push('/new_store')}}
+                                style={{backgroundColor: '#b45309', padding: '3%', borderRadius: 10, width: '50%'}}
+                            >
+                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                    + Store
+                                </Text>
+                            </Pressable>
+
+                            <Pressable
+                                onPress={() => {router.push('/delete_store')}}
+                                style={{backgroundColor: '#b45309', padding: '3%', borderRadius: 10, width: '50%'}}
+                            >
+                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                    - Store
+                                </Text>
+                            </Pressable>
                         </View>
                         <SelectList
                             setSelected={setStore}
