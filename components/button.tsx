@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, StyleSheet, Text } from 'react-native';
 
 interface AppButtonProps {
     text: string;
@@ -66,10 +66,10 @@ const AppButton: React.FC<AppButtonProps> = ({
                 disabled && styles.disabled,
             ]}
         >
-             <Animated.View style={[styles.button, { transform: [{ scale }] }]}>
-            <View
+            <Animated.View
                 style={[
                     styles.button,
+                    {transform: [{ scale }]},
                     buttonWidthStyle,
                     backgroundColor && { backgroundColor: backgroundColor }
                 ]}
@@ -82,7 +82,6 @@ const AppButton: React.FC<AppButtonProps> = ({
                 ]}>
                     {text}
                 </Text>
-            </View>
             </Animated.View>
         </Pressable>
     );

@@ -71,9 +71,6 @@ const ScanScreen = () => {
                 style={{ flex: 1, width: '100%' }}
                 facing={facing}
                 onCameraReady={() => console.log('Camera is ready')}
-                barcodeScannerSettings={{
-                    barcodeTypes: ['ean13', 'ean8', 'code128', 'itf14' ],
-                }}
                 onBarcodeScanned={(event) => {
                     if (hasScanned) return;
                     setHasScanned(true)
