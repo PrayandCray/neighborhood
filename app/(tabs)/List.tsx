@@ -418,18 +418,7 @@ const List = () => {
                             </Text>
                         }
                         ListFooterComponent={
-                            <View style={{paddingVertical: 10, alignSelf: 'center'}}>
-                                <AppButton
-                                    text = 'Save Grocery List'
-                                    fontSize={14}
-                                    onPress={() => {router.push({
-                                        pathname: '/save_grocery_list',
-                                        params: {selectedList: JSON.stringify(filteredItems)}
-                                    })}}
-                                    textColor={'#EADDCA'}
-                                    isFullWidth={true}
-                                />
-                            </View>
+                            <View style={{paddingBottom: 10}}></View>
                         }
                     />
                     <View style={styles.buttonContainer}>

@@ -3,8 +3,10 @@ import ScanItemPopup from '@/components/scanItemPopup';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import Fuse from 'fuse.js';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { UseItems } from './context/ItemContext';
 
 const fetchProduct = async (
     barcode: string
@@ -27,6 +29,7 @@ const fetchProduct = async (
 
 const ScanScreen = () => {
     const router = useRouter()
+    const {groceryItems, pantryItems, addSingleGroceryItem, addSinglePantryItem} = UseItems() 
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const { listType } = useLocalSearchParams<{ listType?: string }>();
     const [itemProduct, setItemProduct] = useState<[string | null, string | null, string | null] | null>(null);
@@ -35,13 +38,55 @@ const ScanScreen = () => {
     const [hasScanned, setHasScanned] = React.useState(false);
 
     const handleScanConfirm = (selectedItem: string) => {
-        setIsPopupVisible(false);
-        
-        console.log(listType);
-        router.push({
-            pathname: '/new',
-            params: {listType: listType, itemName: selectedItem}
-        })
+        const existingItems = listType === 'grocery' ? groceryItems : pantryItems;
+        const itemName = selectedItem.trim().toLowerCase();
+
+        const fuse = new Fuse(existingItems, ({
+            keys: ['name'],
+            threshold: 0.4,
+        }));
+
+        const results = fuse.search(itemName);
+        const jsonResults = JSON.stringify(results);
+
+        if (results.length > 0) {
+            Alert.alert(
+                'Similar item found',
+                'Do you want to add this to an item already in your pantry?',
+                [
+                    {
+                        text: `Add ${itemName} to existing item`,
+                        onPress: () => {
+                            router.push({
+                                pathname: '/simmilar_item',
+                                params: {listType, jsonResults}
+                            })
+                        }
+                    },
+                    {
+                        text: `Add ${itemName} as a new item`,
+                        onPress: () => {
+                            router.push({
+                                pathname: '/new',
+                                params: {listType, itemName: selectedItem}
+                            })
+                        }
+                    },
+                    {
+                        text: 'Cancel',
+                        style: 'cancel',
+                        onPress: () => setIsPopupVisible(false)
+                    },
+                ]
+            )
+        } else {
+            
+            console.log(listType);
+            router.push({
+                pathname: '/new',
+                params: {listType: listType, itemName: selectedItem}
+            })
+        }
     }
 
     if (!cameraPermission) {
