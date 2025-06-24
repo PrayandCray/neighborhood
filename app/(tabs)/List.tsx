@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SelectList } from 'react-native-dropdown-select-list';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 const List = () => {
     const router = useRouter();
@@ -347,7 +347,7 @@ const List = () => {
                                 </View>
                                 {activeList === 'second' && (
                                 <View>
-                                    <Text style={[styles.subtitle, {color: '#b45309', paddingBottom: '0%', paddingTop: '0%'}]}>
+                                    <Text style={[styles.subtitle, {color: '#b45309', paddingHorizontal: 10, paddingBottom: 10}]}>
                                         Sort by store
                                     </Text>
                                     <View style={[styles.storeContainer]}>
@@ -381,35 +381,22 @@ const List = () => {
                                                 </Text>
                                             </Pressable>
                                         </View>
-                                        <SelectList
-                                            setSelected={setStore}
-                                            data={stores.map(store => ({
-                                                key: store.label,
-                                                value: store.label
-                                            }))}
-                                            save="value"
-                                            search={false}
-                                            defaultOption={{ key: store, value: store }}
-                                            boxStyles={styles.unitDropdown}
-                                            inputStyles={{
+                                        <ModalDropdown
+                                            options={stores.map(store => store.label)}
+                                            defaultValue={store}
+                                            style={styles.unitDropdown}
+                                            textStyle={{
                                                 fontFamily: 'sans-serif',
                                                 color: '#b45309',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
+                                                textAlign: 'center',
                                             }}
-                                            dropdownStyles={styles.unitDropdownList}
-                                            dropdownTextStyles={{
+                                            dropdownStyle={styles.unitDropdownList}
+                                            dropdownTextStyle={{
                                                 color: '#b45309',
                                                 fontSize: 13,
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
+                                                textAlign: 'center',
                                             }}
-                                            dropdownItemStyles={{
-                                                paddingVertical: 8,
-                                            }}
-                                            arrowicon={
-                                                <Ionicons name="caret-down" size={12} color="#a96733" style={{left: '10%'}} />
-                                            }
+                                            onSelect={(index: number, option: string) => {setStore(option), console.log(option)}}
                                         />
                                     </View>
                                 </View>
@@ -616,6 +603,7 @@ const styles = StyleSheet.create({
         top: 45,
         borderColor: '#b45309',
         backgroundColor: '#fff',
+        zIndex: 5,
     },
     categorySmallContainer: {
         width: 30,
