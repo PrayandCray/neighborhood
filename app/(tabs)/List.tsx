@@ -137,7 +137,7 @@ const List = () => {
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.listItemContainer}>
+                    <View style={[styles.listItemContainer, {paddingBottom: '5%'}]}>
                             <View style={{
                                 gap: Platform.select({
                                     ios: 8,
@@ -150,6 +150,14 @@ const List = () => {
                                 <Text style={[styles.listItem, {flex: 5, paddingTop: '4%', paddingLeft: '4%'}]}>
                                     Name
                                 </Text>
+                                {activeList === 'second' && (
+                                    <View style={[styles.categoryContainer, {marginTop: '5%'}]}>
+                                        <Text style={styles.categoryLabel}>
+                                            Store
+                                        </Text>
+                                    </View>
+                                )}
+                                
                                 <View style={{flexDirection: 'column', gap: 2, height: '100%'}}>
                                     <View style={styles.categoryContainer}>
                                         <Text style={styles.categoryLabel}>
@@ -163,19 +171,19 @@ const List = () => {
                                     </View>
                                 </View>
                                     <Ionicons
-                                        style={{paddingHorizontal: 2, justifyContent: 'center', paddingTop: '4%'}}
+                                        style={{ justifyContent: 'center', paddingTop: '5%'}}
                                         name='create-outline'
-                                        size={20}
+                                        size={25}
                                         color="#4076cc"
                                     />
-                                <View style={{flexDirection: 'column', gap: 2, paddingRight: '5%'}}>
-                                    <View style={styles.categorySmallContainer}>
-                                        <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
+                                <View style={[styles.plusMinusContainer, {alignSelf: 'center', width: 35, height: 40, gap: 2, flexDirection: 'column'}]}>
+                                    <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, paddingVertical: 5 }]}>
+                                        <Text style={[styles.categoryLabel, {color: "#4076cc"}]} numberOfLines={1}>
                                             - 1
                                         </Text>
                                     </View>
-                                    <View style={styles.categorySmallContainer}>
-                                        <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
+                                    <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, paddingVertical: 5 }]}>
+                                        <Text style={[styles.categoryLabel, {color: "#4076cc"}]} numberOfLines={1}>
                                             + 1
                                         </Text>
                                     </View>
@@ -183,85 +191,12 @@ const List = () => {
                                 <View style={{justifyContent: 'center'}}>
                                     <Ionicons
                                         name = 'trash-bin-outline'
-                                        size = {20}
+                                        size = {25}
                                         color = "#b45309"
                                     />
                                 </View>
                             </View>
-
-
                     </View>
-
-                     {activeList === 'second' && (
-                    <View>
-                        <Text style={[styles.subtitle, {color: '#b45309', paddingBottom: '0%', paddingTop: '2%'}]}>
-                            Sort by store
-                        </Text>
-                        <View style={[styles.storeContainer]}>
-                            <View style={{ 
-                                    width: '50%', 
-                                    flexDirection: 'row',
-                                    alignSelf: 'center',
-                                    marginBottom: Platform.select({
-                                        web: '2%',
-                                    }), 
-                                    gap: '2%',
-                                    height: '145%',
-                                    paddingVertical: 10,
-                                    justifyContent: 'center',
-                                }}>
-                                <Pressable
-                                    onPress={() => {router.push('/new_store')}}
-                                    style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
-                                >
-                                    <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
-                                        + Store
-                                    </Text>
-                                </Pressable>
-
-                                <Pressable
-                                    onPress={() => {router.push('/delete_store')}}
-                                    style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
-                                >
-                                    <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
-                                        - Store
-                                    </Text>
-                                </Pressable>
-                            </View>
-                            <SelectList
-                                setSelected={setStore}
-                                data={stores.map(store => ({
-                                    key: store.label,
-                                    value: store.label
-                                }))}
-                                save="value"
-                                search={false}
-                                defaultOption={{ key: store, value: store }}
-                                boxStyles={styles.unitDropdown}
-                                inputStyles={{
-                                    fontFamily: 'sans-serif',
-                                    color: '#b45309',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                                dropdownStyles={styles.unitDropdownList}
-                                dropdownTextStyles={{
-                                    color: '#b45309',
-                                    fontSize: 13,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                                dropdownItemStyles={{
-                                    paddingVertical: 8,
-                                }}
-                                arrowicon={
-                                    <Ionicons name="caret-down" size={12} color="#a96733" style={{left: '10%'}} />
-                                }
-                            />
-                        </View>
-                    </View>
-                    )}
-
                     
                     <FlatList
                         style={styles.listContainer}
@@ -277,14 +212,19 @@ const List = () => {
 
                                     <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
 
-                                    {activeList === 'second' && (
-                                        <Text style={[styles.categoryLabel, styles.categoryContainer, {paddingVertical: '4%'}]} numberOfLines={1}>{item.store}</Text>
-                                    )}
+                                        {activeList === 'second' && (
+                                            <View style={styles.categoryContainer}>
+                                            <Text style={[styles.categoryLabel]} numberOfLines={1}>{item.store}</Text>
+                                            </View>
+                                        )}
 
                                     <View style={{flexDirection: 'column', gap: 4, alignItems: 'center'}}>
-                                        <Text style={[styles.categoryContainer, styles.categoryLabel]} numberOfLines={1}>
-                                            {`${item.amount || '1'} ${item.unit || 'count'}`}
-                                        </Text>
+                                        <View style={styles.categoryContainer}>
+                                            <Text style={styles.categoryLabel} numberOfLines={1}>
+                                                {`${item.amount || '1'} ${item.unit || 'count'}`}
+                                            </Text>
+                                        </View>
+
                                         {item.category && (
                                             <View style={styles.categoryContainer}>
                                                 <Text style={styles.categoryLabel} numberOfLines={1}>
@@ -292,6 +232,7 @@ const List = () => {
                                                 </Text>
                                             </View>
                                         )}
+
                                     </View>
                                     <View>
                                         <Pressable
@@ -304,19 +245,17 @@ const List = () => {
                                                 }
                                             })}
                                         >
-                                            <Text>
-                                                <Ionicons
-                                                    style={{paddingLeft: '5%', paddingRight: '2%', justifyContent: 'center'}}
-                                                    name='create-outline'
-                                                    size={20}
-                                                    color="#4076cc"
-                                                />
-                                            </Text>
+                                        <Ionicons
+                                            style={{paddingLeft: '1%', paddingRight: '1%', justifyContent: 'center'}}
+                                            name='create-outline'
+                                            size={25}
+                                            color="#4076cc"
+                                        />
                                         </Pressable>
                                     </View>
                                     
                                     <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
-                                        <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
+                                        <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, padding: 5,}]}>
                                             <TouchableOpacity
                                                 onPress={() => handleDecrement({
                                                     id: item.id,
@@ -326,13 +265,12 @@ const List = () => {
                                             }
                                                 activeOpacity={0.7}
                                             >
-                                                <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
+                                                <Text style={[styles.categoryLabel, {color: "#4076cc",}]}>
                                                     -1
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
-
-                                        <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30,}]}>
+                                        <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, padding: 5,}]}>
                                             <TouchableOpacity
                                                 onPress={() => {
                                                     if (activeList === 'first') {
@@ -354,7 +292,7 @@ const List = () => {
                                     <View style={styles.trashContainer}>
                                             <Ionicons
                                                 name = 'trash-bin-outline'
-                                                size = {20}
+                                                size = {25}
                                                 color = "#b45309"
                                                 onPress={() => {
                                                     if (activeList === 'first') {
@@ -407,6 +345,75 @@ const List = () => {
                                         borderColor={activeList === 'second' ? '#fff' : '#b45309'}
                                         textColor={'#EADDCA'}/>
                                 </View>
+                                {activeList === 'second' && (
+                                <View>
+                                    <Text style={[styles.subtitle, {color: '#b45309', paddingBottom: '0%', paddingTop: '0%'}]}>
+                                        Sort by store
+                                    </Text>
+                                    <View style={[styles.storeContainer]}>
+                                        <View style={{ 
+                                                width: '50%', 
+                                                flexDirection: 'row',
+                                                alignSelf: 'center',
+                                                marginBottom: Platform.select({
+                                                    web: '2%',
+                                                }), 
+                                                gap: '2%',
+                                                height: '145%',
+                                                paddingVertical: 10,
+                                                justifyContent: 'center',
+                                            }}>
+                                            <Pressable
+                                                onPress={() => {router.push('/new_store')}}
+                                                style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
+                                            >
+                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                                    + Store
+                                                </Text>
+                                            </Pressable>
+                                        
+                                            <Pressable
+                                                onPress={() => {router.push('/delete_store')}}
+                                                style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
+                                            >
+                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                                    - Store
+                                                </Text>
+                                            </Pressable>
+                                        </View>
+                                        <SelectList
+                                            setSelected={setStore}
+                                            data={stores.map(store => ({
+                                                key: store.label,
+                                                value: store.label
+                                            }))}
+                                            save="value"
+                                            search={false}
+                                            defaultOption={{ key: store, value: store }}
+                                            boxStyles={styles.unitDropdown}
+                                            inputStyles={{
+                                                fontFamily: 'sans-serif',
+                                                color: '#b45309',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}
+                                            dropdownStyles={styles.unitDropdownList}
+                                            dropdownTextStyles={{
+                                                color: '#b45309',
+                                                fontSize: 13,
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}
+                                            dropdownItemStyles={{
+                                                paddingVertical: 8,
+                                            }}
+                                            arrowicon={
+                                                <Ionicons name="caret-down" size={12} color="#a96733" style={{left: '10%'}} />
+                                            }
+                                        />
+                                    </View>
+                                </View>
+                                )}
                                 <Text style={styles.listHeaderText}>
                                     {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
                                 </Text>
@@ -549,12 +556,17 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: '#d97706',
         textAlign: 'center',
-        paddingVertical: 4,
+        paddingVertical: 2,
+        paddingHorizontal: 3,
+
     },
     categoryContainer: {
         flex: 1,
-        minWidth: 50,
-        maxWidth: 60,
+        minWidth: 60,
+        maxWidth: 70,
+        minHeight: 30,
+        maxHeight: 35,
+        justifyContent: 'center',
         paddingHorizontal: 4,
         borderRadius: 8,
         backgroundColor: '#fef3c7',
@@ -623,10 +635,11 @@ const styles = StyleSheet.create({
     emptyList: {
         flex: 1,
         alignItems: 'center',
+        top: '50%',
         justifyContent: 'center',
         textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 16,
+        fontWeight: '700',
+        fontSize: 20,
         color: '#b45309',
     },
     title: {
