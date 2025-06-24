@@ -1,8 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { UseItems } from './context/ItemContext';
 
 const SimilarItemScreen = () => {
+    const {addSingleGroceryItem, addSinglePantryItem} = UseItems();
     const router = useRouter();
     const { listType, jsonResults } = useLocalSearchParams<{
         listType?: string;
@@ -10,13 +12,12 @@ const SimilarItemScreen = () => {
     }>();
 
     const results = jsonResults ? JSON.parse(jsonResults) : [];
-
-    const handleAction = (itemName: string, action: 'add' | 'replace') => {
-        console.log(`Replacing with "${itemName}"`);
-        router.push({
-            pathname: '/edit',
-            params: { listType, itemName },
-        });
+    const handleAction = (itemId: string) => {
+        if (listType === 'grocery') {
+            addSingleGroceryItem(itemId)
+        } else {
+            addSinglePantryItem(itemId)
+        }
     };
 
     return (
@@ -38,13 +39,10 @@ const SimilarItemScreen = () => {
                     }}
                 >
                     <Text style={{ fontSize: 16 }}>{result.item.name}</Text>
-                    <Text style={{ fontSize: 12, color: '#999' }}>
-                        Similarity: {(1 - result.score).toFixed(2)}
-                    </Text>
 
                     <View style={{ flexDirection: 'row', marginTop: 10, gap: 10 }}>
                         <TouchableOpacity
-                            onPress={() => handleAction(result.item.name, 'replace')}
+                            onPress={() => handleAction(result.item.id)}
                             style={{
                                 padding: 10,
                                 backgroundColor: '#4076cc',
@@ -62,7 +60,9 @@ const SimilarItemScreen = () => {
 
 const styles = StyleSheet.create({
     contentContainerStyle: { 
-        padding: 20 }
+        padding: 20,
+        backgroundColor: '#EADDCA'
+    }
 })
 
 export default SimilarItemScreen;

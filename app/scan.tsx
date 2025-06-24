@@ -50,6 +50,7 @@ const ScanScreen = () => {
         const jsonResults = JSON.stringify(results);
 
         if (results.length > 0) {
+            setIsPopupVisible(true)
             Alert.alert(
                 'Similar item found',
                 'Do you want to add this to an item already in your pantry?',
@@ -59,7 +60,7 @@ const ScanScreen = () => {
                         onPress: () => {
                             router.push({
                                 pathname: '/simmilar_item',
-                                params: {listType, jsonResults}
+                                params: {listType, jsonResults, }
                             })
                         }
                     },
@@ -112,7 +113,8 @@ const ScanScreen = () => {
 
     return (
         <View style={styles.container}>
-            <CameraView
+            {!isPopupVisible && (
+                <CameraView
                 style={{ flex: 1, width: '100%' }}
                 facing={facing}
                 onCameraReady={() => console.log('Camera is ready')}
@@ -132,6 +134,8 @@ const ScanScreen = () => {
                     });
                 }}
             />
+            )}
+            
 
             <View style={styles.cameraBottomView}>
                 <Text style={[styles.text, {color: 'white', fontWeight: 500, bottom: 15}]}>Scan Barcode/Reciept</Text>
@@ -151,7 +155,6 @@ const ScanScreen = () => {
                 barcodeItemList={itemProduct ? itemProduct.filter((item): item is string => !!item && item.trim() !== '') : []}
                 onConfirm={handleScanConfirm}
                 onClose={() => {
-                    setIsPopupVisible(false);
                     setHasScanned(false);
                 }}
                 listType={listType}
