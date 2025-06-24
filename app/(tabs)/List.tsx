@@ -2,12 +2,12 @@ import { UseItems } from '@/app/context/ItemContext';
 import AppWrapper from "@/components/appwrapper";
 import AppButton from "@/components/button";
 import PantryForwardPopup from '@/components/itempopup';
+import StoreForwardPopup from '@/components/storepopup';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import ModalDropdown from 'react-native-modal-dropdown';
 
 const List = () => {
     const router = useRouter();
@@ -18,6 +18,7 @@ const List = () => {
     const [sortByCategory, setSortByCategory] = React.useState(false);
     const [search, setSearch] = React.useState('');
     const [isPopupVisible, setIsPopupVisible] = React.useState(false);
+    const [isStorePopupVisible, setIsStorePopupVisible] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<{id: string; name:string} | null>(null);
     const [store, setStore] = React.useState('General');
     
@@ -300,6 +301,7 @@ const List = () => {
                                                     } else {
                                                         removeFromGrocery(item.id);
                                                     }
+                                                    console.log(stores)
                                                 }}
                                             />
                                     </View>
@@ -381,23 +383,14 @@ const List = () => {
                                                 </Text>
                                             </Pressable>
                                         </View>
-                                        <ModalDropdown
-                                            options={stores.map(store => store.label)}
-                                            defaultValue={store}
-                                            style={styles.unitDropdown}
-                                            textStyle={{
-                                                fontFamily: 'sans-serif',
-                                                color: '#b45309',
-                                                textAlign: 'center',
-                                            }}
-                                            dropdownStyle={styles.unitDropdownList}
-                                            dropdownTextStyle={{
-                                                color: '#b45309',
-                                                fontSize: 13,
-                                                textAlign: 'center',
-                                            }}
-                                            onSelect={(index: number, option: string) => {setStore(option), console.log(option)}}
-                                        />
+                                        <Pressable
+                                            onPress={() => {setIsStorePopupVisible(true)}}
+                                            style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
+                                        >
+                                            <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                                Set Sorted Store
+                                            </Text>
+                                        </Pressable>
                                     </View>
                                 </View>
                                 )}
@@ -448,6 +441,15 @@ const List = () => {
                         itemName={selectedItem?.name}
                         itemId={selectedItem?.id}
                         listType={activeList}
+                    />
+                    <StoreForwardPopup
+                        isVisible={isStorePopupVisible}
+                        stores={stores}
+                        onClose={() => setIsStorePopupVisible(false)}
+                        onConfirm={(storeItem) => {
+                            setStore(storeItem);
+                            setIsStorePopupVisible(false)
+                        }}
                     />
                 </SafeAreaView>
             </AppWrapper>
@@ -596,6 +598,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 3,
+    },
+    storeDropdownStyle: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingHorizontal: 4,
+        borderRadius: 8,
+        backgroundColor: '#fef3c7',
     },
     unitDropdownList: {
         position: 'absolute',
