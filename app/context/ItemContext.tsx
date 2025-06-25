@@ -35,8 +35,8 @@ type ItemContextType = {
     removeFromGrocery: (id: string) => Promise<void>;
     removeSinglePantryItem: (id: string) => Promise<void>;
     removeSingleGroceryItem: (id: string) => Promise<void>;
-    addSinglePantryItem: (id: string) => Promise<void>;
-    addSingleGroceryItem: (id: string) => Promise<void>;
+    addSinglePantryItem: (id: string, givenAmount?: number) => Promise<void>;
+    addSingleGroceryItem: (id: string, givenAmount?: number) => Promise<void>;
     updatePantryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string; listType?: string}) => Promise<void>;
     updateGroceryItem: (id: string, updates: { name?: string; amount?: string; unit: string; category?: string; store?: string; listType?: string}) => Promise<void>;
     resetData: () => Promise<void>;
@@ -261,26 +261,22 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         }));
     };
 
-    const addSinglePantryItem = async (id: string): Promise<void> => {
+    const addSinglePantryItem = async (id: string, givenAmount?: number): Promise<void> => {
         setPantryItems(prev => prev.map(item =>{
             if (item.id === id) {
-                const newAmount = Math.max(0, parseInt(item.amount) + 1);
-                if (newAmount === 0) {
-                    return item;
-                }
+                const amountToAdd = typeof givenAmount === 'number' ? givenAmount : 1
+                const newAmount = Math.max(0, parseInt(item.amount) + amountToAdd);
                 return { ...item, amount: newAmount.toString() };
             }
             return item;
         }));
     };
 
-    const addSingleGroceryItem = async (id: string): Promise<void> => {
+    const addSingleGroceryItem = async (id: string, givenAmount?: number): Promise<void> => {
         setGroceryItems(prev => prev.map(item => {
             if (item.id === id) {
+                const amountToAdd = typeof givenAmount === 'number' ? givenAmount : 1
                 const newAmount = Math.max(0, parseInt(item.amount) + 1);
-                if (newAmount === 0) {
-                    return item;
-                }
                 return { ...item, amount: newAmount.toString() };
             }
             return item;

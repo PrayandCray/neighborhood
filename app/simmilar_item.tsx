@@ -1,10 +1,11 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { UseItems } from './context/ItemContext';
 
 const SimilarItemScreen = () => {
     const {addSingleGroceryItem, addSinglePantryItem} = UseItems();
+    const [amount, setAmount] = React.useState<number | undefined>(undefined);
     const router = useRouter();
     const { listType, jsonResults } = useLocalSearchParams<{
         listType?: string;
@@ -12,11 +13,11 @@ const SimilarItemScreen = () => {
     }>();
 
     const results = jsonResults ? JSON.parse(jsonResults) : [];
-    const handleAction = (itemId: string) => {
+    const handleAction = (itemId: string, amt: number) => {
         if (listType === 'grocery') {
-            addSingleGroceryItem(itemId)
+            addSingleGroceryItem(itemId, amt)
         } else {
-            addSinglePantryItem(itemId)
+            addSinglePantryItem(itemId, amt)
         }
         router.back()
     };
@@ -26,6 +27,19 @@ const SimilarItemScreen = () => {
             <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>
                 Found similar items:
             </Text>
+
+            <TextInput
+                autoFocus={true}
+                style={styles.input}
+                value={amount?.toString() ?? ''}
+                onChangeText={(text) => {
+                    const parsed = parseInt(text);
+                    setAmount(isNaN(parsed) ? undefined : parsed);
+                }}
+                keyboardType="numeric"
+                placeholder="Enter Amount (Default: 1)"
+                placeholderTextColor="#a96733"
+            />
 
             {results.map((result: any, index: number) => (
                 <View
@@ -43,7 +57,7 @@ const SimilarItemScreen = () => {
 
                     <View style={{ flexDirection: 'row', marginTop: 10, gap: 10 }}>
                         <TouchableOpacity
-                            onPress={() => handleAction(result.item.id)}
+                            onPress={() => handleAction(result.item.id, amount ?? 1)}
                             style={{
                                 padding: 10,
                                 backgroundColor: '#4076cc',
@@ -63,7 +77,17 @@ const styles = StyleSheet.create({
     contentContainerStyle: { 
         padding: 20,
         backgroundColor: '#EADDCA'
-    }
+    },
+    input: {
+        alignSelf: 'center',
+        width: '90%',
+        height: 40,
+        padding: 10,
+        marginVertical: 16,
+        borderWidth: 1,
+        borderColor: '#b45309',
+        borderRadius: 10,
+    },
 })
 
 export default SimilarItemScreen;
