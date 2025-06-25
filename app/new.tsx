@@ -34,7 +34,7 @@ const NewItemScreen = () => {
             const itemName = inputText.trim()
             const fuse = new Fuse(existingItems, ({
                 keys: ['name'],
-                threshold: 0.4,
+                threshold: 0.5,
             }));
             const results = fuse.search(itemName)
             const jsonResults = JSON.stringify(results)
@@ -42,7 +42,7 @@ const NewItemScreen = () => {
             if (results.length > 0) {
                 Alert.alert(
                     'Similar item found',
-                    'Do you want to add this to an item already in your pantry?',
+                    `Do you want to add this to an item already in your ${listType === 'grocery' ? 'Grocery List' : 'Pantry'}?`,
                     [
                         {
                             text: `Add ${itemName} to existing item`,
@@ -69,7 +69,7 @@ const NewItemScreen = () => {
                     ]
                 )
             } else {
-                addNewItem
+                addNewItem()
             }
 
             
@@ -78,7 +78,7 @@ const NewItemScreen = () => {
 
     const addNewItem = async () => {
         try {
-            if (!inputText || !category || !amount || !unit || (listType === 'grocery' && !store)) {
+            if (!inputText || !category || !unit || (listType === 'grocery' && !store)) {
                 alert('Please fill out all of the boxes.');
                 return;
             }

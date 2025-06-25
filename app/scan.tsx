@@ -43,7 +43,7 @@ const ScanScreen = () => {
 
         const fuse = new Fuse(existingItems, ({
             keys: ['name'],
-            threshold: 0.4,
+            threshold: 0.5,
         }));
 
         const results = fuse.search(itemName);
@@ -69,7 +69,7 @@ const ScanScreen = () => {
                         onPress: () => {
                             router.push({
                                 pathname: '/new',
-                                params: {listType, itemName: selectedItem}
+                                params: {listType, itemName: selectedItem, amount: 1}
                             })
                         }
                     },
