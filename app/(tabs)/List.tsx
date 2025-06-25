@@ -123,20 +123,6 @@ const List = () => {
                         This is where your lists are stored
                     </Text>
 
-                    <View style={styles.sortButtonContainer}>
-                        <TouchableOpacity
-                            onPress={() => setSortByCategory(!sortByCategory)}
-                            activeOpacity={0.45}
-                            style={[styles.sortButton, sortByCategory && styles.sortButtonActive]}>
-                            <Text style={[
-                                styles.sortButtonText,
-                                sortByCategory && styles.sortButtonTextActive
-                            ]}>
-                                {sortByCategory ? 'Sort by Date Added' : 'Sort by Category'}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
                     <View style={[styles.listItemContainer, {paddingBottom: '5%'}]}>
                             <View style={{
                                 gap: Platform.select({
@@ -308,6 +294,21 @@ const List = () => {
                         )}
                         ListHeaderComponent={
                             <View style={{gap: '10'}}>
+
+                                <View style={styles.sortButtonContainer}>
+                                    <TouchableOpacity
+                                        onPress={() => setSortByCategory(!sortByCategory)}
+                                        activeOpacity={0.45}
+                                        style={[styles.sortButton, sortByCategory && styles.sortButtonActive]}>
+                                        <Text style={[
+                                            styles.sortButtonText,
+                                            sortByCategory && styles.sortButtonTextActive
+                                        ]}>
+                                            {sortByCategory ? 'Sort by Date Added' : 'Sort by Category'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+
                                 <View style={styles.searchBar}>
                                     <Ionicons
                                         style={{paddingLeft: '3%', alignSelf: 'center'}}
@@ -489,7 +490,7 @@ const styles = StyleSheet.create({
     },
     sortButton: {
         paddingHorizontal: 12,
-        paddingVertical: 6,
+        paddingBottom: 6,
         borderRadius: 8,
         backgroundColor: '#fef3c7',
     },
