@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Animated, Platform, Pressable, StyleSheet, Text } from 'react-native';
+import React from 'react';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface AppButtonProps {
     text: string;
@@ -28,48 +28,19 @@ const AppButton: React.FC<AppButtonProps> = ({
     fontSize,
     fontWeight,
 }) => {
-    const scale = useRef(new Animated.Value(1)).current;
-
-    const onPressIn = () => {
-      Animated.spring(scale, {
-        toValue: 0.95,
-        useNativeDriver: true,
-      }).start();
-    };
-
-    const onPressOut = () => {
-      Animated.spring(scale, {
-        toValue: 1,
-        friction: 3,
-        useNativeDriver: true,
-      }).start();
-    };
 
     const buttonWidthStyle = isFullWidth
     ? {}
     : { width : width };
     // @ts-ignore
     return (
-        <Pressable
+        <TouchableOpacity
             onPress={onPress}
-            onPressIn={onPressIn}
-            onPressOut={onPressOut}
             disabled={disabled}
-            style={({ pressed }) => [
-                styles.buttonContainer,
-                {
-                    padding: borderPadding,
-                    backgroundColor: '#b45309',
-                    ...(Platform.OS === 'web' ? {marginTop: 10, paddingVertical: 10, paddingHorizontal: 5} : {}),
-                },
-                pressed && styles.pressed,
-                disabled && styles.disabled,
-            ]}
         >
-            <Animated.View
+            <View
                 style={[
                     styles.button,
-                    {transform: [{ scale }]},
                     buttonWidthStyle,
                     backgroundColor && { backgroundColor: backgroundColor }
                 ]}
@@ -82,8 +53,8 @@ const AppButton: React.FC<AppButtonProps> = ({
                 ]}>
                     {text}
                 </Text>
-            </Animated.View>
-        </Pressable>
+            </View>
+        </TouchableOpacity>
     );
 };
 

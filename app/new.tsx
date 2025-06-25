@@ -2,8 +2,9 @@ import AppButton from "@/components/button";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import Fuse from "fuse.js";
 import React, { useState } from 'react';
-import { Keyboard, Platform, SafeAreaView, StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Keyboard, Platform, SafeAreaView, StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SelectList } from "react-native-dropdown-select-list";
 import { UseItems } from './context/ItemContext';
 
@@ -27,31 +28,83 @@ const NewItemScreen = () => {
     };
 
     const handleDone = async () => {
-    if (inputText.trim()) {
-        try {
-            const newItem = {
-                id: Date.now().toString(),
-                name: inputText,
-                category,
-                amount: amount || '1',
-                unit: unit || 'count',
-                store: listType === 'grocery' ? store : 'any',
-            };
 
-            if (listType === 'pantry') {
-                await addToPantry(newItem);
-                console.log('Added to pantry:', newItem);
-            } else if (listType === 'grocery') {
-                await addToGrocery(newItem);
-                console.log('Added to grocery:', newItem);
+        if (inputText.trim()) {
+            const existingItems = listType === 'grocery'? groceryItems : pantryItems;
+            const itemName = inputText.trim()
+            const fuse = new Fuse(existingItems, ({
+                keys: ['name'],
+                threshold: 0.4,
+            }));
+            const results = fuse.search(itemName)
+            const jsonResults = JSON.stringify(results)
+
+            if (results.length > 0) {
+                Alert.alert(
+                    'Similar item found',
+                    'Do you want to add this to an item already in your pantry?',
+                    [
+                        {
+                            text: `Add ${itemName} to existing item`,
+                            onPress: () => {
+                                router.back(),
+                                setTimeout(() => {
+                                    router.push({
+                                    pathname: '/simmilar_item',
+                                    params: {listType, jsonResults, }
+                                })
+                                }, 50)
+                                
+                            }
+                        },
+                        {
+                            text: `Add ${itemName} as a new item`,
+                            onPress: () => {
+                                router.back(),
+                                setTimeout(() => {
+                                    router.push({
+                                    pathname: '/new',
+                                    params: {listType, itemName: itemName}
+                                })
+                                }, 50)
+                                
+                            }
+                        },
+                        {
+                            text: 'Cancel',
+                            style: 'cancel',
+                        },
+                    ]
+                )
+            } else {
+
+                try {
+                    const newItem = {
+                        id: Date.now().toString(),
+                        name: inputText,
+                        category,
+                        amount: amount || '1',
+                        unit: unit || 'count',
+                        store: listType === 'grocery' ? store : 'any',
+                    };
+
+                    if (listType === 'pantry') {
+                            await addToPantry(newItem);
+                            console.log('Added to pantry:', newItem);
+                        } else if (listType === 'grocery') {
+                            await addToGrocery(newItem);
+                            console.log('Added to grocery:', newItem);
+                        }
+                    router.back();
+            } catch (error) {
+                console.error('Error adding item:', error);
+                alert('Failed to add item. Please try again.');
             }
-            router.back();
-        } catch (error) {
-            console.error('Error adding item:', error);
-            alert('Failed to add item. Please try again.');
+            }
+
+            
         }
-    }
-};
+    };
 
     return (
         <TouchableWithoutFeedback

@@ -225,9 +225,6 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
                 console.log(`Deleted store from context ${storeId}`)
                 return updatedStores;
             });
-            useEffect(() => {
-                console.log('Stores updated:', stores);
-            }, [stores]);
             setPantryItems(prev => prev.map(item => {
                 if (item.store === storeId) {
                     return { ...item, storeId: 'general' };

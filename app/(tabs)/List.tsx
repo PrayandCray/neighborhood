@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const List = () => {
     const router = useRouter();
@@ -21,7 +21,6 @@ const List = () => {
     const [isStorePopupVisible, setIsStorePopupVisible] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<{id: string; name:string} | null>(null);
     const [store, setStore] = React.useState('General');
-    
 
     const handleDecrement = async (item: { id: string; name: string; amount: string }) => {
         const newAmount = Math.max(0, parseInt(item.amount) - 1);
@@ -172,7 +171,7 @@ const List = () => {
                                     </View>
                                 </View>
                                     <Ionicons
-                                        style={{ justifyContent: 'center', paddingTop: '5%'}}
+                                        style={{ justifyContent: 'center', paddingTop: '5%', paddingLeft: '2%'}}
                                         name='create-outline'
                                         size={25}
                                         color="#4076cc"
@@ -236,7 +235,7 @@ const List = () => {
 
                                     </View>
                                     <View>
-                                        <Pressable
+                                        <TouchableOpacity
                                             style={{alignSelf: 'center', paddingHorizontal: 4,}}
                                             onPress={() => router.push({
                                                 pathname: '/edit',
@@ -252,58 +251,55 @@ const List = () => {
                                             size={25}
                                             color="#4076cc"
                                         />
-                                        </Pressable>
+                                        </TouchableOpacity>
                                     </View>
                                     
                                     <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
-                                        <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, padding: 5,}]}>
-                                            <TouchableOpacity
-                                                onPress={() => handleDecrement({
-                                                    id: item.id,
-                                                    name: item.name,
-                                                    amount: item.amount
-                                                })
-                                            }
-                                                activeOpacity={0.7}
-                                            >
-                                                <Text style={[styles.categoryLabel, {color: "#4076cc",}]}>
-                                                    -1
-                                                </Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, padding: 5,}]}>
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    if (activeList === 'first') {
-                                                        addSinglePantryItem(item.id)
-                                                    } else {
-                                                        addSingleGroceryItem(item.id)
-                                                    }
-                                                }}
-                                                activeOpacity={0.7}
-                                            >
-                                                <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
-                                                    +1
-                                                </Text>
-                                            </TouchableOpacity>
-                                        </View>
-
+                                        <TouchableOpacity
+                                            style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, padding: 5,}]}
+                                            onPress={() => handleDecrement({
+                                                id: item.id,
+                                                name: item.name,
+                                                amount: item.amount
+                                            })
+                                        }
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text style={[styles.categoryLabel, {color: "#4076cc",}]}>
+                                                -1
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, padding: 5,}]}
+                                            onPress={() => {
+                                                if (activeList === 'first') {
+                                                    addSinglePantryItem(item.id)
+                                                } else {
+                                                    addSingleGroceryItem(item.id)
+                                                }
+                                            }}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text style={[styles.categoryLabel, {color: "#4076cc"}]}>
+                                                +1
+                                            </Text>
+                                        </TouchableOpacity>
                                     </View>
 
                                     <View style={styles.trashContainer}>
-                                            <Ionicons
-                                                name = 'trash-bin-outline'
-                                                size = {25}
-                                                color = "#b45309"
-                                                onPress={() => {
-                                                    if (activeList === 'first') {
+                                        <Ionicons
+                                            name='trash-bin-outline'
+                                            size={25}
+                                            color="#b45309"
+                                            onPress={() => {
+                                                if (activeList === 'first') {
                                                         removeFromPantry(item.id);
                                                     } else {
                                                         removeFromGrocery(item.id);
                                                     }
-                                                    console.log(stores)
-                                                }}
-                                            />
+                                                console.log(stores);
+                                            }}
+                                        />
                                     </View>
 
                                 </View>
@@ -365,32 +361,32 @@ const List = () => {
                                                 paddingVertical: 10,
                                                 justifyContent: 'center',
                                             }}>
-                                            <Pressable
+                                            <TouchableOpacity
                                                 onPress={() => {router.push('/new_store')}}
                                                 style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
                                             >
-                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500', color: '#EADDCA'}}>
                                                     + Store
                                                 </Text>
-                                            </Pressable>
+                                            </TouchableOpacity>
                                         
-                                            <Pressable
+                                            <TouchableOpacity
                                                 onPress={() => {router.push('/delete_store')}}
                                                 style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
                                             >
-                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500', color: '#EADDCA'}}>
                                                     - Store
                                                 </Text>
-                                            </Pressable>
+                                            </TouchableOpacity>
                                         </View>
-                                        <Pressable
+                                        <TouchableOpacity
                                             onPress={() => {setIsStorePopupVisible(true)}}
-                                            style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
+                                            style={{backgroundColor: '#b45309', paddingVertical: '4%', borderRadius: 10, width: '50%', }}
                                         >
-                                            <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500'}}>
+                                            <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', fontWeight: '500', color: '#EADDCA'}}>
                                                 Set Sorted Store
                                             </Text>
-                                        </Pressable>
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
                                 )}
@@ -633,7 +629,7 @@ const styles = StyleSheet.create({
     emptyList: {
         flex: 1,
         alignItems: 'center',
-        top: '50%',
+        top: '25%',
         justifyContent: 'center',
         textAlign: 'center',
         fontWeight: '700',

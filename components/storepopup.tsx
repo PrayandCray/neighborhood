@@ -1,5 +1,4 @@
 import { Store, UseItems } from "@/app/context/ItemContext";
-import { useRouter } from "expo-router";
 import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import Modal from "react-native-modal";
@@ -21,8 +20,6 @@ const StoreForwardPopup: React.FC<StorePopupProps> = ({
     const {
         stores,
     } = UseItems();
-
-    const router = useRouter();
 
     return (
         <Modal

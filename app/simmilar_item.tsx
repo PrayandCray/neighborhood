@@ -18,6 +18,7 @@ const SimilarItemScreen = () => {
         } else {
             addSinglePantryItem(itemId)
         }
+        router.back()
     };
 
     return (

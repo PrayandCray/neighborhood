@@ -72,7 +72,12 @@ const Home = () => {
                 <View style={[styles.shortcutsContainer, {marginTop: 16}]}>
                     <AppButton
                         text='Scan Item'
-                        onPress={() => router.push('/scan')}
+                        onPress={() => {
+                            router.push('/List'),
+                            setTimeout(() => {
+                                router.push('/scan')
+                            }, 150)
+                        }}
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
                     />
