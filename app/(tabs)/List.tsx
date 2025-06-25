@@ -123,7 +123,7 @@ const List = () => {
                         This is where your lists are stored
                     </Text>
 
-                    <View style={[styles.listItemContainer, {paddingBottom: '5%'}]}>
+                    <View style={[styles.listItemContainer, {paddingBottom: '4%'}]}>
                             <View style={{
                                 gap: Platform.select({
                                     ios: 8,
@@ -133,11 +133,11 @@ const List = () => {
                                 flexDirection: 'row',
                                 paddingBottom: 2,
                             }}>
-                                <Text style={[styles.listItem, {flex: 5, paddingTop: '4%', paddingLeft: '4%'}]}>
+                                <Text style={[styles.listItem, {flex: 5, top: '50%', paddingLeft: '4%'}]}>
                                     Name
                                 </Text>
                                 {activeList === 'second' && (
-                                    <View style={[styles.categoryContainer, {marginTop: '5%'}]}>
+                                    <View style={[styles.categoryContainer, {marginTop: '3.7%'}]}>
                                         <Text style={styles.categoryLabel}>
                                             Store
                                         </Text>
@@ -174,7 +174,7 @@ const List = () => {
                                         </Text>
                                     </View>
                                 </View>
-                                <View style={{justifyContent: 'center'}}>
+                                <View style={{justifyContent: 'center', paddingRight: 8}}>
                                     <Ionicons
                                         name = 'trash-bin-outline'
                                         size = {25}
@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     },
     sortButton: {
         paddingHorizontal: 12,
-        paddingBottom: 6,
+        paddingVertical: 6,
         borderRadius: 8,
         backgroundColor: '#fef3c7',
     },

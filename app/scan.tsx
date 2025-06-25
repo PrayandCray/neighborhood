@@ -29,7 +29,7 @@ const fetchProduct = async (
 
 const ScanScreen = () => {
     const router = useRouter()
-    const {groceryItems, pantryItems, addSingleGroceryItem, addSinglePantryItem} = UseItems() 
+    const {groceryItems, pantryItems } = UseItems() 
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const { listType } = useLocalSearchParams<{ listType?: string }>();
     const [itemProduct, setItemProduct] = useState<[string | null, string | null, string | null] | null>(null);
@@ -156,6 +156,7 @@ const ScanScreen = () => {
                 onConfirm={handleScanConfirm}
                 onClose={() => {
                     setHasScanned(false);
+                    setIsPopupVisible(false)
                 }}
                 listType={listType}
             />

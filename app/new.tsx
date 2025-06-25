@@ -59,16 +59,8 @@ const NewItemScreen = () => {
                         },
                         {
                             text: `Add ${itemName} as a new item`,
-                            onPress: () => {
-                                router.back(),
-                                setTimeout(() => {
-                                    router.push({
-                                    pathname: '/new',
-                                    params: {listType, itemName: itemName}
-                                })
-                                }, 50)
-                                
-                            }
+                            onPress: () => addNewItem()
+                            
                         },
                         {
                             text: 'Cancel',
@@ -77,34 +69,42 @@ const NewItemScreen = () => {
                     ]
                 )
             } else {
-
-                try {
-                    const newItem = {
-                        id: Date.now().toString(),
-                        name: inputText,
-                        category,
-                        amount: amount || '1',
-                        unit: unit || 'count',
-                        store: listType === 'grocery' ? store : 'any',
-                    };
-
-                    if (listType === 'pantry') {
-                            await addToPantry(newItem);
-                            console.log('Added to pantry:', newItem);
-                        } else if (listType === 'grocery') {
-                            await addToGrocery(newItem);
-                            console.log('Added to grocery:', newItem);
-                        }
-                    router.back();
-            } catch (error) {
-                console.error('Error adding item:', error);
-                alert('Failed to add item. Please try again.');
-            }
+                addNewItem
             }
 
             
         }
     };
+
+    const addNewItem = async () => {
+        try {
+            if (!inputText || !category || !amount || !unit || (listType === 'grocery' && !store)) {
+                alert('Please fill out all of the boxes.');
+                return;
+            }
+        
+            const newItem = {
+                id: Date.now().toString(),
+                name: inputText,
+                category,
+                amount: amount || '1',
+                unit: unit || 'count',
+                store: listType === 'grocery' ? store : 'any',
+            };
+        
+            if (listType === 'pantry') {
+                await addToPantry(newItem);
+                console.log('Added to pantry:', newItem);
+            } else if (listType === 'grocery') {
+                await addToGrocery(newItem);
+                console.log('Added to grocery:', newItem);
+            }
+            router.back();
+        } catch (error) {
+            console.error('Error adding item:', error);
+            alert('Failed to add item. Please try again.');
+        }
+    }
 
     return (
         <TouchableWithoutFeedback
@@ -245,7 +245,7 @@ const NewItemScreen = () => {
                 <View style={styles.buttonContainer}>
                     <AppButton
                         text="Done"
-                        onPress={handleDone}
+                        onPress={() => handleDone()}
                         isFullWidth={false}
                         width={150}
                         borderPadding={20}

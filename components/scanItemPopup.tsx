@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
@@ -44,9 +45,21 @@ const ScanItemPopup: React.FC<ScanItemPopupProps> = ({
             hideModalContentWhileAnimating={true}
         >
             <View style={styles.popupContent}>
-                <Text style={styles.title}>
-                    New Scan Item for {listType}
-                </Text>
+                <View style={{flexDirection: 'row', top: '2%', gap: '2%', paddingHorizontal: '8%'}}>
+                    <TouchableOpacity
+                        onPress={onClose}
+                    >
+                        <Ionicons
+                            name='caret-back'
+                            size={40}
+                            color={'black'}
+                            style={{top: '15%'}}
+                        />
+                    </TouchableOpacity>
+                    <Text style={styles.title}>
+                        New Scan Item for {listType === 'pantry' ? 'Pantry' : 'Grocery'}
+                    </Text>
+                </View>
                 <Text style={styles.subtitle}>
                     Pick a Name that Resembles the Item
                 </Text>
