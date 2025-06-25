@@ -11,7 +11,7 @@ import { UseItems } from './context/ItemContext';
 const NewItemScreen = () => {
     const router = useRouter();
     const inputRef = React.useRef(null);
-    const {listType, itemName} = useLocalSearchParams();
+    const {listType, itemName, dupeItemAlert} = useLocalSearchParams();
     const [inputText, setInputText] = useState<string>(typeof itemName === 'string' ? itemName : '');
     const {addToPantry, addToGrocery, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
@@ -39,7 +39,7 @@ const NewItemScreen = () => {
             const results = fuse.search(itemName)
             const jsonResults = JSON.stringify(results)
 
-            if (results.length > 0) {
+            if (results.length > 0 && !dupeItemAlert ) {
                 Alert.alert(
                     'Similar item found',
                     `Do you want to add this to an item already in your ${listType === 'grocery' ? 'Grocery List' : 'Pantry'}?`,

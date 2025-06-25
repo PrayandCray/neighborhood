@@ -1,4 +1,4 @@
-import { UseItems } from '@/app/context/ItemContext';
+import { ListItem, UseItems } from '@/app/context/ItemContext';
 import AppWrapper from "@/components/appwrapper";
 import AppButton from "@/components/button";
 import PantryForwardPopup from '@/components/itempopup';
@@ -17,10 +17,29 @@ const List = () => {
     );
     const [sortByCategory, setSortByCategory] = React.useState(false);
     const [search, setSearch] = React.useState('');
+    const [mergeMode, setMergeMode] = React.useState(false)
     const [isPopupVisible, setIsPopupVisible] = React.useState(false);
     const [isStorePopupVisible, setIsStorePopupVisible] = React.useState(false);
+    const [selectedMergeItems, setSelectedMergeItems] = React.useState<string[]>([]);
     const [selectedItem, setSelectedItem] = React.useState<{id: string; name:string} | null>(null);
     const [store, setStore] = React.useState('General');
+
+    const toggleItemSelection = (id: string) => {
+        setSelectedMergeItems(prev => 
+            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+        )
+        //console.log(selectedMergeItems)
+    }
+
+    const openItem = (item: ListItem) => {
+        router.push({
+            pathname: '/edit',
+            params: {
+                itemId: item.id,
+                listType: activeList === 'first' ? 'pantry' : 'grocery'
+            }
+        })
+    }
 
     const handleDecrement = async (item: { id: string; name: string; amount: string }) => {
         const newAmount = Math.max(0, parseInt(item.amount) - 1);
@@ -194,9 +213,24 @@ const List = () => {
                         renderItem={({item}) => (
                             <View style={styles.listItemContainer}>
 
-                                <View style={styles.itemContentContainer}>
+                                <TouchableOpacity
+                                    style={styles.itemContentContainer}
+                                    onPress={() => mergeMode ? toggleItemSelection(item.id) : openItem(item)}>
 
-                                    <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
+                                        <Ionicons 
+                                            name={mergeMode
+                                                ?   (selectedMergeItems.includes(item.id) 
+                                                        ? 'checkmark-circle-outline' 
+                                                        : 'ellipse-outline')
+                                                :   'pencil'
+                                            } 
+                                            style={{
+                                                backgroundColor: mergeMode && selectedMergeItems.includes(item.id) ? '#ADD8E6' : 'transparent',
+                                                padding: '2%',
+                                                borderRadius: 5
+                                            }} 
+                                        />
+                                        <Text style={styles.listItem} numberOfLines={1}>{item.name}</Text>
 
                                         {activeList === 'second' && (
                                             <View style={styles.categoryContainer}>
@@ -219,25 +253,6 @@ const List = () => {
                                             </View>
                                         )}
 
-                                    </View>
-                                    <View>
-                                        <TouchableOpacity
-                                            style={{alignSelf: 'center', paddingHorizontal: 4,}}
-                                            onPress={() => router.push({
-                                                pathname: '/edit',
-                                                params: {
-                                                    itemId: item.id,
-                                                    listType: activeList === 'first' ? 'pantry' : 'grocery'
-                                                }
-                                            })}
-                                        >
-                                        <Ionicons
-                                            style={{paddingLeft: '1%', paddingRight: '1%', justifyContent: 'center'}}
-                                            name='create-outline'
-                                            size={25}
-                                            color="#4076cc"
-                                        />
-                                        </TouchableOpacity>
                                     </View>
                                     
                                     <View style={[styles.plusMinusContainer, {flexDirection: 'column'}]}>
@@ -287,8 +302,8 @@ const List = () => {
                                             }}
                                         />
                                     </View>
-
-                                </View>
+                                
+                                </TouchableOpacity>
 
                             </View>
                         )}
@@ -394,6 +409,14 @@ const List = () => {
                                 <Text style={styles.listHeaderText}>
                                     {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
                                 </Text>
+                                <AppButton
+                                    text='Merge Items'
+                                    onPress={() => setMergeMode(mergeMode === false ? true : false)}
+                                    textColor='#EADDCA'
+                                    isFullWidth={false}
+                                    //@ts-ignore
+                                    width={'100%'}
+                                />
                             </View>
                         }
                         ListEmptyComponent={
@@ -402,7 +425,18 @@ const List = () => {
                             </Text>
                         }
                         ListFooterComponent={
-                            <View style={{paddingBottom: 10}}></View>
+                            <View style={{paddingBottom: 10}}>
+                                {mergeMode && 
+                                    <AppButton
+                                        text='Merge Items'
+                                        onPress={() =>
+                                            router.push({
+                                                pathname: '/merge_items'
+                                            })
+                                        }
+                                    />
+                                }
+                            </View>
                         }
                     />
                     <View style={styles.buttonContainer}>

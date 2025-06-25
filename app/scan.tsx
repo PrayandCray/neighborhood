@@ -69,7 +69,7 @@ const ScanScreen = () => {
                         onPress: () => {
                             router.push({
                                 pathname: '/new',
-                                params: {listType, itemName: selectedItem, amount: 1}
+                                params: {listType, itemName: selectedItem, amount: 1, dupeItemAlert: String(true)}
                             })
                         }
                     },

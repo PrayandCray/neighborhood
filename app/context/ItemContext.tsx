@@ -142,13 +142,14 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         ));
     };
 
-    const addToPantry = async (item: ListItem) => {
+    const addToPantry = async (item: ListItem,) => {
         const duplicate = pantryItems.find(existingItem =>
             existingItem.name.toLowerCase().trim() === item.name.toLowerCase().trim()
         );
 
         if (duplicate) {
-            duplicate.amount = (parseInt(duplicate.amount) +1). toString();
+            const itemAmount = (parseInt(item.amount))
+            duplicate.amount = (parseInt(duplicate.amount) + itemAmount). toString();
         } else{
             setPantryItems(prev => [...prev, { ...item, id: Date.now().toString() }]);
         }
@@ -165,7 +166,8 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         );
 
         if (duplicate) {
-            duplicate.amount = (parseInt(duplicate.amount) +1). toString();
+            const itemAmount = (parseInt(item.amount))
+            duplicate.amount = (parseInt(duplicate.amount) + itemAmount). toString();
         } else {
             if (pantryDuplicate) {
                 Alert.alert(
