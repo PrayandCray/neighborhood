@@ -13,7 +13,7 @@ const NewItemScreen = () => {
     const inputRef = React.useRef(null);
     const {listType, itemName, dupeItemAlert, merge, mergedItemsList} = useLocalSearchParams();
     const [inputText, setInputText] = useState<string>(typeof itemName === 'string' ? itemName : '');
-    const {addToPantry, addToGrocery, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
+    const {addToPantry, addToGrocery, removeFromGrocery, removeFromPantry, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');
     const [unit, setUnit] = useState('count');
@@ -32,13 +32,32 @@ const NewItemScreen = () => {
         });
     };
 
-    const handleDeleteMergedItems = () => {
-    const mergedIds = parsedMergedItemsList.map(item => item.id);
+    const handleDeleteMergedItems = async () => {
+        const mergedIds = parsedMergedItemsList.map(item => item.id);
+        console.log("IDs to delete:", mergedIds);
 
-    setPantryItems(prev =>
-        prev.filter(item => !mergedIds.includes(item.id))
-    );
-};
+        if (listType === 'grocery') {
+            for (const id of mergedIds) {
+                const item = groceryItems.find(i => i.id === id);
+                if (item) {
+                    await removeFromGrocery(item.id);
+                    console.log(`Deleted grocery item: ${item.name}`);
+                } else {
+                    console.warn(`Couldn't find grocery item with id: ${id}`);
+                }
+            }
+        } else if (listType === 'pantry') {
+            for (const id of mergedIds) {
+                const item = pantryItems.find(i => i.id === id);
+                if (item) {
+                    await removeFromPantry(item.id);
+                    console.log(`Deleted pantry item: ${item.name}`);
+                } else {
+                    console.warn(`Couldn't find pantry item with id: ${id}`);
+                }
+            }
+        }
+    };
 
     const handleDone = async () => {
 
@@ -53,9 +72,9 @@ const NewItemScreen = () => {
             const jsonResults = JSON.stringify(results)
 
             if (booleanMerge) {
-                addNewItem()
-                setMergedItemsList([]);
-
+                await handleDeleteMergedItems();
+                await addNewItem();
+                router.back();
 
             } else {
                 if (results.length > 0 && !dupeItemAlert ) {

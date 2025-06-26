@@ -441,7 +441,7 @@ const List = () => {
                                             onPress={() =>
                                                 router.push({
                                                     pathname: '/merge_items',
-                                                    params: { mergedItemsList: JSON.stringify(selectedMergeItems)}
+                                                    params: { mergedItemsList: JSON.stringify(selectedMergeItems), listType: activeList}
                                                 })
                                             }
                                         />

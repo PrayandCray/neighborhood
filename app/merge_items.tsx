@@ -9,13 +9,15 @@ const MergeItemsScreen = () => {
     const { mergedItemsList } = useLocalSearchParams<{
         mergedItemsList?: string;
     }>();
+    const {listType} = useLocalSearchParams()
+    const convertedListType = listType === 'first' ? 'pantry' : 'grocery';
 
     const items = mergedItemsList ? JSON.parse(mergedItemsList) : [];
 
     const handleMergeNewItem = (name: string) => {
         useRouter().push({
             pathname: '/new',
-            params: {itemName: name, merge: 'true', mergedItemsList}
+            params: {itemName: name, merge: 'true', mergedItemsList, listType: convertedListType}
         })
         console.log(name)
 
