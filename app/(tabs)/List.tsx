@@ -20,16 +20,17 @@ const List = () => {
     const [mergeMode, setMergeMode] = React.useState(false)
     const [isPopupVisible, setIsPopupVisible] = React.useState(false);
     const [isStorePopupVisible, setIsStorePopupVisible] = React.useState(false);
-    const [selectedMergeItems, setSelectedMergeItems] = React.useState<string[]>([]);
+    const [selectedMergeItems, setSelectedMergeItems] = React.useState<ListItem[]>([]);
     const [selectedItem, setSelectedItem] = React.useState<{id: string; name:string} | null>(null);
     const [store, setStore] = React.useState('General');
 
-    const toggleItemSelection = (id: string) => {
-        setSelectedMergeItems(prev => 
-            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-        )
-        //console.log(selectedMergeItems)
-    }
+    const toggleItemSelection = (item: ListItem) => {
+    setSelectedMergeItems(prev =>
+        prev.some(i => i.id === item.id)
+            ? prev.filter(i => i.id !== item.id)
+            : [...prev, item]
+    );
+};
 
     const openItem = (item: ListItem) => {
         router.push({
@@ -152,6 +153,13 @@ const List = () => {
                                 flexDirection: 'row',
                                 paddingBottom: 2,
                             }}>
+                                <View style={{top: '10%'}}>
+                                    <Ionicons
+                                        style={{ justifyContent: 'center', paddingTop: '5%', paddingLeft: '2%'}}
+                                        name='pencil'
+                                        size={15}
+                                    />
+                                </View>
                                 <Text style={[styles.listItem, {flex: 5, top: '50%', paddingLeft: '4%'}]}>
                                     Name
                                 </Text>
@@ -175,12 +183,6 @@ const List = () => {
                                         </Text>
                                     </View>
                                 </View>
-                                    <Ionicons
-                                        style={{ justifyContent: 'center', paddingTop: '5%', paddingLeft: '2%'}}
-                                        name='create-outline'
-                                        size={25}
-                                        color="#4076cc"
-                                    />
                                 <View style={[styles.plusMinusContainer, {alignSelf: 'center', width: 35, height: 40, gap: 2, flexDirection: 'column'}]}>
                                     <View style={[styles.categorySmallContainer, {alignSelf: 'center', width: 30, paddingVertical: 5 }]}>
                                         <Text style={[styles.categoryLabel, {color: "#4076cc"}]} numberOfLines={1}>
@@ -215,17 +217,17 @@ const List = () => {
 
                                 <TouchableOpacity
                                     style={styles.itemContentContainer}
-                                    onPress={() => mergeMode ? toggleItemSelection(item.id) : openItem(item)}>
+                                    onPress={() => mergeMode ? toggleItemSelection(item) : openItem(item)}>
 
                                         <Ionicons 
                                             name={mergeMode
-                                                ?   (selectedMergeItems.includes(item.id) 
+                                                ?   (selectedMergeItems.includes(item) 
                                                         ? 'checkmark-circle-outline' 
                                                         : 'ellipse-outline')
                                                 :   'pencil'
                                             } 
                                             style={{
-                                                backgroundColor: mergeMode && selectedMergeItems.includes(item.id) ? '#ADD8E6' : 'transparent',
+                                                backgroundColor: mergeMode && selectedMergeItems.includes(item) ? '#ADD8E6' : 'transparent',
                                                 padding: '2%',
                                                 borderRadius: 5
                                             }} 
@@ -409,14 +411,16 @@ const List = () => {
                                 <Text style={styles.listHeaderText}>
                                     {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
                                 </Text>
-                                <AppButton
-                                    text='Merge Items'
-                                    onPress={() => setMergeMode(mergeMode === false ? true : false)}
-                                    textColor='#EADDCA'
-                                    isFullWidth={false}
-                                    //@ts-ignore
-                                    width={'100%'}
-                                />
+                                <View style={{alignItems: 'center', paddingBottom: 5}}>
+                                    <AppButton
+                                        text='Select Merge Items'
+                                        onPress={() => setMergeMode(mergeMode === false ? true : false)}
+                                        textColor='#EADDCA'
+                                        isFullWidth={false}
+                                        //@ts-ignore
+                                        width='90%'
+                                    />
+                                </View>
                             </View>
                         }
                         ListEmptyComponent={
@@ -427,14 +431,21 @@ const List = () => {
                         ListFooterComponent={
                             <View style={{paddingBottom: 10}}>
                                 {mergeMode && 
-                                    <AppButton
-                                        text='Merge Items'
-                                        onPress={() =>
-                                            router.push({
-                                                pathname: '/merge_items'
-                                            })
-                                        }
-                                    />
+                                    <View style={{alignItems: 'center', paddingTop: 5}}>
+                                        <AppButton
+                                            text='Merge Items'
+                                            textColor='#EADDCA'
+                                            isFullWidth={false}
+                                            //@ts-ignore
+                                            width={'90%'}
+                                            onPress={() =>
+                                                router.push({
+                                                    pathname: '/merge_items',
+                                                    params: { mergedItemsList: JSON.stringify(selectedMergeItems)}
+                                                })
+                                            }
+                                        />
+                                    </View>
                                 }
                             </View>
                         }

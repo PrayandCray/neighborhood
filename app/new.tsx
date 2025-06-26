@@ -6,18 +6,23 @@ import Fuse from "fuse.js";
 import React, { useState } from 'react';
 import { Alert, Keyboard, Platform, SafeAreaView, StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SelectList } from "react-native-dropdown-select-list";
-import { UseItems } from './context/ItemContext';
+import { ListItem, UseItems } from "./context/ItemContext";
 
 const NewItemScreen = () => {
     const router = useRouter();
     const inputRef = React.useRef(null);
-    const {listType, itemName, dupeItemAlert} = useLocalSearchParams();
+    const {listType, itemName, dupeItemAlert, merge, mergedItemsList} = useLocalSearchParams();
     const [inputText, setInputText] = useState<string>(typeof itemName === 'string' ? itemName : '');
     const {addToPantry, addToGrocery, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');
     const [unit, setUnit] = useState('count');
     const [store, setStore] = useState('any')
+    const rawParam = useLocalSearchParams().mergedItemsList;
+    const mergedItemsJson = typeof rawParam === 'string' ? rawParam : rawParam?.[0] ?? '[]';
+    const parsedMergedItemsList: ListItem[] = JSON.parse(mergedItemsJson);
+
+    const booleanMerge = merge === 'true'
 
     const handleTextChange = (text: string) => {
         setInputText(text);
@@ -26,6 +31,14 @@ const NewItemScreen = () => {
             headerTitle: text ? `Add "${text}" to ${listType}` : baseTitle
         });
     };
+
+    const handleDeleteMergedItems = () => {
+    const mergedIds = parsedMergedItemsList.map(item => item.id);
+
+    setPantryItems(prev =>
+        prev.filter(item => !mergedIds.includes(item.id))
+    );
+};
 
     const handleDone = async () => {
 
@@ -39,7 +52,13 @@ const NewItemScreen = () => {
             const results = fuse.search(itemName)
             const jsonResults = JSON.stringify(results)
 
-            if (results.length > 0 && !dupeItemAlert ) {
+            if (booleanMerge) {
+                addNewItem()
+                setMergedItemsList([]);
+
+
+            } else {
+                if (results.length > 0 && !dupeItemAlert ) {
                 Alert.alert(
                     'Similar item found',
                     `Do you want to add this to an item already in your ${listType === 'grocery' ? 'Grocery List' : 'Pantry'}?`,
@@ -71,6 +90,8 @@ const NewItemScreen = () => {
             } else {
                 addNewItem()
             }
+            }
+            
 
             
         }
