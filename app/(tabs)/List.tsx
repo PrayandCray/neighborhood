@@ -11,7 +11,7 @@ import { FlatList, Platform, SafeAreaView, StyleSheet, Text, TextInput, Touchabl
 
 const List = () => {
     const router = useRouter();
-    const { initialList } = useLocalSearchParams();
+    const { initialList, showStorePopup } = useLocalSearchParams();
     const [activeList, setActiveList] = React.useState<'first' | 'second'>(
         initialList === 'second' ? 'second' : 'first'
     );
@@ -22,7 +22,11 @@ const List = () => {
     const [isStorePopupVisible, setIsStorePopupVisible] = React.useState(false);
     const [selectedMergeItems, setSelectedMergeItems] = React.useState<ListItem[]>([]);
     const [selectedItem, setSelectedItem] = React.useState<{id: string; name:string} | null>(null);
-    const [store, setStore] = React.useState('General');
+    const [store, setStore] = React.useState('All');
+
+    React.useEffect(() => {
+        setIsStorePopupVisible(showStorePopup === 'true');
+    }, [showStorePopup]);
 
     const toggleItemSelection = (item: ListItem) => {
     setSelectedMergeItems(prev =>
@@ -133,9 +137,13 @@ const List = () => {
     }
 
     function filterItemsByStore(store: string, items: typeof sortedItems) {
-        if (!store || store === 'General') return items;
+        if (!store || store.toLowerCase() === 'all') {
+            return items;
+        }
+
         return items.filter(item => item.store === store);
     }
+
     const filteredItems = React.useMemo(() => filterItemsByStore(store, sortedItems), [store, sortedItems]);
 
     const handleShareList = (activeList: string) => {
@@ -159,14 +167,10 @@ const List = () => {
             locations={[0, 0.275, 1]}
             style={styles.container}>
             <AppWrapper>
-                <SafeAreaView style={{ flex: 1, maxHeight:'100%' }}>
+                <SafeAreaView style={{ flex: 1 }}>
 
                     <Text style={styles.title}>
                         List
-                    </Text>
-
-                    <Text style={styles.subtitle}>
-                        This is where your lists are stored
                     </Text>
 
                     <View style={[styles.listItemContainer, {paddingBottom: '4%'}]}>
@@ -231,6 +235,19 @@ const List = () => {
                             </View>
                     </View>
                     
+                    <View>
+                        {activeList === 'first' &&
+                            <Text style={styles.subtitle}>
+                                currently {pantryItems.length} items in your pantry list
+                            </Text>
+                        }
+                        {activeList === 'second' &&
+                            <Text style={styles.subtitle}>
+                                currently {groceryItems.length} items in your grocery list
+                            </Text>
+                        }
+                    </View>
+
                     <FlatList
                         style={styles.listContainer}
                         data={filterItemsBySearch(search, filteredItems)}
@@ -239,7 +256,7 @@ const List = () => {
                         showsHorizontalScrollIndicator={true}
                         persistentScrollbar={true}
                         renderItem={({item}) => (
-                            <View style={styles.listItemContainer}>
+                            <View style={[styles.listItemContainer, mergeMode && selectedMergeItems.includes(item) ? { backgroundColor: '#ADD8E6', borderRadius: 12} : { backgroundColor: 'transparent' }]}>
 
                                 <TouchableOpacity
                                     style={styles.itemContentContainer}
@@ -253,7 +270,6 @@ const List = () => {
                                                 :   'pencil'
                                             } 
                                             style={{
-                                                backgroundColor: mergeMode && selectedMergeItems.includes(item) ? '#ADD8E6' : 'transparent',
                                                 padding: '2%',
                                                 borderRadius: 5
                                             }} 
@@ -385,45 +401,12 @@ const List = () => {
                                 </View>
                                 {activeList === 'second' && (
                                 <View>
-                                    <Text style={[styles.subtitle, {color: '#b45309', paddingHorizontal: 10, paddingBottom: 10}]}>
-                                        Sort by store
-                                    </Text>
                                     <View style={[styles.storeContainer]}>
-                                        <View style={{ 
-                                                width: '50%', 
-                                                flexDirection: 'row',
-                                                alignSelf: 'center',
-                                                marginBottom: Platform.select({
-                                                    web: '2%',
-                                                }), 
-                                                gap: '2%',
-                                                height: '145%',
-                                                paddingVertical: 10,
-                                                justifyContent: 'center',
-                                            }}>
-                                            <TouchableOpacity
-                                                onPress={() => {router.push('/new_store')}}
-                                                style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
-                                            >
-                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500', color: '#EADDCA'}}>
-                                                    + Store
-                                                </Text>
-                                            </TouchableOpacity>
-                                        
-                                            <TouchableOpacity
-                                                onPress={() => {router.push('/delete_store')}}
-                                                style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
-                                            >
-                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500', color: '#EADDCA'}}>
-                                                    - Store
-                                                </Text>
-                                            </TouchableOpacity>
-                                        </View>
                                         <TouchableOpacity
                                             onPress={() => {setIsStorePopupVisible(true)}}
-                                            style={{backgroundColor: '#b45309', paddingVertical: '4%', borderRadius: 10, width: '50%', }}
+                                            style={{backgroundColor: '#b45309', paddingVertical: '4%', borderRadius: 10, width: '85%', }}
                                         >
-                                            <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', fontWeight: '500', color: '#EADDCA'}}>
+                                            <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', fontWeight: '800', color: '#EADDCA'}}>
                                                 Set Sorted Store
                                             </Text>
                                         </TouchableOpacity>
@@ -436,7 +419,12 @@ const List = () => {
                                 <View style={{alignItems: 'center', paddingBottom: 5}}>
                                     <AppButton
                                         text='Select Merge Items'
-                                        onPress={() => setMergeMode(mergeMode === false ? true : false)}
+                                        onPress={() => {
+                                            if (mergeMode) {
+                                                setSelectedMergeItems([])
+                                            }
+                                            setMergeMode(!mergeMode)
+                                        }}
                                         textColor='#EADDCA'
                                         isFullWidth={false}
                                         //@ts-ignore
@@ -447,40 +435,39 @@ const List = () => {
                         }
                         ListEmptyComponent={
                             <Text style={styles.emptyList}>
-                                No Items Found
+                                Add your first Item to get started
                             </Text>
                         }
                         ListFooterComponent={
-                            <View style={{paddingBottom: 10}}>
-                                {mergeMode &&
-                                    selectedMergeItems.filter(id =>
-                                      [...pantryItems, ...groceryItems].some(item => selectedMergeItems.includes(item))
-                                    ).length >= 2 && (
+                            <View style={{ paddingBottom: 10 }}>
+                                    {mergeMode && selectedMergeItems.filter(selectedItem =>
+                                        [...pantryItems, ...groceryItems].some(item => item.id === selectedItem.id)
+                                    ).length > 1 && (
                                         <View style={{ alignItems: 'center', paddingTop: 5 }}>
                                             <AppButton
-                                                text='Merge Items'
-                                                textColor='#EADDCA'
+                                                text="Merge Items"
+                                                textColor="#EADDCA"
                                                 isFullWidth={false}
-                                                // @ts-ignore
+                                                //@ts-ignore
                                                 width={'90%'}
                                                 onPress={handleMergeItems}
                                             />
                                         </View>
-                                )}
+                                    )}
 
-                                <View style={{paddingTop: 8, alignItems: 'center'}}>
-                                    <AppButton
-                                        text='Share this List'
-                                        onPress={() => handleShareList(activeList)}
-                                        isFullWidth={false}
-                                        //@ts-ignore
-                                        width={'90%'}
-                                        textColor='#EADDCA'
-                                    />
+                                    <View style={{ paddingTop: 8, alignItems: 'center' }}>
+                                        <AppButton
+                                            text="Share this List"
+                                            onPress={() => handleShareList(activeList)}
+                                            isFullWidth={false}
+                                            //@ts-ignore
+                                            width={'90%'}
+                                            textColor="#EADDCA"
+                                        />
+                                    </View>
                                 </View>
+                            }
 
-                            </View>
-                        }
                     />
                     <View style={styles.buttonContainer}>
                         <AppButton
@@ -518,7 +505,6 @@ const List = () => {
                     />
                     <StoreForwardPopup
                         isVisible={isStorePopupVisible}
-                        stores={stores}
                         onClose={() => setIsStorePopupVisible(false)}
                         onConfirm={(storeItem) => {
                             setStore(storeItem);
@@ -707,7 +693,7 @@ const styles = StyleSheet.create({
     emptyList: {
         flex: 1,
         alignItems: 'center',
-        top: '25%',
+        top: '50%',
         justifyContent: 'center',
         textAlign: 'center',
         fontWeight: '700',

@@ -9,6 +9,7 @@ export type ListItem = {
     amount: string;
     unit: string;
     store: string;
+    photo?: string;
 };
 
 export type Store = {
@@ -117,6 +118,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
         if(storeList) {
             const parsedStores = JSON.parse(storeList);
             setStores(parsedStores.length > 0 ? parsedStores : [{ label: 'General', value: 'general' }])
+            console.log(stores)
         } else {
             setStores(storeList ? JSON.parse(storeList) : []);
         }

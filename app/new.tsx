@@ -11,7 +11,7 @@ import { ListItem, UseItems } from "./context/ItemContext";
 const NewItemScreen = () => {
     const router = useRouter();
     const inputRef = React.useRef(null);
-    const {listType, itemName, dupeItemAlert, merge, mergedItemsList} = useLocalSearchParams();
+    const {listType, itemName, dupeItemAlert, merge, photouri} = useLocalSearchParams();
     const [inputText, setInputText] = useState<string>(typeof itemName === 'string' ? itemName : '');
     const {addToPantry, addToGrocery, removeFromGrocery, removeFromPantry, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
     const [category, setCategory] = useState('other');
@@ -129,9 +129,11 @@ const NewItemScreen = () => {
                 category,
                 amount: amount || '1',
                 unit: unit || 'count',
-                store: store || 'general'
+                store: store || 'General',
+                photouri: photouri || null
             };
         
+            console.log(newItem)
             if (listType === 'pantry') {
                 await addToPantry(newItem);
                 console.log('Added to pantry:', newItem);
@@ -140,7 +142,6 @@ const NewItemScreen = () => {
                 console.log('Added to grocery:', newItem);
             }
             router.back();
-            console.log(stores)
         } catch (error) {
             console.error('Error adding item:', error);
             alert('Failed to add item. Please try again.');
@@ -257,7 +258,7 @@ const NewItemScreen = () => {
                             }))}
                             save="value"
                             search={false}
-                            defaultOption={{ key: 'general', value: 'General' }}
+                            defaultOption={{ key: 'General', value: 'general' }}
                             boxStyles={styles.unitDropdown}
                             inputStyles={{
                                 fontWeight: '500',
@@ -282,7 +283,7 @@ const NewItemScreen = () => {
                         />
                     </View>
                     )}
-
+                    
                 <View style={styles.buttonContainer}>
                     <AppButton
                         text="Done"

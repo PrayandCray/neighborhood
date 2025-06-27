@@ -1,5 +1,6 @@
 import { UseItems } from '@/app/context/ItemContext';
 import AppButton from '@/components/button';
+import StoreForwardPopup from '@/components/storepopup';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
@@ -7,19 +8,21 @@ import { Alert, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-
 
 const ShareListScreen = () => {
 
-    const {groceryItems, pantryItems} = UseItems()
+    const {groceryItems, pantryItems, stores} = UseItems()
 
     const params = useLocalSearchParams();
     const includeGroceryParam = params.includeGrocery === 'true';
     const includePantryParam = params.includePantry === 'true'
 
     const [includeGrocery, setIncludeGrocery] = useState(includeGroceryParam);
+    const [selectedStore, setSelectedStore] = useState<string>('all');
+    const [showStoreModal, setShowStoreModal] = useState(false);
     const [includePantry, setIncludePantry] = useState(includePantryParam);
 
     const formatList = (title: string, items: any[]) => {
         if (!items.length) return `${title}:\n(no items)\n`;
 
-        return `${title}:\n` + items.map(item => {
+        return `${title}:\n` + `${items.length} items\n\n` + items.map(item => {
             const amount = item.amount || 1;
             const unit = item.unit && item.unit !== 'count' ? `${item.unit}` : '';
             return `- ${amount} ${unit} ${item.name}`;
@@ -28,8 +31,14 @@ const ShareListScreen = () => {
 
     const getShareText = () => {
         let sections = [];
-        if (includeGrocery) sections.push(formatList('🛒 Grocery List', groceryItems));
-        if (includePantry) sections.push(formatList('🏠 Pantry', pantryItems));
+        if (includeGrocery) {
+            const filtered = filterByStore(groceryItems)
+            sections.push(formatList('🛒 Grocery List', filtered));
+        }
+        if (includePantry) {
+            const filtered = filterByStore(pantryItems)
+            sections.push(formatList('🏠 Pantry', filtered));
+        }
         return sections.join('\n\n');
     };
 
@@ -37,6 +46,13 @@ const ShareListScreen = () => {
         const text = getShareText();
         await Clipboard.setStringAsync(text);
         Alert.alert('Copied!', 'List copied to clipboard.');
+    };
+
+    const filterByStore = (items: any[]) => {
+        if (!selectedStore || selectedStore.toLowerCase() === 'all') return items;
+        return items.filter(item =>
+            item.store?.toLowerCase().trim() === selectedStore.toLowerCase().trim()
+        );
     };
 
     const handleShare = async () => {
@@ -63,6 +79,12 @@ const ShareListScreen = () => {
             </View>
 
             <View style={styles.buttonContainer}>
+                <Text style={{ fontWeight: 'bold' }}>Store: {selectedStore}</Text>
+                <AppButton
+                    text="🛒 Choose Store"
+                    isFullWidth={true}
+                    onPress={() => setShowStoreModal(true)}
+                />
                 <AppButton
                     text="📋 Copy List"
                     onPress={handleCopy}
@@ -76,7 +98,17 @@ const ShareListScreen = () => {
             </View>
 
             <Text style={styles.previewTitle}> Preview: </Text>
-            <Text style={styles.previewText}> {getShareText()} </Text>
+            <Text style={[styles.previewText, {paddingBottom: 200}]}> {getShareText()} </Text>
+
+            <StoreForwardPopup
+                isVisible={showStoreModal}
+                onClose={() => setShowStoreModal(false)}
+                onConfirm={(storeName: string) => {
+                    setSelectedStore(storeName);
+                    setShowStoreModal(false);
+                }}
+                stores={stores}
+            />
 
         </ScrollView>
     )

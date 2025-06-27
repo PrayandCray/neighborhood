@@ -36,6 +36,19 @@ export default function StackLayout(){
               />
 
               <Stack.Screen
+                  name="item_photo"
+                  options={{
+                    headerShown: true,
+                    headerTitle: 'Scan Item',
+                    headerTitleAlign: 'center',
+                    headerStyle: { backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+                    headerTransparent: true,
+                    headerTintColor: '#b45309',
+                    headerBackButtonDisplayMode: 'minimal',
+                }}
+              />
+
+              <Stack.Screen
                   name="delete_store"
                   options={({
                                 route,
@@ -94,27 +107,7 @@ export default function StackLayout(){
                       };
                   }}
               />
-
-              <Stack.Screen
-                  name="save_grocery_list"
-                  options={({
-                                route,
-                            }: {
-                      route: { params?: { headerTitle?: string } }
-                  }) => {
-                      const headerTitle = route.params?.headerTitle || 'Save Grocery List';
-
-                      return {
-                          presentation: 'modal',
-                          animation: 'slide_from_bottom',
-                          headerTitle: headerTitle,
-                          headerTitleAlign: 'center',
-                          headerStyle: {backgroundColor: '#EADDCA'},
-                          headerTintColor: '#b45309',
-                      };
-                  }}
-              />
-
+              
               <Stack.Screen
                   name="new"
                   options={({

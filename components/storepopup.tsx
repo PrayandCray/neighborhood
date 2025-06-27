@@ -1,6 +1,7 @@
 import { Store, UseItems } from "@/app/context/ItemContext";
+import { router } from "expo-router";
 import React from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 
 interface StorePopupProps {
@@ -39,7 +40,7 @@ const StoreForwardPopup: React.FC<StorePopupProps> = ({
                 <View style={{flexDirection: 'column', width: '90%', alignSelf: 'center'}}>
                         <FlatList
                         style={styles.storeList}
-                            data={stores}
+                            data={[{label: 'All', value: 'all'}, ...stores]}
                             keyExtractor={(item, index) => typeof item === 'string' ? item : item.value || index.toString()}
                             renderItem={({ item }) => (
                                 <View style={{ borderRadius: 16, backgroundColor: '#d97706', marginBottom: 6 }}>
@@ -52,6 +53,44 @@ const StoreForwardPopup: React.FC<StorePopupProps> = ({
                                     </Text>
                                 </View>
                             )}
+                            ListFooterComponent={
+                                <View style={{ 
+                                        maxHeight: '30%',
+                                        flexDirection: 'row',
+                                        alignSelf: 'center',
+                                        marginBottom: Platform.select({
+                                            web: '2%',
+                                        }), 
+                                        gap: '2%',
+                                        height: '145%',
+                                        padding: 10,
+                                        justifyContent: 'center',
+                                    }}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            onClose()
+                                            router.push('/new_store')
+                                        }}
+                                        style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
+                                    >
+                                        <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500', color: '#EADDCA'}}>
+                                            + Store
+                                        </Text>
+                                    </TouchableOpacity>
+                                
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            onClose()
+                                            router.push('/delete_store')
+                                        }}
+                                        style={{backgroundColor: '#b45309', paddingVertical: '3%', borderRadius: 10, width: '50%'}}
+                                    >
+                                        <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', top: '20%', fontWeight: '500', color: '#EADDCA'}}>
+                                            - Store
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            }
                         />
                 </View>
             </View>

@@ -60,6 +60,27 @@ const MergeItemsScreen = () => {
         <View style={styles.container}>
             <Text style={styles.text}>List of merged items</Text>
 
+            <View style={[styles.input, {alignItems: 'center', alignSelf: 'center'}]}>
+                <TextInput
+                    value={itemName}
+                    onChangeText={setItemName}
+                    placeholder="Enter Name of Merged Item"
+                    placeholderTextColor={'#b45309'}
+                />
+            </View>
+
+            <View>
+                <View style={{paddingTop: 15}}>
+                    <AppButton
+                        text="Merge items into New Name"
+                        onPress={() => handleMergeNewItem(itemName)}
+                        isFullWidth={true}
+                    />
+                </View>
+            </View>
+
+            <Text style={[styles.text, {paddingTop: 40}]}> Or select an item to merge into </Text>
+
             <View style={styles.flatListContainer}>
                 <FlatList
                     style={{alignSelf: 'center'}}
@@ -79,25 +100,6 @@ const MergeItemsScreen = () => {
                 />
             </View>
 
-            <View style={styles.input}>
-                <TextInput
-                    value={itemName}
-                    onChangeText={setItemName}
-                    placeholder="Enter Name of Merged Item"
-                    placeholderTextColor={'#b45309'}
-                />
-            </View>
-
-            <View>
-                <View style={{paddingTop: 15}}>
-                    <AppButton
-                        text="Merge items into New Name"
-                        onPress={() => handleMergeNewItem(itemName)}
-                        isFullWidth={true}
-                    />
-                </View>
-            </View>
-
         </View>
     );
 };
@@ -106,6 +108,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        paddingTop: 8,
         backgroundColor: "#EADDCA",
     },
     flatListContainer: {
