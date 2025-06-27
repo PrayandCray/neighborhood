@@ -129,7 +129,7 @@ const NewItemScreen = () => {
                 category,
                 amount: amount || '1',
                 unit: unit || 'count',
-                store: listType === 'grocery' ? store : 'any',
+                store: store || 'general'
             };
         
             if (listType === 'pantry') {
@@ -140,6 +140,7 @@ const NewItemScreen = () => {
                 console.log('Added to grocery:', newItem);
             }
             router.back();
+            console.log(stores)
         } catch (error) {
             console.error('Error adding item:', error);
             alert('Failed to add item. Please try again.');

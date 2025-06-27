@@ -81,6 +81,14 @@ const Home = () => {
                         borderColor={'#fff'}
                         textColor={'#EADDCA'}
                     />
+                    <AppButton
+                        text='Share List'
+                        onPress={() => {
+                            router.push('/share_list')
+                            }}
+                        borderColor={'#fff'}
+                        textColor={'#EADDCA'}
+                    />
                 </View>
                 <View style={{ alignSelf: "center", top: '45.5%'}}>
                     <AppButton

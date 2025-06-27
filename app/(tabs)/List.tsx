@@ -138,6 +138,20 @@ const List = () => {
     }
     const filteredItems = React.useMemo(() => filterItemsByStore(store, sortedItems), [store, sortedItems]);
 
+    const handleShareList = (activeList: string) => {
+        if (activeList === 'first') {
+            router.push({
+                pathname: '/share_list',
+                params: { includePantry: 'true', includeGrocery: 'false' },
+            });
+        } else {
+            router.push({
+                pathname: '/share_list',
+                params: { includePantry: 'false', includeGrocery: 'true' },
+            });
+        }
+    };
+
 
     return (
         <LinearGradient
@@ -453,6 +467,17 @@ const List = () => {
                                             />
                                         </View>
                                 )}
+
+                                <View style={{paddingTop: 8, alignItems: 'center'}}>
+                                    <AppButton
+                                        text='Share this List'
+                                        onPress={() => handleShareList(activeList)}
+                                        isFullWidth={false}
+                                        //@ts-ignore
+                                        width={'90%'}
+                                        textColor='#EADDCA'
+                                    />
+                                </View>
 
                             </View>
                         }
