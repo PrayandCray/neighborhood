@@ -42,6 +42,14 @@ const List = () => {
         })
     }
 
+    const handleMergeItems = () => {
+        router.push({
+            pathname: '/merge_items',
+            params: { mergedItemsList: JSON.stringify(selectedMergeItems), listType: activeList }
+        })
+        setSelectedMergeItems([])
+    }
+
     const handleDecrement = async (item: { id: string; name: string; amount: string }) => {
         const newAmount = Math.max(0, parseInt(item.amount) - 1);
         
@@ -430,23 +438,22 @@ const List = () => {
                         }
                         ListFooterComponent={
                             <View style={{paddingBottom: 10}}>
-                                {mergeMode && 
-                                    <View style={{alignItems: 'center', paddingTop: 5}}>
-                                        <AppButton
-                                            text='Merge Items'
-                                            textColor='#EADDCA'
-                                            isFullWidth={false}
-                                            //@ts-ignore
-                                            width={'90%'}
-                                            onPress={() =>
-                                                router.push({
-                                                    pathname: '/merge_items',
-                                                    params: { mergedItemsList: JSON.stringify(selectedMergeItems), listType: activeList}
-                                                })
-                                            }
-                                        />
-                                    </View>
-                                }
+                                {mergeMode &&
+                                    selectedMergeItems.filter(id =>
+                                      [...pantryItems, ...groceryItems].some(item => selectedMergeItems.includes(item))
+                                    ).length >= 2 && (
+                                        <View style={{ alignItems: 'center', paddingTop: 5 }}>
+                                            <AppButton
+                                                text='Merge Items'
+                                                textColor='#EADDCA'
+                                                isFullWidth={false}
+                                                // @ts-ignore
+                                                width={'90%'}
+                                                onPress={handleMergeItems}
+                                            />
+                                        </View>
+                                )}
+
                             </View>
                         }
                     />
