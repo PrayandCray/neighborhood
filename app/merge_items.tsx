@@ -1,10 +1,13 @@
 import AppButton from "@/components/button";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ListItem, UseItems } from "./context/ItemContext";
 
 const MergeItemsScreen = () => {
+    const {removeFromGrocery, removeFromPantry} = UseItems()
     const [itemName, setItemName] = React.useState('')
+    const [mergedItems, setMergedItems] = React.useState<ListItem[]>([]);
 
     const { mergedItemsList } = useLocalSearchParams<{
         mergedItemsList?: string;
@@ -20,8 +23,38 @@ const MergeItemsScreen = () => {
             params: {itemName: name, merge: 'true', mergedItemsList, listType: convertedListType}
         })
         console.log(name)
-
     }
+
+    React.useEffect(() => {
+        if (mergedItemsList) {
+            try {
+                const parsed = JSON.parse(mergedItemsList);
+                setMergedItems(parsed);
+            } catch (e) {
+                console.error("Failed to parse mergedItemsList", e);
+            }
+        }
+    }, [mergedItemsList]);
+
+    const updateMergedItems = async (idToRemove: string) => {
+        setMergedItems(prev => prev.filter(item => item.id !== idToRemove));
+        console.log('Updated merged items:', mergedItems);
+    }
+
+    const handleRemoveMergeSelectedItem = async (idToRemove: string) => {
+        await updateMergedItems(idToRemove)
+        for (const item of mergedItems) {
+            if (convertedListType === 'pantry') {
+                await removeFromPantry(item.id);
+                console.log(`deleted pantry item ${item.name}`)
+            } else {
+                await removeFromGrocery(item.id);
+                console.log(`deleted grocery item ${item.name}`)
+            }
+            useRouter().back()
+        }
+        setMergedItems([]);
+    };
 
     return (
         <View style={styles.container}>
@@ -35,9 +68,13 @@ const MergeItemsScreen = () => {
                     showsHorizontalScrollIndicator={true}
                     persistentScrollbar={true}
                     renderItem={({ item }) => (
-                        <View>
-                            <Text style={{textAlign: 'center', paddingVertical: 5}}>{item.name}</Text>
-                        </View>
+                        <TouchableOpacity
+                            onPress={() => {
+                                handleRemoveMergeSelectedItem(item.id)
+                            }}
+                        >
+                            <Text style={{textAlign: 'center', paddingVertical: 5, fontSize: 16}}>{item.name}</Text>
+                        </TouchableOpacity>
                     )}
                 />
             </View>

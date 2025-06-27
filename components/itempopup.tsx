@@ -25,8 +25,19 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
 
     const {
         stores,
-        updatePantryItem,
+        pantryItems,
+        groceryItems,
+        removeFromGrocery,
+        removeFromPantry,
+        addToPantry,
+        addToGrocery,
     } = UseItems();
+
+    const getItemById = (id: string) => {
+        return listType === 'first'
+            ? pantryItems.find(item => item.id === id)
+            : groceryItems.find(item => item.id === id)
+    };
 
     const [amount, setAmount] = React.useState('');
 
@@ -52,13 +63,13 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
             {listType === 'first' &&
             <View style={styles.popupContent}>
                 <Text style={styles.title}>
-                    Where do you want to move {itemName || 'item'}?
+                    Do you want to delete {itemName || 'item'}?
                 </Text>
                 <View style={{flexDirection: 'column'}}>
 
                     <View>
                         <Text style={[styles.title, {fontSize: 14, color: 'black', fontWeight: '600'}]}>
-                            Grocery Stores:
+                            (Or select a store to move it to)
                         </Text>
                         <TextInput style={styles.textInputStyle}
                         keyboardType="numeric"
@@ -93,14 +104,23 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
                                 <View style={{ borderRadius: 16, backgroundColor: '#d97706', marginBottom: 6 }}>
                                     <Text
                                         style={{ padding: 10, textAlign: 'center' }}
-                                        onPress={() => {
+                                        onPress={async () => {
                                             if (itemId) {
-                                            updatePantryItem(itemId, {
-                                                listType: 'grocery',
-                                                store: typeof item === 'string' ? item : item.label,
-                                                unit: 'count',
-                                                amount: amount || '1',
-                                            })};
+                                                const originalItem = getItemById(itemId);
+                                                if (originalItem) {
+                                                    await addToGrocery({
+                                                        //@ts-ignore
+                                                        dontAsk: true,
+                                                        ...originalItem,
+                                                        id: Date.now().toString(),
+                                                        store: typeof item === 'string' ? item : item.value,
+                                                        unit: 'count',
+                                                        amount: amount || '1'
+                                                    });
+                                                    await removeFromPantry(itemId);
+                                                    console.log('moved to grocery')
+                                                }
+                                            }
                                             onClose();
                                         }}>
                                         {typeof item === 'string' ? item : item.label || item.value}
@@ -145,22 +165,29 @@ const PantryForwardPopup: React.FC<PantryPopupProps> = ({
 
                 <View style={styles.buttonContainer}>
                         <AppButton
-                            text="No"
-                            onPress={onClose}
+                            text="Yes"
+                            onPress={async () => {
+                                if (itemId) {
+                                    const originalItem = getItemById(itemId);
+                                    if (originalItem) {
+                                        await addToPantry({
+                                            ...originalItem,
+                                            id: Date.now().toString(),
+                                            unit: 'count',
+                                            amount: amount || '1',
+                                        });
+                                        await removeFromGrocery(itemId);
+                                        console.log('Moved to pantry');
+                                    }
+                                }
+                                onClose();
+                            }}
                             backgroundColor="#6B7280"
                             width={120}
                         />
                         <AppButton
-                            text="Yes"
-                            onPress={() => {
-                                if (itemId) {
-                                updatePantryItem(itemId, {
-                                    listType: 'pantry',
-                                    unit: 'count',
-                                    amount: amount || '1',
-                                })};
-                                onClose();
-                            }}
+                            text="No, Delete"
+                            onPress={onClose}
                             backgroundColor="#DC2626"
                             width={120}
                         />

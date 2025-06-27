@@ -130,13 +130,14 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(false);
     };
 
-    const updatePantryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => {
+    const updatePantryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string, store?: string, listType?: string }) => {
         setPantryItems(prev => prev.map(item =>
             item.id === id ? { ...item, ...updates } : item
         ));
+        console.log(id, updates)
     };
 
-    const updateGroceryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string }) => {
+    const updateGroceryItem = async (id: string, updates: { name?: string; amount?: string; unit: string; category?: string, store?: string, listType?: string }) => {
         setGroceryItems(prev => prev.map(item =>
             item.id === id ? { ...item, ...updates } : item
         ));
@@ -156,7 +157,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
 
     };
 
-    const addToGrocery = async (item: ListItem) => {
+    const addToGrocery = async (item: ListItem, dontAsk?: boolean ) => {
         const duplicate = groceryItems.find(existingItem =>
             existingItem.name.toLowerCase().trim() === item.name.toLowerCase().trim()
         );
@@ -169,7 +170,7 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
             const itemAmount = (parseInt(item.amount))
             duplicate.amount = (parseInt(duplicate.amount) + itemAmount). toString();
         } else {
-            if (pantryDuplicate) {
+            if (pantryDuplicate && dontAsk) {
                 Alert.alert(
                     'Already in pantry',
                     `${item.name} is already in your pantry.`,

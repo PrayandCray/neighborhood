@@ -54,8 +54,7 @@ const List = () => {
         const newAmount = Math.max(0, parseInt(item.amount) - 1);
         
         if (newAmount === 0) {
-            setSelectedItem(item);
-            setIsPopupVisible(true);
+            await deleteItem(item)
         } else {
             if (activeList === 'first') {
                 await removeSinglePantryItem(item.id);
@@ -64,6 +63,11 @@ const List = () => {
             }
         }
     };
+
+    const deleteItem = async (item: { id: string; name: string; amount: string }) => {
+            setSelectedItem(item);
+            setIsPopupVisible(true);
+    }
 
     const handleConfirmMove = async () => {
         if (selectedItem) {
@@ -303,11 +307,7 @@ const List = () => {
                                             size={25}
                                             color="#b45309"
                                             onPress={() => {
-                                                if (activeList === 'first') {
-                                                        removeFromPantry(item.id);
-                                                    } else {
-                                                        removeFromGrocery(item.id);
-                                                    }
+                                                deleteItem(item)
                                                 console.log(stores);
                                             }}
                                         />
