@@ -1,12 +1,12 @@
 import AppButton from "@/components/button";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect } from "react";
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { ListItem, UseItems } from "./context/ItemContext";
 import { useStyle } from "./context/styleContext";
 
 const MergeItemsScreen = () => {
-    const {removeFromGrocery, removeFromPantry} = UseItems();
+    const {removeFromGrocery, removeFromPantry, updatePantryItem, updateGroceryItem} = UseItems();
     const { activeStyle } = useStyle();
     const [itemName, setItemName] = React.useState('');
     const [mergedItems, setMergedItems] = React.useState<ListItem[]>([]);
@@ -31,6 +31,7 @@ const MergeItemsScreen = () => {
     const { mergedItemsList } = useLocalSearchParams<{
         mergedItemsList?: string;
     }>();
+
     const {listType} = useLocalSearchParams()
     const convertedListType = listType === 'first' ? 'pantry' : 'grocery';
 
@@ -55,25 +56,49 @@ const MergeItemsScreen = () => {
         }
     }, [mergedItemsList]);
 
-    const updateMergedItems = async (idToRemove: string) => {
-        setMergedItems(prev => prev.filter(item => item.id !== idToRemove));
-        console.log('Updated merged items:', mergedItems);
-    }
+    const handleRemoveMergeSelectedItem = async (idToKeep: string) => {
+        const itemToKeep = mergedItems.find(item => item.id === idToKeep);
+        const itemsToRemove = mergedItems.filter(item => item.id !== idToKeep);
+        const unitsMatch = mergedItems.every(item => item.unit === itemToKeep?.unit);
 
-    const handleRemoveMergeSelectedItem = async (idToRemove: string) => {
-        await updateMergedItems(idToRemove)
-        for (const item of mergedItems) {
+        if (!itemToKeep) return;
+
+        if (!unitsMatch) {
+            Alert.alert(
+                'Unit Mismatch',
+                'All items must have the same unit to merge their amounts.',
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+        const totalAmount = itemsToRemove.reduce((sum, item) => {
+            const amt = parseFloat(item.amount || '0');
+            return sum + (isNaN(amt) ? 0 : amt);
+        }, parseFloat(itemToKeep.amount || '0') || 0);
+
+        const updatedItem = {
+            ...itemToKeep,
+            amount: totalAmount.toString(),
+        };
+
+        if (convertedListType === 'pantry') {
+            await updatePantryItem(idToKeep, updatedItem);
+        } else {
+            await updateGroceryItem(idToKeep, updatedItem);
+        }
+
+        for (const item of itemsToRemove) {
             if (convertedListType === 'pantry') {
                 await removeFromPantry(item.id);
-                console.log(`deleted pantry item ${item.name}`)
             } else {
                 await removeFromGrocery(item.id);
-                console.log(`deleted grocery item ${item.name}`)
             }
-            useRouter().back()
         }
-        setMergedItems([]);
+
+        useRouter().back();
     };
+
+
 
     return (
         <View style={styles.container}>
@@ -103,18 +128,15 @@ const MergeItemsScreen = () => {
 
             <View style={styles.flatListContainer}>
                 <FlatList
-                    style={{alignSelf: 'center'}}
+                    style={{ alignSelf: 'center' }}
                     data={items}
+                    keyExtractor={(item) => item.id}
                     scrollEnabled={true}
-                    showsHorizontalScrollIndicator={true}
-                    persistentScrollbar={true}
                     renderItem={({ item }) => (
-                        <TouchableOpacity
-                            onPress={() => {
-                                handleRemoveMergeSelectedItem(item.id)
-                            }}
-                        >
-                            <Text style={{textAlign: 'center', paddingVertical: 5, fontSize: 16}}>{item.name}</Text>
+                        <TouchableOpacity onPress={() => handleRemoveMergeSelectedItem(item.id)}>
+                            <Text style={{ textAlign: 'center', paddingVertical: 5, fontSize: 16 }}>
+                                {item.name}
+                            </Text>
                         </TouchableOpacity>
                     )}
                 />
