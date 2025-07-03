@@ -1,9 +1,15 @@
-import { View, Platform, StyleSheet} from 'react-native';
+import { useStyle } from "@/app/context/styleContext";
 import React from "react";
+import { Platform, StyleSheet, View } from 'react-native';
 
 const AppWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const {changeBackgroundColor, activeStyle} = useStyle();
+
     return (
-        <View style={styles.wrapper}>
+        <View style={[
+            styles.wrapper,
+            { backgroundColor: activeStyle === 'dark' ? '#000' : '#fff' }
+        ]}>
             {children}
         </View>
     );

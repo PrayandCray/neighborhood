@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
+import { StyleProvider } from './styleContext';
 
 export type ListItem = {
     id: string;
@@ -312,33 +313,35 @@ export const ItemProvider = ({ children }: { children: React.ReactNode }) => {
     };
     
     return (
-        <ItemContext.Provider value={{
-            pantryItems,
-            groceryItems,
-            categories,
-            unitOptions,
-            stores,
-            addStore,
-            updateStore,
-            deleteStore,
-            fetchItems,
-            addToPantry,
-            addToGrocery,
-            removeFromPantry,
-            removeFromGrocery,
-            removeSinglePantryItem,
-            removeSingleGroceryItem,
-            addSinglePantryItem,
-            addSingleGroceryItem,
-            updatePantryItem,
-            updateGroceryItem,
-            resetData,
-            isLoading,
-            error,
-            isAuthenticated,
-        }}>
-            {children}
-        </ItemContext.Provider>
+        <StyleProvider>
+            <ItemContext.Provider value={{
+                pantryItems,
+                groceryItems,
+                categories,
+                unitOptions,
+                stores,
+                addStore,
+                updateStore,
+                deleteStore,
+                fetchItems,
+                addToPantry,
+                addToGrocery,
+                removeFromPantry,
+                removeFromGrocery,
+                removeSinglePantryItem,
+                removeSingleGroceryItem,
+                addSinglePantryItem,
+                addSingleGroceryItem,
+                updatePantryItem,
+                updateGroceryItem,
+                resetData,
+                isLoading,
+                error,
+                isAuthenticated,
+            }}>
+                {children}
+            </ItemContext.Provider>
+        </StyleProvider>
     );
 };
 

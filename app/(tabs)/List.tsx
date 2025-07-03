@@ -4,10 +4,14 @@ import AppButton from "@/components/button";
 import PantryForwardPopup from '@/components/itempopup';
 import StoreForwardPopup from '@/components/storepopup';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useStyle } from '../context/styleContext';
+
+function getBackgroundColor(activeStyle: string): string {
+    return activeStyle === 'dark' ? 'dark' : 'light';
+}
 
 const List = () => {
     const router = useRouter();
@@ -25,16 +29,16 @@ const List = () => {
     const [store, setStore] = React.useState('All');
 
     React.useEffect(() => {
-        setIsStorePopupVisible(showStorePopup === 'true');
-    }, [showStorePopup]);
+            setIsStorePopupVisible(showStorePopup === 'true');
+        }, [showStorePopup]);
 
-    const toggleItemSelection = (item: ListItem) => {
-    setSelectedMergeItems(prev =>
-        prev.some(i => i.id === item.id)
-            ? prev.filter(i => i.id !== item.id)
-            : [...prev, item]
-    );
-};
+        const toggleItemSelection = (item: ListItem) => {
+        setSelectedMergeItems(prev =>
+            prev.some(i => i.id === item.id)
+                ? prev.filter(i => i.id !== item.id)
+                : [...prev, item]
+        );
+    };
 
     const openItem = (item: ListItem) => {
         router.push({
@@ -113,6 +117,12 @@ const List = () => {
         addSingleGroceryItem,
     } = UseItems();
 
+    const {
+        activeStyle
+    } = useStyle();
+
+    const styles = getStyles(activeStyle);
+
     const currentItems = activeList === 'first' ? pantryItems : groceryItems;
 
     const sortedItems = React.useMemo(() => {
@@ -162,10 +172,6 @@ const List = () => {
 
 
     return (
-        <LinearGradient
-            colors={['#E2E2E2', '#B39171', '#843F00']}
-            locations={[0, 0.275, 1]}
-            style={styles.container}>
             <AppWrapper>
                 <SafeAreaView style={{ flex: 1 }}>
 
@@ -173,7 +179,7 @@ const List = () => {
                         List
                     </Text>
 
-                    <View style={[styles.listItemContainer, {paddingBottom: '4%'}]}>
+                    <View style={[styles.listItemContainer, {paddingBottom: '4%', width: '90%', alignSelf: 'center'}]}>
                             <View style={{
                                 gap: Platform.select({
                                     ios: 8,
@@ -233,19 +239,6 @@ const List = () => {
                                     />
                                 </View>
                             </View>
-                    </View>
-                    
-                    <View>
-                        {activeList === 'first' &&
-                            <Text style={styles.subtitle}>
-                                currently {pantryItems.length} items in your pantry list
-                            </Text>
-                        }
-                        {activeList === 'second' &&
-                            <Text style={styles.subtitle}>
-                                currently {groceryItems.length} items in your grocery list
-                            </Text>
-                        }
                     </View>
 
                     <FlatList
@@ -350,6 +343,22 @@ const List = () => {
                         ListHeaderComponent={
                             <View style={{gap: '10'}}>
 
+                                <View>
+                                    {activeList === 'first' &&
+                                        <Text style={[styles.subtitle, {paddingTop: 4, paddingBottom: 0}]}>
+                                            currently {pantryItems.length} items in your pantry list
+                                        </Text>
+                                    }
+                                    {activeList === 'second' &&
+                                        <Text style={[styles.subtitle, {paddingTop: 4, paddingBottom: 0}]}>
+                                            currently {groceryItems.length} items in your grocery list
+                                        </Text>
+                                    }
+                                </View>
+
+                                {currentItems.length > 0 && (
+
+                                <>
                                 <View style={styles.sortButtonContainer}>
                                     <TouchableOpacity
                                         onPress={() => setSortByCategory(!sortByCategory)}
@@ -367,7 +376,7 @@ const List = () => {
                                 <View style={styles.searchBar}>
                                     <Ionicons
                                         style={{paddingLeft: '3%', alignSelf: 'center'}}
-                                        name='search'
+                                        name='search' 
                                         size={20}
                                         color="#b45309"
                                     />
@@ -381,6 +390,45 @@ const List = () => {
                                         }}
                                     />
                                 </View>
+                        
+                                <Text style={styles.listHeaderText}>
+                                    {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
+                                </Text>
+
+                                {activeList === 'second' && (
+                                    <View>
+                                        <View style={[styles.storeContainer]}>
+                                            <TouchableOpacity
+                                                onPress={() => {setIsStorePopupVisible(true)}}
+                                                style={{backgroundColor: '#b45309', paddingVertical: '4%', borderRadius: 10, width: '85%', }}
+                                            >
+                                                <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', fontWeight: '800', color: '#EADDCA'}}>
+                                                    Set Sorted Store
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                )}
+
+                                <View style={{alignItems: 'center', paddingBottom: 5}}>
+                                    <AppButton
+                                        text='Select Merge Items'
+                                        onPress={() => {
+                                            if (mergeMode) {
+                                                setSelectedMergeItems([])
+                                            }
+                                            setMergeMode(!mergeMode)
+                                        }}
+                                        textColor='#EADDCA'
+                                        isFullWidth={false}
+                                        //@ts-ignore
+                                        width='90%'
+                                    />
+                                </View>
+                                </>
+
+                                )}
+
                                 <View style={[styles.buttonContainer, {paddingBottom: '0.5%'}]}>
                                     <AppButton
                                         text="My Pantry"
@@ -399,38 +447,8 @@ const List = () => {
                                         borderColor={activeList === 'second' ? '#fff' : '#b45309'}
                                         textColor={'#EADDCA'}/>
                                 </View>
-                                {activeList === 'second' && (
-                                <View>
-                                    <View style={[styles.storeContainer]}>
-                                        <TouchableOpacity
-                                            onPress={() => {setIsStorePopupVisible(true)}}
-                                            style={{backgroundColor: '#b45309', paddingVertical: '4%', borderRadius: 10, width: '85%', }}
-                                        >
-                                            <Text style={{fontFamily: 'sans-serif', fontSize: 14, textAlign: 'center', fontWeight: '800', color: '#EADDCA'}}>
-                                                Set Sorted Store
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                                )}
-                                <Text style={styles.listHeaderText}>
-                                    {activeList === 'first' ? 'My Pantry' : 'Grocery List'}
-                                </Text>
-                                <View style={{alignItems: 'center', paddingBottom: 5}}>
-                                    <AppButton
-                                        text='Select Merge Items'
-                                        onPress={() => {
-                                            if (mergeMode) {
-                                                setSelectedMergeItems([])
-                                            }
-                                            setMergeMode(!mergeMode)
-                                        }}
-                                        textColor='#EADDCA'
-                                        isFullWidth={false}
-                                        //@ts-ignore
-                                        width='90%'
-                                    />
-                                </View>
+
+                                
                             </View>
                         }
                         ListEmptyComponent={
@@ -456,20 +474,22 @@ const List = () => {
                                     )}
 
                                     <View style={{ paddingTop: 8, alignItems: 'center' }}>
-                                        <AppButton
-                                            text="Share this List"
-                                            onPress={() => handleShareList(activeList)}
-                                            isFullWidth={false}
-                                            //@ts-ignore
-                                            width={'90%'}
-                                            textColor="#EADDCA"
-                                        />
+                                        {currentItems.length > 0 && (
+                                            <AppButton
+                                                text="Share this List"
+                                                onPress={() => handleShareList(activeList)}
+                                                isFullWidth={false}
+                                                //@ts-ignore
+                                                width={'90%'}
+                                                textColor="#EADDCA"
+                                            />
+                                        )}
                                     </View>
                                 </View>
                             }
 
                     />
-                    <View style={styles.buttonContainer}>
+                    <View style={[styles.buttonContainer, {paddingBottom: '15%'}]}>
                         <AppButton
                             text="Scan Items"
                             onPress={() => router.push({
@@ -513,208 +533,216 @@ const List = () => {
                     />
                 </SafeAreaView>
             </AppWrapper>
-        </LinearGradient>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        backgroundColor: '#EADDCA',
-        padding: 16,
-        paddingBottom: Platform.select({
-            web: 16,
-            default: 80,
-        }),
-        gap: 16,
-        width: '100%',
+export const getStyles = (activeStyle: string) => {
+    const isDark = activeStyle === 'dark';
 
-    },
-    listContainer: {
-        flex: 2,
-        backgroundColor: '#fff',
-        borderRadius: 15,
-        padding: 16,
-        marginVertical: 8,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 8,
-        paddingBottom: 5,
-    },
-    sortButtonContainer: {
-        alignItems: 'center',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-    },
-    sortButton: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 8,
-        backgroundColor: '#fef3c7',
-    },
-    sortButtonActive: {
-        backgroundColor: '#b45309',
-    },
-    sortButtonText: {
-        fontSize: 12,
-        color: '#b45309',
-        fontWeight: '600',
-        textAlign: 'center',
-    },
-    sortButtonTextActive: {
-        color: '#EADDCA',
-    },
-    listItemContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#b45309',
-    },
-    itemContentContainer: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: '1%',
-        minWidth: 0,
-    },
-    listHeaderText: {
-        color: '#b45309',
-        fontSize: 16,
-        fontWeight: '800',
-        textAlign: 'center',
-        paddingBottom: 10,
-    },
-    listItem: {
-        flex: 2,
-        fontSize: 11,
-        fontWeight: '600',
-        paddingRight: 4,
-    },
-    categoryLabel: {
-        fontSize: 10,
-        fontWeight: '400',
-        color: '#d97706',
-        textAlign: 'center',
-        paddingVertical: 2,
-        paddingHorizontal: 3,
+    const backgroundMain = isDark ? '#333333' : '#fffaec';
+    const backgroundAlt = isDark ? '#444444' : '#fef3c7';
+    const textMain = isDark ? '#EADDCA' : '#b45309';
+    const textSecondary = isDark ? '#F5DEB3' : '#d97706';
 
-    },
-    categoryContainer: {
-        flex: 1,
-        minWidth: 60,
-        maxWidth: 70,
-        minHeight: 30,
-        maxHeight: 35,
-        justifyContent: 'center',
-        paddingHorizontal: 4,
-        borderRadius: 8,
-        backgroundColor: '#fef3c7',
-    },
-    plusMinusContainer: {
-        flex: 0,
-        flexDirection: "row",
-        gap: 4,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: Platform.select({
-            web: 16,
-            default: 0,
-        }),
-        marginRight: Platform.select({
-            web: 16,
-            default: 0,
-        }),
-    },
-    storeContainer: {
-        marginBottom: '1%',
-        position: 'relative',
-        width: '90%',
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        alignSelf: 'center',
-        gap: 10,
-        zIndex: 1,
-        marginTop: 10,
-        height: 45,   
-    },
-    unitDropdown: {
-        flex: 1,
-        height: 40,
-        borderColor: '#b45309',
-        borderRadius: 10,
-        backgroundColor: 'transparent',
-        width: '80%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 3,
-    },
-    storeDropdownStyle: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        paddingHorizontal: 4,
-        borderRadius: 8,
-        backgroundColor: '#fef3c7',
-    },
-    unitDropdownList: {
-        position: 'absolute',
-        width: '80%',
-        top: 45,
-        borderColor: '#b45309',
-        backgroundColor: '#fff',
-        zIndex: 5,
-    },
-    categorySmallContainer: {
-        width: 30,
-        borderRadius: 8,
-        backgroundColor: '#fef3c7',
-    },
-    trashContainer: {
-        alignItems: 'center',
-        marginLeft: 4,
-    },
-    searchBar: {
-        flexDirection: 'row',
-        paddingVertical: '2%',
-        backgroundColor: '#fef3c7',
-        borderRadius: 25
-    },
-    emptyList: {
-        flex: 1,
-        alignItems: 'center',
-        top: '50%',
-        justifyContent: 'center',
-        textAlign: 'center',
-        fontWeight: '700',
-        fontSize: 20,
-        color: '#b45309',
-    },
-    title: {
-        alignSelf: 'center',
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#b45309',
-        marginBottom: 8,
-    },
-    subtitle: {
-        alignItems: 'center',
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#d97706',
-        textAlign: 'center',
-        paddingBottom: 10,
-    },
-});
+    return StyleSheet.create({
+        container: {
+            flex: 1,
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            backgroundColor: backgroundMain,
+            padding: 16,
+            paddingBottom: Platform.select({
+                web: 16,
+                default: 80,
+            }),
+            gap: 16,
+            width: '100%',
+        },
+        listContainer: {
+            flex: 2,
+            backgroundColor: backgroundMain,
+            borderRadius: 15,
+            padding: 16,
+            marginVertical: 8,
+            width: '90%',
+            alignSelf: 'center',
+        },
+        buttonContainer: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: 8,
+            paddingBottom: 5,
+        },
+        sortButtonContainer: {
+            alignItems: 'center',
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+        },
+        sortButton: {
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 8,
+        },
+        sortButtonActive: {
+            backgroundColor: textMain,
+        },
+        sortButtonText: {
+            fontSize: 12,
+            color: textMain,
+            fontWeight: '600',
+            textAlign: 'center',
+        },
+        sortButtonTextActive: {
+            color: backgroundMain,
+        },
+        listItemContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignContent: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            paddingVertical: 10,
+            borderBottomWidth: 1,
+            borderBottomColor: textMain,
+        },
+        itemContentContainer: {
+            flex: 1,
+            justifyContent: 'flex-end',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '1%',
+            minWidth: 0,
+        },
+        listHeaderText: {
+            color: textMain,
+            fontSize: 16,
+            fontWeight: '800',
+            textAlign: 'center',
+            paddingBottom: 10,
+        },
+        listItem: {
+            color: textMain,
+            flex: 2,
+            fontSize: 11,
+            fontWeight: '600',
+            paddingRight: 4,
+        },
+        categoryLabel: {
+            fontSize: 10,
+            fontWeight: '400',
+            color: textSecondary,
+            textAlign: 'center',
+            paddingVertical: 2,
+            paddingHorizontal: 3,
+        },
+        categoryContainer: {
+            flex: 1,
+            minWidth: 60,
+            maxWidth: 70,
+            minHeight: 30,
+            maxHeight: 35,
+            justifyContent: 'center',
+            paddingHorizontal: 4,
+            borderRadius: 8,
+            backgroundColor: backgroundAlt,
+        },
+        plusMinusContainer: {
+            flex: 0,
+            flexDirection: 'row',
+            gap: 4,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft: Platform.select({
+                web: 16,
+                default: 0,
+            }),
+            marginRight: Platform.select({
+                web: 16,
+                default: 0,
+            }),
+        },
+        storeContainer: {
+            marginBottom: '1%',
+            position: 'relative',
+            width: '90%',
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            alignSelf: 'center',
+            gap: 10,
+            zIndex: 1,
+            marginTop: 10,
+            height: 45,
+        },
+        unitDropdown: {
+            flex: 1,
+            height: 40,
+            borderColor: textMain,
+            borderRadius: 10,
+            backgroundColor: 'transparent',
+            width: '80%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 3,
+        },
+        storeDropdownStyle: {
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            paddingHorizontal: 4,
+            borderRadius: 8,
+            backgroundColor: backgroundAlt,
+        },
+        unitDropdownList: {
+            position: 'absolute',
+            width: '80%',
+            top: 45,
+            borderColor: textMain,
+            backgroundColor: isDark ? '#222' : '#fff',
+            zIndex: 5,
+        },
+        categorySmallContainer: {
+            width: 30,
+            borderRadius: 8,
+            backgroundColor: backgroundAlt,
+        },
+        trashContainer: {
+            alignItems: 'center',
+            marginLeft: 4,
+        },
+        searchBar: {
+            flexDirection: 'row',
+            paddingVertical: '2%',
+            backgroundColor: backgroundAlt,
+            borderRadius: 25,
+        },
+        emptyList: {
+            flex: 1,
+            alignItems: 'center',
+            top: '50%',
+            justifyContent: 'center',
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 20,
+            color: textMain,
+        },
+        title: {
+            alignSelf: 'center',
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: textMain,
+            marginBottom: 8,
+        },
+        subtitle: {
+            alignItems: 'center',
+            fontSize: 14,
+            fontWeight: '600',
+            color: textSecondary,
+            textAlign: 'center',
+            paddingBottom: 10,
+        },
+    });
+};
 
 export default List;

@@ -1,5 +1,4 @@
 import { ItemProvider } from "@/app/context/ItemContext";
-import '@/firebaseConfig';
 import { Stack } from "expo-router";
 import "./globals.css";
 

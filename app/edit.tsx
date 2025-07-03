@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Keyboard, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SelectList } from "react-native-dropdown-select-list";
 import { UseItems } from './context/ItemContext';
+import { useStyle } from './context/styleContext';
 
 const EditScreen = () => {
     const { itemId, listType } = useLocalSearchParams();
@@ -18,6 +19,12 @@ const EditScreen = () => {
         updatePantryItem,
         updateGroceryItem
     } = UseItems();
+
+    const {
+        activeStyle
+    } = useStyle();
+
+    const styles = getStyles(activeStyle)
 
     const item = listType === 'pantry'
         ? pantryItems.find(item => item.id === itemId)
@@ -200,7 +207,12 @@ const EditScreen = () => {
     )
 }
 
-const styles = StyleSheet.create({
+export const getStyles =  (activeStyle: string) => {
+    const isDark = activeStyle === 'dark';
+
+    const backgroundMain = isDark ? '#333' : '#EADDCA'
+
+    return StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#EADDCA',
@@ -308,6 +320,6 @@ const styles = StyleSheet.create({
         gap: 16,
         marginTop: 24,
     },
-});
+})};
 
 export default EditScreen;

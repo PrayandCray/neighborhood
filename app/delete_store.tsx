@@ -98,7 +98,7 @@ const NewListScreen = () => {
                         </View>
                     </View>
                 </SafeAreaView>
-        </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>   
     );
 };
 
