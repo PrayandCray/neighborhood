@@ -1,4 +1,5 @@
 import { Store, UseItems } from "@/app/context/ItemContext";
+import { useStyle } from "@/app/context/styleContext";
 import { router } from "expo-router";
 import React from "react";
 import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -21,6 +22,12 @@ const StoreForwardPopup: React.FC<StorePopupProps> = ({
     const {
         stores,
     } = UseItems();
+
+    const {
+        activeStyle
+    } = useStyle();
+
+    const styles = getStyles(activeStyle)
 
     return (
         <Modal
@@ -55,7 +62,7 @@ const StoreForwardPopup: React.FC<StorePopupProps> = ({
                             )}
                             ListFooterComponent={
                                 <View style={{ 
-                                        maxHeight: '30%',
+                                        maxHeight: '45%',
                                         flexDirection: 'row',
                                         alignSelf: 'center',
                                         marginBottom: Platform.select({
@@ -98,56 +105,62 @@ const StoreForwardPopup: React.FC<StorePopupProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
-    modalContainer: {
-        margin: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    popupContent: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        width: '80%',
-        alignItems: 'center',
-    },
-    storeList: {
-        width: '100%',
-        maxHeight: 150,
-        marginBottom: 16,
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#f9fafb',
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    textInputStyle: {
-        height: 40,
-        borderColor: '#b45309',
-        borderWidth: 1,
-        borderRadius: 8,
-        alignSelf: 'center',
-        paddingHorizontal: 10,
-        marginBottom: 10,
-        width: '90%',
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        paddingHorizontal: 10,
-    }
-});
+export const getStyles =  (activeStyle: string) => {
+    const isDark = activeStyle === 'dark';
+
+    const backgroundMain = isDark ? '#333' : '#EADDCA';
+    const backgroundAlt = isDark ? '#444444' : '#fef3c7';
+    const textMain = isDark ? '#EADDCA' : '#b45309';
+
+    return StyleSheet.create({
+        modalContainer: {
+            margin: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        popupContent: {
+            backgroundColor: backgroundMain,
+            padding: 20,
+            borderRadius: 10,
+            elevation: 5,
+            width: '80%',
+            alignItems: 'center',
+        },
+        storeList: {
+            width: '100%',
+            maxHeight: 150,
+            marginBottom: 16,
+            borderWidth: 1,
+            padding: 5,
+            borderColor: backgroundAlt,
+            borderRadius: 8,
+            backgroundColor: backgroundMain,
+        },
+        title: {
+            fontSize: 18,
+            fontWeight: '600',
+            color: textMain,
+            marginBottom: 20,
+            textAlign: 'center',
+        },
+        textInputStyle: {
+            height: 40,
+            color: textMain,
+            borderColor: '#b45309',
+            borderWidth: 1,
+            borderRadius: 8,
+            alignSelf: 'center',
+            paddingHorizontal: 10,
+            marginBottom: 10,
+            width: '90%',
+        },
+        buttonContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingHorizontal: 10,
+            height: '100%',
+        }
+})};
 
 export default StoreForwardPopup;

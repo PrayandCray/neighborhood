@@ -1,16 +1,35 @@
 import AppButton from "@/components/button";
-import { useRouter } from "expo-router";
-import React, { useState } from 'react';
+import { useNavigation, useRouter } from "expo-router";
+import React, { useLayoutEffect, useState } from 'react';
 import { Alert, Keyboard, Platform, SafeAreaView, StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { UseItems } from "./context/ItemContext";
+import { useStyle } from "./context/styleContext";
 
 const NewListScreen = () => {
     const router = useRouter();
     const { addStore } = UseItems();
+    const { activeStyle } = useStyle();
     const inputRef = React.useRef(null);
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+
+        const navigation = useNavigation();
+        const isDark = activeStyle === 'dark';
+    
+        useLayoutEffect(() => {
+            navigation.setOptions({
+                headerStyle: {
+                    backgroundColor: isDark ? '#333333' : '#EADDCA',
+                },
+                headerTintColor: isDark ? '#EADDCA' : '#b45309',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                },
+            });
+        }, [navigation, activeStyle]);
+
+    const styles = getStyles(activeStyle)
 
     const handleTextChange = (text: string) => {
         setInputText(text);
@@ -80,17 +99,26 @@ const NewListScreen = () => {
 
 }
 
-const styles = StyleSheet.create({
-     container: {
+export const getStyles =  (activeStyle: string) => {
+    const isDark = activeStyle === 'dark';
+
+    const backgroundMain = isDark ? '#333' : '#EADDCA';
+    const backgroundAlt = isDark ? '#444444' : '#fef3c7';
+    const textMain = isDark ? '#EADDCA' : '#b45309';
+    const textSecondary = isDark ? '#F5DEB3' : '#d97706';
+
+    return StyleSheet.create({
+    container: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '#EADDCA',
+        backgroundColor: backgroundMain,
         width: '100%',
         paddingTop: 20,
         zIndex: 1
     },
     buttonContainer: {
         paddingTop: 50,
+        backgroundColor: backgroundAlt,
         bottom: 40,
         width: '100%',
         justifyContent: 'center',
@@ -105,6 +133,6 @@ const styles = StyleSheet.create({
         borderColor: '#b45309',
         borderRadius: 10,
     },
-})
+})};
 
 export default NewListScreen;

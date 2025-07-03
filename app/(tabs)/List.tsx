@@ -249,7 +249,7 @@ const List = () => {
                         showsHorizontalScrollIndicator={true}
                         persistentScrollbar={true}
                         renderItem={({item}) => (
-                            <View style={[styles.listItemContainer, mergeMode && selectedMergeItems.includes(item) ? { backgroundColor: '#ADD8E6', borderRadius: 12} : { backgroundColor: 'transparent' }]}>
+                            <View style={[styles.listItemContainer, mergeMode && selectedMergeItems.includes(item) ? { backgroundColor: 'rgba(173, 216, 230, 0.4)', borderRadius: 12} : { backgroundColor: 'transparent' }]}>
 
                                 <TouchableOpacity
                                     style={styles.itemContentContainer}

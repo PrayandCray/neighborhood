@@ -1,7 +1,7 @@
 import AppButton from '@/components/button';
 import { Picker } from '@react-native-picker/picker';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import React, { useLayoutEffect, useState } from 'react';
 import { Keyboard, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SelectList } from "react-native-dropdown-select-list";
 import { UseItems } from './context/ItemContext';
@@ -35,6 +35,21 @@ const EditScreen = () => {
     const [category, setCategory] = useState(item?.category || 'other');
     const [unit, setUnit] = useState(item?.unit || 'count');
     const [store, setStore] = useState(item?.store || 'General');
+
+    const navigation = useNavigation();
+    const isDark = activeStyle === 'dark';
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                backgroundColor: isDark ? '#333333' : '#EADDCA',
+            },
+            headerTintColor: isDark ? '#EADDCA' : '#b45309',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        });
+    }, [navigation, activeStyle]);
 
     const handleSave = () => {
         const updates = {
@@ -84,7 +99,6 @@ const EditScreen = () => {
                         <View style={styles.amountInputWrapper}>
                             <TextInput
                                 placeholder="Enter Amount (Default: 1)"
-                                placeholderTextColor="#a96733"
                                 style={styles.amountInput}
                                 keyboardType="numeric"
                                 maxLength={12}
@@ -211,16 +225,17 @@ export const getStyles =  (activeStyle: string) => {
     const isDark = activeStyle === 'dark';
 
     const backgroundMain = isDark ? '#333' : '#EADDCA'
+    const textMain = isDark ? '#EADDCA' : '#b45309';
 
     return StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#EADDCA',
+        backgroundColor: backgroundMain,
     },
     content: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#EADDCA'
+        backgroundColor: backgroundMain
     },
     amountContainer: {
         width: '90%',
@@ -244,7 +259,7 @@ export const getStyles =  (activeStyle: string) => {
         flex: 1,
         height: '100%',
         padding: 10,
-        color: '#b45309',
+        color: textMain,
     },
     storeContainer: {
         position: 'relative',
@@ -273,7 +288,7 @@ export const getStyles =  (activeStyle: string) => {
         width: '100%',
         top: 45,
         borderColor: '#b45309',
-        backgroundColor: '#fff',
+        backgroundColor: backgroundMain,
     },
     label: {
         textAlign: 'center',
@@ -285,6 +300,7 @@ export const getStyles =  (activeStyle: string) => {
         width: '90%',
         alignSelf: 'center',
         borderWidth: 1,
+        color: textMain,
         borderColor: '#b45309',
         borderRadius: 8,
         padding: 8,
@@ -314,7 +330,7 @@ export const getStyles =  (activeStyle: string) => {
         overflow: 'hidden',
     },
     buttonContainer: {
-        backgroundColor: '#EADDCA',
+        backgroundColor: backgroundMain,
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 16,

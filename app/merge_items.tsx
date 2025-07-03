@@ -1,13 +1,32 @@
 import AppButton from "@/components/button";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React from "react";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import React, { useLayoutEffect } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { ListItem, UseItems } from "./context/ItemContext";
+import { useStyle } from "./context/styleContext";
 
 const MergeItemsScreen = () => {
-    const {removeFromGrocery, removeFromPantry} = UseItems()
-    const [itemName, setItemName] = React.useState('')
+    const {removeFromGrocery, removeFromPantry} = UseItems();
+    const { activeStyle } = useStyle();
+    const [itemName, setItemName] = React.useState('');
     const [mergedItems, setMergedItems] = React.useState<ListItem[]>([]);
+
+    const styles = getStyles(activeStyle);
+
+    const navigation = useNavigation();
+    const isDark = activeStyle === 'dark';
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                backgroundColor: isDark ? '#333333' : '#EADDCA',
+            },
+            headerTintColor: isDark ? '#EADDCA' : '#b45309',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        });
+    }, [navigation, activeStyle]);
 
     const { mergedItemsList } = useLocalSearchParams<{
         mergedItemsList?: string;
@@ -60,12 +79,13 @@ const MergeItemsScreen = () => {
         <View style={styles.container}>
             <Text style={styles.text}>List of merged items</Text>
 
-            <View style={[styles.input, {alignItems: 'center', alignSelf: 'center'}]}>
+            <View style={{alignItems: 'center', alignSelf: 'center'}}>
                 <TextInput
                     value={itemName}
                     onChangeText={setItemName}
+                    style={styles.input}
                     placeholder="Enter Name of Merged Item"
-                    placeholderTextColor={'#b45309'}
+                    placeholderTextColor={isDark ? '#EADDCA' : '#b45309'}
                 />
             </View>
 
@@ -103,39 +123,48 @@ const MergeItemsScreen = () => {
         </View>
     );
 };
+export const getStyles =  (activeStyle: string) => {
+    const isDark = activeStyle === 'dark';
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        paddingTop: 8,
-        backgroundColor: "#EADDCA",
-    },
-    flatListContainer: {
-        width: '100%',
-        maxHeight: 150,
-        marginBottom: 16,
-        textAlign: 'center',
-        padding: 8,
-        borderWidth: 1,
-        borderColor: '#e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#f9fafb',
-    },
-    text: {
-        textAlign: 'center',
-        fontSize: 18,
-        marginBottom: 12,
-    },
-    input: {
-        width: '90%',
-        height: 40,
-        padding: 10,
-        marginVertical: 10,
-        borderWidth: 1,
-        borderColor: '#b45309',
-        borderRadius: 10,
-    },
-});
+    const backgroundMain = isDark ? '#333' : '#EADDCA';
+    const backgroundAlt = isDark ? '#444444' : '#fef3c7';
+    const textMain = isDark ? '#EADDCA' : '#b45309';
+    const textSecondary = isDark ? '#F5DEB3' : '#d97706';
+
+    return StyleSheet.create({
+        container: {
+            flex: 1,
+            padding: 20,
+            paddingTop: 8,
+            backgroundColor: backgroundMain,
+        },
+        flatListContainer: {
+            width: '100%',
+            maxHeight: 150,
+            marginBottom: 16,
+            textAlign: 'center',
+            padding: 8,
+            borderWidth: 1,
+            borderColor: '#e5e7eb',
+            borderRadius: 8,
+            backgroundColor: backgroundAlt,
+        },
+        text: {
+            textAlign: 'center',
+            color: textSecondary,
+            fontSize: 18,
+            marginBottom: 12,
+        },
+        input: {
+            width: '90%',
+            height: 40,
+            padding: 10,
+            marginVertical: 10,
+            borderWidth: 1,
+            color: textMain,
+            borderColor: '#b45309',
+            borderRadius: 10,
+        },
+})};
 
 export default MergeItemsScreen;
