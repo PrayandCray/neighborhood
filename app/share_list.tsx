@@ -2,13 +2,15 @@ import { UseItems } from '@/app/context/ItemContext';
 import AppButton from '@/components/button';
 import StoreForwardPopup from '@/components/storepopup';
 import * as Clipboard from 'expo-clipboard';
-import { useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useLayoutEffect, useState } from 'react';
 import { Alert, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { useStyle } from './context/styleContext';
 
 const ShareListScreen = () => {
 
     const {groceryItems, pantryItems, stores} = UseItems()
+    const {activeStyle} = useStyle();
 
     const params = useLocalSearchParams();
     const includeGroceryParam = params.includeGrocery === 'true';
@@ -18,6 +20,22 @@ const ShareListScreen = () => {
     const [selectedStore, setSelectedStore] = useState<string>('all');
     const [showStoreModal, setShowStoreModal] = useState(false);
     const [includePantry, setIncludePantry] = useState(includePantryParam);
+
+    const navigation = useNavigation();
+    const isDark = activeStyle === 'dark';
+    const styles = getStyles(activeStyle);
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                backgroundColor: isDark ? '#333333' : '#EADDCA',
+            },
+            headerTintColor: isDark ? '#EADDCA' : '#b45309',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        });
+    }, [navigation, activeStyle]);
 
     const formatList = (title: string, items: any[]) => {
         if (!items.length) return `${title}:\n(no items)\n`;
@@ -69,29 +87,32 @@ const ShareListScreen = () => {
             <Text style={styles.title}> Select lists to share </Text>
 
             <View style={styles.toggleRow}>
-                <Text> Include Grocery List</Text>
+                <Text style={{color: activeStyle === 'dark' ? '#F5DEB3' : '#d97706'}}> Include Grocery List</Text>
                 <Switch value={includeGrocery} onValueChange={setIncludeGrocery}/>
             </View>
 
             <View style={styles.toggleRow}>
-                <Text> Include Pantry </Text>
+                <Text style={{color: activeStyle === 'dark' ? '#F5DEB3' : '#d97706'}}> Include Pantry </Text>
                 <Switch value={includePantry} onValueChange={setIncludePantry}/>
             </View>
 
             <View style={styles.buttonContainer}>
-                <Text style={{ fontWeight: 'bold' }}>Store: {selectedStore}</Text>
+                <Text style={{ fontWeight: 'bold', color: activeStyle === 'dark' ? '#EADDCA' : '#b45309'}}>Store: {selectedStore}</Text>
                 <AppButton
                     text="🛒 Choose Store"
+                    textColor={activeStyle === 'dark' ? '#F5DEB3' : '#eaddca'}
                     isFullWidth={true}
                     onPress={() => setShowStoreModal(true)}
                 />
                 <AppButton
                     text="📋 Copy List"
+                    textColor={activeStyle === 'dark' ? '#F5DEB3' : '#eaddca'}
                     onPress={handleCopy}
                     isFullWidth={true}
                 />
                 <AppButton
                     text="📋 Share List"
+                    textColor={activeStyle === 'dark' ? '#F5DEB3' : '#eaddca'}
                     onPress={handleShare}
                     isFullWidth={true}
                 />
@@ -114,36 +135,45 @@ const ShareListScreen = () => {
     )
 
 };
+export const getStyles =  (activeStyle: string) => {
+    const isDark = activeStyle === 'dark';
 
-const styles = StyleSheet.create({
-    container: {
-        padding: 16,
-        backgroundColor: '#EADDCA',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 16,
-    },
-    toggleRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginVertical: 8,
-    },
-    buttonContainer: {
-        marginTop: 16,
-        gap: 10,
-    },
-    previewTitle: {
-        marginTop: 20,
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    previewText: {
-        marginTop: 8,
-        fontFamily: 'monospace',
-    },
-});
+    const backgroundMain = isDark ? '#333' : '#EADDCA';
+    const backgroundAlt = isDark ? '#444444' : '#fef3c7';
+    const textMain = isDark ? '#EADDCA' : '#b45309';
+    const textSecondary = isDark ? '#F5DEB3' : '#333';
+    return StyleSheet.create({
+        container: {
+            padding: 16,
+            backgroundColor: backgroundMain,
+        },
+        title: {
+            color: textMain,
+            fontSize: 20,
+            fontWeight: 'bold',
+            marginBottom: 16,
+        },
+        toggleRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginVertical: 8,
+        },
+        buttonContainer: {
+            marginTop: 16,
+            gap: 10,
+        },
+        previewTitle: {
+            color: textMain,
+            marginTop: 20,
+            fontWeight: 'bold',
+            fontSize: 16,
+        },
+        previewText: {
+            marginTop: 8,
+            color: textSecondary,
+            fontFamily: 'monospace',
+        },
+})};
 
 export default ShareListScreen;

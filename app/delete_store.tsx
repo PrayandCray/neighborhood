@@ -1,7 +1,7 @@
 import AppButton from "@/components/button";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from 'react';
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import React, { useLayoutEffect, useState } from 'react';
 import {
     Alert,
     Keyboard,
@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SelectList } from "react-native-dropdown-select-list";
 import { UseItems } from "./context/ItemContext";
+import { useStyle } from "./context/styleContext";
 
 const NewListScreen = () => {
     const { itemId, listType } = useLocalSearchParams();
@@ -25,6 +26,27 @@ const NewListScreen = () => {
         stores,
         deleteStore,
     } = UseItems();
+
+    const {
+        activeStyle
+    } = useStyle();
+
+    const navigation = useNavigation();
+        const isDark = activeStyle === 'dark';
+    
+        useLayoutEffect(() => {
+            navigation.setOptions({
+                headerStyle: {
+                    backgroundColor: isDark ? '#333333' : '#EADDCA',
+                },
+                headerTintColor: isDark ? '#EADDCA' : '#b45309',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                },
+            });
+        }, [navigation, activeStyle]);
+
+    const styles = getStyles(activeStyle)
 
     const item = listType === 'pantry'
         ? pantryItems.find(item => item.id === itemId)
@@ -102,62 +124,69 @@ const NewListScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#EADDCA',
-    },
-    innerContent: {
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flex: 1,
-        width: '100%',
-    },
-    label: {
-        fontSize: 16,
-        color: '#5B3A0D',
-        marginBottom: 6,
-        marginLeft: 10,
-    },
-    title: {
-        textAlign: 'center',
-        fontSize: 20,
-        fontWeight: '600',
-        marginBottom: 20,
-        color: '#843F00',
-    },
-    dropdownWrapper: {
-        width: '100%',
-        marginBottom: 20,
-    },
-    unitDropdown: {
-        borderColor: '#b45309',
-        borderRadius: 10,
-        height: 45,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-        paddingHorizontal: 12,
-    },
-    inputText: {
-        fontFamily: 'sans-serif',
-        color: '#b45309',
-        textAlign: 'center',
-    },
-    unitDropdownList: {
-        borderColor: '#b45309',
-        backgroundColor: '#fff',
-        borderRadius: 10,
-    },
-    dropdownText: {
-        color: '#b45309',
-        fontSize: 14,
-        textAlign: 'center',
-    },
-    buttonWrapper: {
-        width: '100%',
-        marginTop: 10,
-    },
-});
+export const getStyles = (activeStyle: string) => {
+    const isDark = activeStyle === 'dark';
+    const backgroundMain = isDark ? '#333' : '#EADDCA';
+    const backgroundAlt = isDark ? '#444444' : '#fef3c7';
+    const textMain = isDark ? '#EADDCA' : '#b45309';
+    const textSecondary = isDark ? '#F5DEB3' : '#d97706';
+
+    return StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: backgroundMain,
+        },
+        innerContent: {
+            padding: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: 1,
+            width: '100%',
+        },
+        label: {
+            fontSize: 16,
+            color: '#5B3A0D',
+            marginBottom: 6,
+            marginLeft: 10,
+        },
+        title: {
+            textAlign: 'center',
+            fontSize: 20,
+            fontWeight: '600',
+            marginBottom: 20,
+            color: '#843F00',
+        },
+        dropdownWrapper: {
+            width: '100%',
+            marginBottom: 20,
+        },
+        unitDropdown: {
+            borderColor: '#b45309',
+            borderRadius: 10,
+            height: 45,
+            backgroundColor: '#fff',
+            justifyContent: 'center',
+            paddingHorizontal: 12,
+        },
+        inputText: {
+            fontFamily: 'sans-serif',
+            color: textMain,
+            textAlign: 'center',
+        },
+        unitDropdownList: {
+            borderColor: '#b45309',
+            backgroundColor: '#fff',
+            borderRadius: 10,
+        },
+        dropdownText: {
+            color: '#b45309',
+            fontSize: 14,
+            textAlign: 'center',
+        },
+        buttonWrapper: {
+            width: '100%',
+            marginTop: 10,
+        },
+})};
 
 export default NewListScreen;

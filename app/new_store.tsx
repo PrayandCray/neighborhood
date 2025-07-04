@@ -47,7 +47,6 @@ const NewListScreen = () => {
         try {
             setIsLoading(true);
             await addStore(inputText);
-            // Wait a brief moment to ensure store is added
             setTimeout(() => {
                 setIsLoading(false);
                 router.back();
@@ -70,7 +69,7 @@ const NewListScreen = () => {
                 }
             }}
         >
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={[styles.container, {backgroundColor: activeStyle === 'dark' ? '#333' : '#EADDCA'}]}>
                 <TextInput
                     ref = {inputRef}
                     autoFocus={true}
@@ -78,7 +77,7 @@ const NewListScreen = () => {
                     value={inputText}
                     onChangeText={handleTextChange}
                     placeholder="Enter Store Name"
-                    placeholderTextColor="#a96733"
+                    placeholderTextColor={activeStyle == 'dark' ? '#EADDCA' : '#b45309'}
                 />
 
                 <View style={styles.buttonContainer}>
@@ -111,14 +110,13 @@ export const getStyles =  (activeStyle: string) => {
     container: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: backgroundMain,
         width: '100%',
         paddingTop: 20,
         zIndex: 1
     },
     buttonContainer: {
         paddingTop: 50,
-        backgroundColor: backgroundAlt,
+        backgroundColor: 'transparent',
         bottom: 40,
         width: '100%',
         justifyContent: 'center',
@@ -126,6 +124,7 @@ export const getStyles =  (activeStyle: string) => {
     },
     input: {
         width: '90%',
+        color: textMain,
         height: 40,
         padding: 10,
         marginVertical: 16,

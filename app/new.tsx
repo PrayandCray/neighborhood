@@ -1,12 +1,13 @@
 import AppButton from "@/components/button";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from '@react-native-picker/picker';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import Fuse from "fuse.js";
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { Alert, Keyboard, Platform, SafeAreaView, StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { SelectList } from "react-native-dropdown-select-list";
 import { ListItem, UseItems } from "./context/ItemContext";
+import { useStyle } from "./context/styleContext";
 
 const NewItemScreen = () => {
     const router = useRouter();
@@ -14,6 +15,7 @@ const NewItemScreen = () => {
     const {listType, itemName, dupeItemAlert, merge, photouri} = useLocalSearchParams();
     const [inputText, setInputText] = useState<string>(typeof itemName === 'string' ? itemName : '');
     const {addToPantry, addToGrocery, removeFromGrocery, removeFromPantry, stores, pantryItems, groceryItems, categories, unitOptions} = UseItems();
+    const {activeStyle} = useStyle();
     const [category, setCategory] = useState('other');
     const [amount, setAmount] = useState('');
     const [unit, setUnit] = useState('count');
@@ -23,6 +25,23 @@ const NewItemScreen = () => {
     const parsedMergedItemsList: ListItem[] = JSON.parse(mergedItemsJson);
 
     const booleanMerge = merge === 'true'
+
+    const navigation = useNavigation();
+    const isDark = activeStyle === 'dark';
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                backgroundColor: isDark ? '#333333' : '#EADDCA',
+            },
+            headerTintColor: isDark ? '#EADDCA' : '#b45309',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        });
+    }, [navigation, activeStyle]);
+
+    const styles = getStyles(activeStyle)
 
     const handleTextChange = (text: string) => {
         setInputText(text);
@@ -156,7 +175,7 @@ const NewItemScreen = () => {
                 }
             }}
         >
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={[styles.container, {backgroundColor: activeStyle === 'dark' ? '#333' : '#EADDCA'}]}>
                 <TextInput
                     ref={inputRef}
                     autoFocus={true}
@@ -164,7 +183,7 @@ const NewItemScreen = () => {
                     value={inputText}
                     onChangeText={handleTextChange}
                     placeholder="Enter Item Name"
-                    placeholderTextColor="#a96733"
+                    placeholderTextColor= {activeStyle === 'dark' ? '#EADDCA' : '#b45309'}
                 />
 
                 <View style={styles.pickerStyle}>
@@ -172,14 +191,14 @@ const NewItemScreen = () => {
                         selectedValue={category}
                         onValueChange={(itemValue) => setCategory(itemValue)}
                         style={styles.picker}
-                        dropdownIconColor='#EADDCA'
+                        dropdownIconColor={activeStyle === 'dark' ? '#EADDCA' : '#b45309'}
                     >
                         {categories.map((cat) => (
                             <Picker.Item
                                 key={cat.value}
                                 label={cat.label}
                                 value={cat.value}
-                                color={'#a96733'}
+                                color={activeStyle === 'dark' ? '#EADDCA' : '#b45309'}
                             />
                         ))}
                     </Picker>
@@ -187,7 +206,7 @@ const NewItemScreen = () => {
                         <Ionicons
                             name="caret-down"
                             size={12}
-                            color="#a96733"
+                            color={activeStyle === 'dark' ? '#EADDCA' : '#b45309'}
                             style={{
                                 position: 'absolute',
                                 right: 20,
@@ -203,7 +222,7 @@ const NewItemScreen = () => {
                     <View style={styles.amountInputWrapper}>
                         <TextInput
                             placeholder="Amount (Default: 1)"
-                            placeholderTextColor="#a96733"
+                            placeholderTextColor= {activeStyle === 'dark' ? '#EADDCA' : '#b45309'}
                             style={styles.amountInput}
                             keyboardType="numeric"
                             maxLength={10}
@@ -222,7 +241,7 @@ const NewItemScreen = () => {
                         defaultOption={{key: 'count', value: 'count'}}
                         boxStyles={styles.unitDropdown}
                         inputStyles={{
-                            color: '#a96733',
+                            color: activeStyle === 'dark' ? '#EADDCA' : '#b45309',
                             textAlign: 'left',
                             fontWeight: '500',
                         }}
@@ -233,7 +252,7 @@ const NewItemScreen = () => {
                             textAlign: 'left',
                         }}
                         arrowicon={
-                            <Ionicons name="caret-down" size={12} color="#a96733" style={{left: '10%'}} />
+                            <Ionicons name="caret-down" size={12} color= {activeStyle === 'dark' ? '#EADDCA' : '#b45309'} style={{left: '10%'}} />
                         }
                     />
                 </View>
@@ -268,7 +287,7 @@ const NewItemScreen = () => {
                             }}
                             dropdownStyles={styles.unitDropdownList}
                             dropdownTextStyles={{
-                                color: '#b45309',
+                                color: activeStyle === 'dark' ? '#EADDCA' : '#b45309',
                                 fontSize: 14,
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -300,99 +319,108 @@ const NewItemScreen = () => {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: '#EADDCA',
-        width: '100%',
-        paddingTop: 20,
-        zIndex: 1
-    },
-    buttonContainer: {
-        paddingTop: 50,
-        bottom: 40,
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    pickerStyle: {
-        width: '90%',
-        height: Platform.select({
-            ios: 210,
-        }),
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#b45309',
-        borderRadius: 10,
-        backgroundColor: 'transparent',
-        overflow: 'hidden',
-    },
-    amountContainer: {
-        width: '90%',
-        flexDirection: 'row',
-        gap: 10,
-        height: 45,
-        alignItems: 'center',
-        zIndex: 2,
-        position: 'relative',
-    },
-    amountInputWrapper: {
-        flex: 2,
-        height: 40,
-        borderWidth: 1,
-        borderColor: '#b45309',
-        borderRadius: 10,
-        overflow: 'hidden',
-    },
-    amountInput: {
-        flex: 1,
-        height: '100%',
-        padding: 10,
-        color: '#b45309',
-    },
-    unitDropdown: {
-        flex: 2,
-        height: 40,
-        borderColor: '#b45309',
-        borderRadius: 10,
-        backgroundColor: 'transparent',
-        justifyContent: 'center',
-        minWidth: 100,
-        paddingHorizontal: 8,
-        zIndex: 3,
-    },
-    unitDropdownList: {
-        position: 'absolute',
-        minWidth: 100,
-        top: 45,
-        borderColor: '#b45309',
-        backgroundColor: '#fff',
-    },
-    storeContainer: {
-        position: 'relative',
-        width: '90%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        zIndex: 1,
-        marginTop: 10,
-        height: 45,   
-    },
-    picker: {
-        width: '100%',
-        height: 60,
-        backgroundColor: 'transparent',
-    },
-    input: {
-        width: '90%',
-        height: 40,
-        padding: 10,
-        marginVertical: 16,
-        borderWidth: 1,
-        borderColor: '#b45309',
-        borderRadius: 10,
-    },
-});
+export const getStyles = (activeStyle: string) => {
+    const isDark = activeStyle === 'dark';
+
+    const backgroundMain = isDark ? '#333' : '#EADDCA';
+    const backgroundAlt = isDark ? '#444444' : '#fef3c7';
+    const textMain = isDark ? '#EADDCA' : '#b45309';
+    const textSecondary = isDark ? '#F5DEB3' : '#d97706';
+
+    return StyleSheet.create({
+        container: {
+            flex: 1,
+            alignItems: 'center',
+            backgroundColor: backgroundMain,
+            width: '100%',
+            paddingTop: 20,
+            zIndex: 1
+        },
+        buttonContainer: {
+            paddingTop: 50,
+            bottom: 40,
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        pickerStyle: {
+            width: '90%',
+            height: Platform.select({
+                ios: 210,
+            }),
+            marginBottom: 10,
+            borderWidth: 1,
+            borderColor: '#b45309',
+            borderRadius: 10,
+            backgroundColor: 'transparent',
+            overflow: 'hidden',
+        },
+        amountContainer: {
+            width: '90%',
+            flexDirection: 'row',
+            gap: 10,
+            height: 45,
+            alignItems: 'center',
+            zIndex: 2,
+            position: 'relative',
+        },
+        amountInputWrapper: {
+            flex: 2,
+            height: 40,
+            borderWidth: 1,
+            borderColor: '#b45309',
+            borderRadius: 10,
+            overflow: 'hidden',
+        },
+        amountInput: {
+            flex: 1,
+            height: '100%',
+            padding: 10,
+            color: '#b45309',
+        },
+        unitDropdown: {
+            flex: 2,
+            height: 40,
+            borderColor: '#b45309',
+            borderRadius: 10,
+            backgroundColor: 'transparent',
+            justifyContent: 'center',
+            minWidth: 100,
+            paddingHorizontal: 8,
+            zIndex: 3,
+        },
+        unitDropdownList: {
+            position: 'absolute',
+            minWidth: 100,
+            top: 45,
+            borderColor: '#b45309',
+            backgroundColor: '#fff',
+        },
+        storeContainer: {
+            position: 'relative',
+            width: '90%',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 10,
+            zIndex: 1,
+            marginTop: 10,
+            height: 45,   
+        },
+        picker: {
+            width: '100%',
+            height: 60,
+            backgroundColor: 'transparent',
+        },
+        input: {
+            width: '90%',
+            height: 40,
+            padding: 10,
+            color: textMain,
+            marginVertical: 16,
+            borderWidth: 1,
+            borderColor: '#b45309',
+            borderRadius: 10,
+        },
+})};
 
 export default NewItemScreen;
