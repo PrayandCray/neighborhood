@@ -14,20 +14,20 @@ const NewListScreen = () => {
     const [isLoading, setIsLoading] = useState(false);
 
 
-        const navigation = useNavigation();
-        const isDark = activeStyle === 'dark';
-    
-        useLayoutEffect(() => {
-            navigation.setOptions({
-                headerStyle: {
-                    backgroundColor: isDark ? '#333333' : '#EADDCA',
-                },
-                headerTintColor: isDark ? '#EADDCA' : '#b45309',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                },
-            });
-        }, [navigation, activeStyle]);
+    const navigation = useNavigation();
+    const isDark = activeStyle === 'dark';
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerStyle: {
+                backgroundColor: isDark ? '#333333' : '#EADDCA',
+            },
+            headerTintColor: isDark ? '#EADDCA' : '#b45309',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+            },
+        });
+    }, [navigation, activeStyle]);
 
     const styles = getStyles(activeStyle)
 

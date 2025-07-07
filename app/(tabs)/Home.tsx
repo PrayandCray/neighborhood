@@ -85,10 +85,16 @@ const Home = () => {
                     textColor={'#EADDCA'}
                 />
             </View>
-            <View style={{paddingTop: 15, alignItems: 'center'}}>
+            <View style={{paddingTop: 15, alignSelf: 'center', flexDirection: 'row', paddingHorizontal: 5}}>
                 <AppButton
                     text='Toggle Light Mode'
                     onPress={() => {changeBackgroundColor()}}
+                    borderColor={'#fff'}
+                    textColor={'#EADDCA'}
+                />
+                <AppButton
+                    text='Scan Reciept'
+                    onPress={() => {router.push('/reciept_scan')}}
                     borderColor={'#fff'}
                     textColor={'#EADDCA'}
                 />

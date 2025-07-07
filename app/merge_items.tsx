@@ -1,5 +1,5 @@
 import AppButton from "@/components/button";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter, withLayoutContext } from "expo-router";
 import React, { useLayoutEffect } from "react";
 import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -154,14 +154,16 @@ const MergeItemsScreen = () => {
 
             <Text style={[styles.text, { paddingTop: 40 }]}> Or select an item to merge into </Text>
 
-            <View style={styles.flatListContainer}>
+            <View style={[styles.flatListContainer, {backgroundColor: activeStyle === 'dark' ? '#333' : '#EADDCA', borderWidth: 5}]}>
                 <FlatList
                     style={{ alignSelf: 'center' }}
                     data={items}
                     keyExtractor={(item) => item.id}
                     scrollEnabled={true}
                     renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => handleRemoveMergeSelectedItem(item.id)}>
+                        <TouchableOpacity 
+                            onPress={() => handleRemoveMergeSelectedItem(item.id)}
+                        >
                             <Text style={{ textAlign: 'center', paddingVertical: 5, fontSize: 16 }}>
                                 {item.name}
                             </Text>
@@ -298,4 +300,4 @@ export const getStyles = (activeStyle: string) => {
     });
 };
 
-export default MergeItemsScreen;
+export default MergeItemsScreen;                                                           

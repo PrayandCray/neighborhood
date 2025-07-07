@@ -37,8 +37,7 @@ const SpeechAddScreen = () => {
             const uri = recording.getURI();
             if (uri) {
                 await sendToGoogle(uri)
-            } 
-
+            }
             recordingRef.current = null;
             } catch (err) {
                 alert('Could not stop recording' + err)
