@@ -1,11 +1,15 @@
+import AppButton from '@/components/button';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import React, { useLayoutEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
@@ -85,10 +89,19 @@ const RecieptScanScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.button} onPress={pickImageAndScan}>
-                <Text style={styles.buttonText}>Scan Receipt</Text>
-            </TouchableOpacity>
+        <SafeAreaView style={styles.container}>
+            <View style={{flexDirection: 'row'}}>
+                <Ionicons
+                name='caret-back-circle'
+                onPress={() => router.back()}
+                size={30}
+                style={{paddingTop: 15, marginLeft: 12}}
+                color={"#b45309"}
+                />
+                <TouchableOpacity style={styles.button} onPress={pickImageAndScan}>
+                    <Text style={styles.buttonText}>Scan Receipt</Text>
+                </TouchableOpacity>
+            </View>
 
             {loading && <ActivityIndicator size="large" color="#b45309" />}
 
@@ -96,11 +109,31 @@ const RecieptScanScreen = () => {
                 <ScrollView style={styles.resultContainer}>
                     {parsedItems.map((item, idx) => (
                         // This is how each individual item is going to look
+
                         <View key={idx} style={styles.itemContainer}>
-                            <Text style={styles.resultText}>
-                                • {item.Name} — {item.Amount ?? '—'} {item.Unit ?? ''}
-                            </Text>
+                            <View style={{flexDirection: 'row'}}>
+                                <Text style={[styles.resultText, {paddingTop: 5}]}>Name: </Text>
+                                <TextInput style={styles.input}
+                                    placeholder={item.Name}
+                                    placeholderTextColor={activeStyle == 'dark' ? '#EADDCA' : '#b45309'}
+                                />
+                            </View>
+                            <View style={styles.buttonContainer}>
+                                <AppButton
+                                    text='Add New'
+                                    onPress={() => {console.log('this is where you add an item')}}
+                                    isFullWidth={true}
+                                    textColor={activeStyle === 'dark' ? '#EADDCA' : '#b45309'}
+                                />
+                                <AppButton
+                                    text='Remove'
+                                    onPress={() => {console.log('this is where you delete this item')}}
+                                    isFullWidth={true}
+                                    textColor={activeStyle === 'dark' ? '#EADDCA' : '#b45309'}
+                                />
+                            </View>
                         </View>
+
                     ))}
                 </ScrollView>
             )}
@@ -108,7 +141,7 @@ const RecieptScanScreen = () => {
             {!loading && error !== '' && (
                 <Text style={{ color: 'red', marginTop: 12 }}>{error}</Text>
             )}
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -126,11 +159,13 @@ export const getStyles = (activeStyle: string) => {
         backgroundColor: backgroundMain,
     },
     button: {
+        marginHorizontal: 15,
         backgroundColor: '#b45309',
         padding: 16,
         borderRadius: 10,
         alignItems: 'center',
         marginBottom: 24,
+        width: '80%'
     },
     buttonText: {
         color: '#fff',
@@ -148,11 +183,28 @@ export const getStyles = (activeStyle: string) => {
     itemContainer: {
         marginBottom: 12,
         paddingVertical: 15,
-        width: '90%',
         alignSelf: 'center',
         backgroundColor: backgroundAlt,
         paddingHorizontal: 10,
-        borderRadius: 12
+        borderRadius: 12,
+        maxWidth: '95%',
+        minWidth: '90%',
+        gap: 10
+    },
+    buttonContainer: {
+        alignSelf: 'center',
+        flexDirection: 'row',
+        gap: 4
+    },
+    input: {
+        width: '85%',
+        alignSelf: 'center',
+        borderWidth: 1,
+        color: textMain,
+        borderColor: '#b45309',
+        borderRadius: 8,
+        padding: 8,
+        marginBottom: 16,
     },
 })};
 

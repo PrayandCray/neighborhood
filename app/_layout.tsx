@@ -22,6 +22,13 @@ export default function StackLayout(){
               />
 
               <Stack.Screen
+                  name="reciept_scan"
+                  options={{
+                      headerShown: false,
+                  }}
+              />
+
+              <Stack.Screen
                   name="scan"
                   options={{
                     headerShown: true,
